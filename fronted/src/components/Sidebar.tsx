@@ -12,7 +12,7 @@ export default function Sidebar() {
   const [active, setActive] = useState(null);
 
   return (
-    <div className="w-45 h-screen bg-white shadow-sm p-4">
+    <div className="w-45 h-screen bg-white shadow-sm p-4 fixed">
       <p className="text-3xl font-bold mt-6 text-gray-800">Računi</p>
 
       <ul className="space-y-2 mt-8 text-left">

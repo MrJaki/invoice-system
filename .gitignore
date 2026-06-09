@@ -70,3 +70,5 @@ backend/uploads/
 
 # Generated files
 *.tgz
+
+.env

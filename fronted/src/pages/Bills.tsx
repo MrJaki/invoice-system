@@ -1,36 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from 'axios';
 
+type Bill = {
+    id: number;
+    id_komitenta: number;
+    naziv_komitenta: string;
+    znesek: number;
+    datum_izstavitve: string;
+    datum_valute: string;
+    datum_plačila: string;
+    stevilka_racuna: number;
+}
 
 function BillsPage() {
-    const [bills] = useState([
-        {
-            id: 1,
-            number: "INV-1001",
-            client: "Acme d.o.o.",
-            date: "2026-06-01",
-            amount: 120.5,
-            status: "Paid",
-        },
-        {
-            id: 2,
-            number: "INV-1002",
-            client: "Beta Ltd",
-            date: "2026-06-03",
-            amount: 340.0,
-            status: "Unpaid",
-        },
-        {
-            id: 3,
-            number: "INV-1003",
-            client: "Gamma Group",
-            date: "2026-06-05",
-            amount: 89.99,
-            status: "Paid",
-        },
-    ]);
-
+    const [bills, setBills] = useState<Bill[]>([]);
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(10);
+
+    const API_URL = 'http://localhost:3002/api';
+
+    const getTasks = async () => {
+        try {
+            const bill = await axios.get(`${API_URL}/bills`);
+            setBills(
+                Array.isArray(bill.data.data)
+                ? bill.data.data
+                : [bill.data.data]
+            );
+        } catch (err) {
+
+        }
+    }
+
+    useEffect(() => {
+        getTasks();
+    }, [])
 
     return (
         <div className="p-6 w-full">
@@ -70,6 +74,7 @@ function BillsPage() {
                             <th className="p-3">Komitent</th>
                             <th className="p-3">Datum Izpisa</th>
                             <th className="p-3">Datum Valute</th>
+                            <th className="p-3">Datum Plačila</th>
                             <th className="p-3">Znesek (€)</th>
                         </tr>
                     </thead>
@@ -77,26 +82,18 @@ function BillsPage() {
                     <tbody>
                         {bills.map((bill) => (
                             <tr
-                                key={bill.id}
+                                key={bill.stevilka_racuna}
                                 className="hover:bg-gray-100 transition"
                             >
                                 <td className="p-3 font-medium text-gray-800">
-                                    {bill.number}
+                                    {bill.stevilka_racuna}
                                 </td>
-                                <td className="p-3">{bill.client}</td>
-                                <td className="p-3">{bill.date}</td>
-                                <td className="p-3">{bill.amount.toFixed(2)}</td>
-                                <td className="p-3">
-                                    <span
-                                        className={`px-2 py-1 rounded text-xs font-medium
-                      ${bill.status === "Paid"
-                                                ? "bg-green-100 text-green-700"
-                                                : "bg-red-100 text-red-700"
-                                            }`}
-                                    >
-                                        {bill.status}
-                                    </span>
-                                </td>
+                                <td className="p-3">{bill.id_komitenta}</td>
+                                <td className="p-3">{bill.naziv_komitenta}</td>
+                                <td className="p-3">{bill.datum_izstavitve ? new Date(bill.datum_izstavitve).toLocaleDateString("sl") : '-'}</td>
+                                <td className="p-3">{bill.datum_valute ? new Date(bill.datum_valute).toLocaleDateString("sl") : '-'}</td>
+                                <td className="p-3">{bill.datum_plačila ? new Date(bill.datum_plačila).toLocaleDateString("sl") : '-'}</td>
+                                <td className="p-3">{bill.znesek}</td>
                             </tr>
                         ))}
                     </tbody>
