@@ -33,4 +33,19 @@ router.get('/selected_id',  async (req, res) => {
     }
 });
 
+router.patch('/',  async (req, res) => {
+    const { dateOut, dateValue, datePayment } = req.body;
+
+    const id_bill = parseInt(req.body.id, 10);
+
+    try {
+        const bill = await dbBills.updateBill(dateOut, dateValue, datePayment, id_bill);
+        res.json({success: true, data: bill});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
 module.exports = router;

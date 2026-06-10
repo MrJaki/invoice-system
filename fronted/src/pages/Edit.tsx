@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 // import styled from 'styled-components'
 import BillsTable from '../components/BillTable'
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 type Bill = {
     id: number;
@@ -24,11 +26,54 @@ type bills = {
     setChosenBill: (value: number) => void;
 }
 
+const Message = styled.p<{ $error: boolean, $visible: boolean }>`
+    color: ${(props) => (props.$error ? "red" : "green")};
+    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
+    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
+    display: ${(props) => (props.$visible ? 'block' : 'none')};
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
+`;
+
 function EditPage({ chosenBill, setChosenBill }: bills) {
     const [chosenNumber, setChosenNumber] = useState(0);
     const [bill, setBill] = useState<Bill | null>(null);
 
+    const [isError, setIsError] = useState(false);
+    const [message, setMessage] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
+
+    const [dateOut, setDateOut] = useState(
+        new Date().toISOString().split("T")[0]
+    );
+
+    const [dateValue, setDateValue] = useState(
+        new Date().toISOString().split("T")[0]
+    );
+
+    const [datePayment, setDatePayment] = useState(
+        new Date().toISOString().split("T")[0]
+    );
+
     const API_URL = 'http://localhost:3002/api';
+
+    const navigate = useNavigate();
+
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return "";
+
+        const d = new Date(dateString);
+
+        return [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, "0"),
+            String(d.getDate()).padStart(2, "0")
+        ].join("-");
+    };
 
     const loadChosenBill = async () => {
         if (chosenBill == 0) return;
@@ -42,9 +87,46 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                 }
             );
 
-            setBill(response.data.data);
-        } catch (err) {
+            const data = response.data.data;
 
+            setBill(response.data.data);
+
+            setDateOut(formatDate(data?.datum_izstavitve));
+            setDateValue(formatDate(data?.datum_valute));
+            setDatePayment(formatDate(data?.datum_plačila));
+
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage("Napaka pri nalaganju računa!");
+        }
+    }
+
+    const updateBill = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        try {
+            await axios.patch(
+                `${API_URL}/bills`,
+                {
+                    dateOut,
+                    dateValue,
+                    datePayment,
+                    id: chosenBill
+                }
+            );
+
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+
+            setTimeout(() => {navigate("/bills"), 500})
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage("Napaka pri nalaganju računa!");
         }
     }
 
@@ -64,7 +146,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                         <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5 w-2/4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text font-semibold text-gray-800">
-                                    Vnesite številko računa
+                                    Vnesite ID računa
                                 </h3>
 
                             </div>
@@ -106,7 +188,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                     Podatki računa
                                 </h3>
 
-                                <div className="space-y-5">
+                                <form onSubmit={updateBill} className="space-y-5">
 
                                     {/* Field */}
                                     <div>
@@ -114,10 +196,14 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             Datum izpisa
                                         </label>
                                         <input
+                                            id="date_out"
                                             type="date"
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2
-                               focus:ring-2 focus:ring-[#242996] focus:border-[#242996]
-                               outline-none bg-gray-50"
+                                            value={dateOut}
+                                            onChange={(e) => {
+                                                setDateOut(e.target.value);
+                                            }}
+                                            className="w-full border border-gray-400 rounded-lg px-3 py-2
+                                            outline-none bg-gray-50"
                                         />
                                     </div>
 
@@ -126,10 +212,14 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             Datum valute
                                         </label>
                                         <input
+                                            id="date_value"
                                             type="date"
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2
-                               focus:ring-2 focus:ring-[#242996] focus:border-[#242996]
-                               outline-none bg-gray-50"
+                                            value={dateValue}
+                                            onChange={(e) => {
+                                                setDateValue(e.target.value);
+                                            }}
+                                            className="w-full border border-gray-400 rounded-lg px-3 py-2
+                                            outline-none bg-gray-50"
                                         />
                                     </div>
 
@@ -138,26 +228,39 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             Datum plačila
                                         </label>
                                         <input
+                                            id="date_payment"
                                             type="date"
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2
-                               focus:ring-2 focus:ring-[#242996] focus:border-[#242996]
-                               outline-none bg-gray-50"
+                                            value={datePayment}
+                                            onChange={(e) => {
+                                                setDatePayment(e.target.value);
+                                            }}
+                                            className="w-full border border-gray-400 rounded-lg px-3 py-2
+                                            outline-none bg-gray-50"
                                         />
                                     </div>
 
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                                            Znesek
-                                        </label>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                                        Znesek
+                                    </label>
+
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        
                                         <input
                                             type="text"
+                                            value={bill?.znesek + ' €'}
                                             readOnly
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2
-                               bg-gray-100 text-gray-700"
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 col-span-1"
                                         />
+                                        <button
+                                            type="submit"
+                                            className="col-span-1 inline-flex items-center gap-2 rounded-lg border-2 text-blue-600 hover:text-white border-blue-500 hover:bg-blue-500 px-3 py-2 font-medium text-sm shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                            >
+                                            <i className="bi bi-floppy"></i>
+                                            Shrani spremembe
+                                        </button>
                                     </div>
 
-                                </div>
+                                </form>
                             </div>
 
                             {/* RIGHT: customer info */}
@@ -165,6 +268,8 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 <h3 className="text-lg font-semibold text-gray-800 mb-5">
                                     Podatki o komitantu
                                 </h3>
+
+                                <Message $error={isError} $visible={isVisible}>{message}</Message>
 
                                 <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
                                     <div>

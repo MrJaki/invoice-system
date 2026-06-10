@@ -20,3 +20,15 @@ module.exports.getBillByID = function(id) {
     return client.query(query, [id])
         .then(res => res.rows[0]);
 };
+
+module.exports.updateBill = function(dateOut, dateValue, datePayment, id) {
+    const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
+    const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
+    const date_payment = (typeof datePayment === 'string' ? datePayment.trim() : datePayment) || null;
+    const query = `UPDATE racuni
+                   SET datum_izstavitve=$1, datum_valute=$2, datum_plačila=$3
+                   WHERE id=$4
+                   RETURNING *`;
+    return client.query(query, [date_out, date_value, date_payment, id])
+        .then(res => res.rows[0]);
+};

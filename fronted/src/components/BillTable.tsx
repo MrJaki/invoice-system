@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import styled from 'styled-components'
+import { useNavigate } from "react-router-dom";
 // import { exit } from "process";
 
 type Bill = {
@@ -27,13 +28,6 @@ const Message = styled.p<{ $error: boolean, $visible: boolean }>`
     margin-right: 12px;
 `;
 
-type setTotal = {
-  setTotalRevenue?: (value: number) => void;
-  setTotalUnpaid?: (value: number) => void;
-  setChosenBill?: (value: number) => void;
-  setPage?: (value: string) => void;
-};
-
 function BillsPage({setTotalRevenue,
                     setTotalUnpaid,
                     setChosenBill,
@@ -57,13 +51,16 @@ function BillsPage({setTotalRevenue,
         new Date(new Date().getFullYear(), 0, 1)
         .toISOString()
         .split("T")[0]
+        
     );
 
     const [end, setEnd] = useState(
-        new Date(new Date())
+        new Date(new Date().toLocaleDateString("sl"))
         .toISOString()
         .split("T")[0]
     );
+
+    const navigate = useNavigate();
 
     const API_URL = 'http://localhost:3002/api';
 
@@ -99,9 +96,8 @@ function BillsPage({setTotalRevenue,
 
             if (setTotalUnpaid) {
                 const totalUnpaid = data.reduce((sum: number, bill: any) => {
-                    const dueDate = new Date(bill.datum_plačila);
 
-                    if (!bill.datum_plačila || dueDate <= new Date()) {
+                    if (!bill.datum_plačila) {
                         return sum + Number(bill.znesek || 0);
                     }
 
@@ -205,6 +201,7 @@ function BillsPage({setTotalRevenue,
                 <table className="w-full text-sm text-left">
                     <thead className="bg-[#242996] text-white uppercase text-xs">
                         <tr>
+                            <th className="p-3">ID</th>
                             <th className="p-3">Št. Računa</th>
                             <th className="p-3">Št. Komitenta</th>
                             <th className="p-3">Komitent</th>
@@ -225,6 +222,7 @@ function BillsPage({setTotalRevenue,
                                 key={bill.stevilka_racuna}
                                 className="hover:bg-gray-100 transition"
                             >
+                                <td className="p-3">{bill.id}</td>
                                 <td className="p-3 font-medium text-gray-800">
                                     {bill.stevilka_racuna}
                                 </td>
@@ -241,6 +239,7 @@ function BillsPage({setTotalRevenue,
                                         onClick={() => {
                                             setChosenBill?.(bill.id);
                                             setPage?.("edit");  
+                                            navigate("/edit")
                                         }}
                                     >
                                         <i className="bi bi-pencil"></i>

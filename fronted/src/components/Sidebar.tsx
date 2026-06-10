@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 type SidebarProps = {
   setPage: (page: string) => void;
@@ -15,6 +16,8 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
     { title: "Komitenti", icon: "bi-person", link: "clients" },
   ];
 
+  const navigate = useNavigate();
+
   return (
     <div className="w-45 h-screen bg-white shadow-sm p-4 fixed">
       <p className="text-3xl font-bold mt-6 text-gray-800">Računi</p>
@@ -25,6 +28,7 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
             onClick={() => {
               setPage(item.link);
               setChosenBill(0);
+              navigate("/" + item.link)
             }}
             className={`p-2 text-sm rounded cursor-pointer transition
               ${page == item.link ? "bg-gray-200 text-gray-900" : "text-gray-600 hover:bg-gray-100"}
