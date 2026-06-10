@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import styled from 'styled-components'
 
 type Bill = {
     id: number;
@@ -12,29 +13,95 @@ type Bill = {
     stevilka_racuna: number;
 }
 
+const Message = styled.p<{ $error: boolean, $visible: boolean }>`
+    color: ${(props) => (props.$error ? "red" : "green")};
+    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
+    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
+    display: ${(props) => (props.$visible ? 'block' : 'none')};
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+    margin-right: 12px;
+`;
+
 function BillsPage() {
     const [bills, setBills] = useState<Bill[]>([]);
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(10);
+    const [isError, setIsError] = useState(false);
+    const [message, setMessage] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterVisible, setFilterVisible] = useState(true);
+    const [totalRevenue, setTotalRevenue] = useState(0);
+    const [totalUnpaid, setTotalUnpaid] = useState(0);
+
+    const [start, setStart] = useState(
+        new Date(new Date().getFullYear(), 0, 1)
+        .toISOString()
+        .split("T")[0]
+    );
+
+    const [end, setEnd] = useState(
+        new Date(new Date())
+        .toISOString()
+        .split("T")[0]
+    );
 
     const API_URL = 'http://localhost:3002/api';
 
-    const getTasks = async () => {
+    const loadBills = async () => {
         try {
-            const bill = await axios.get(`${API_URL}/bills`);
-            setBills(
-                Array.isArray(bill.data.data)
-                ? bill.data.data
-                : [bill.data.data]
+            const bill = await axios.get(
+                `${API_URL}/bills`,
+                {
+                    params: {
+                        limit: limit,
+                        offset: offset,
+                        start: start,
+                        end: end,
+                    }
+                }
             );
-        } catch (err) {
+            const data = Array.isArray(bill.data.data)
+                ? bill.data.data
+                : [bill.data.data];
 
+            setBills(data);
+
+            const totalRevenue = data.reduce(
+                (sum: any, bill: any) => sum + Number(bill.znesek || 0),
+                0
+            );
+
+            setTotalRevenue(totalRevenue);
+
+            const totalUnpaid = data.reduce((sum: number, bill: any) => {
+                const dueDate = new Date(bill.datum_plačila);
+
+                if (!bill.datum_plačila || dueDate <= new Date()) {
+                    return sum + Number(bill.znesek || 0);
+                }
+
+                return sum;
+            }, 0);
+            setTotalUnpaid(totalUnpaid);
+            
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage("Napaka pri nalaganju računov!");
         }
     }
 
     useEffect(() => {
-        getTasks();
-    }, [])
+        loadBills();
+    }, [offset, limit])
 
     return (
         <div className="p-6 w-full">
@@ -44,24 +111,92 @@ function BillsPage() {
 
             <div className="grid grid-cols-3 gap-4 mb-6 mt-6">
                 <div className="bg-white shadow rounded-lg p-4">
-                    <p className="text-sm text-gray-500">Total Revenue</p>
+                    <p className="text-sm text-gray-500">Skupna Plačila</p>
                     <p className="text-xl font-bold text-green-600">
-                        {/* € {totalRevenue.toFixed(2)} */}
+                        {totalRevenue.toFixed(2)} €
                     </p>
                 </div>
 
                 <div className="bg-white shadow rounded-lg p-4">
-                    <p className="text-sm text-gray-500">Unpaid</p>
+                    <p className="text-sm text-gray-500">Neplačano</p>
                     <p className="text-xl font-bold text-red-600">
-                        {/* € {totalUnpaid.toFixed(2)} */}
+                        {totalUnpaid.toFixed(2)} €
                     </p>
                 </div>
+            </div>
 
-                <div className="bg-white shadow rounded-lg p-4">
-                    <p className="text-sm text-gray-500">Total Invoices</p>
-                    <p className="text-xl font-bold text-gray-800">
-                        {/* € {total.toFixed(2)} */}
-                    </p>
+            <Message $error={isError} $visible={isVisible}>{message}</Message>
+
+            <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5">
+                <div className="flex items-center justify-between">
+                    <h3 className="text font-semibold text-gray-800">
+                        Filtri in iskanje
+                        <button className="bi bi-arrow-down-up ml-5 cursor-pointer" onClick={() => setFilterVisible(!filterVisible)}>
+                        </button>
+                        
+                    </h3>
+                    
+                </div>
+
+                <div className={`grid grid-cols-1 md:grid-cols-24 gap-3 mt-4 ${filterVisible ? '' : 'hidden'}`}>
+                    <input
+                        id="iskanje"
+                        type="text"
+                        placeholder="Išči po komitentu..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className=" md:col-span-8 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
+                    />
+
+                    <label className="md:col-span-2 text-right self-center">St. prikazov: </label>
+
+                    <input
+                        id="limit"
+                        type="number"
+                        placeholder="Prikazanih"
+                        value={limit}
+                        onChange={(e) => {
+                            setLimit(Number(e.target.value));
+                            setOffset(0);
+                        }}
+                        className="  md:col-span-2  border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
+                    />
+
+                    <label className="md:col-span-3 text-right self-center">Datum valute od: </label>
+
+                    <input
+                        id="start"
+                        type="date"
+                        value={start}
+                        onChange={(e) => {
+                            setStart(e.target.value);
+                            setOffset(0);
+                        }}
+                        className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
+                    />
+
+                    <label className="md:col-span-1 text-right self-center">Do: </label>
+
+                    <input
+                        id="end"
+                        type="date"
+                        value={end}
+                        onChange={(e) => {
+                            setEnd(e.target.value);
+                            setOffset(0);
+                        }}
+                        className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
+                    />
+
+                    <button
+                        className=" md:col-span-2 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
+                        onClick={() => {
+                            setMessage("");
+                            loadBills();
+                        }}
+                        >
+                        <i className="bi bi-arrow-clockwise text-lg"></i>
+                    </button>
                 </div>
             </div>
 
@@ -80,7 +215,10 @@ function BillsPage() {
                     </thead>
 
                     <tbody>
-                        {bills.map((bill) => (
+                        {bills.filter(
+                            (item) =>
+                                (item.naziv_komitenta ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+                        ).map((bill) => (
                             <tr
                                 key={bill.stevilka_racuna}
                                 className="hover:bg-gray-100 transition"

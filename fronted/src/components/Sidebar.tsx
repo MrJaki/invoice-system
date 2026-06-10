@@ -1,12 +1,16 @@
 import { useState } from 'react'
 
-export default function Sidebar() {
+type SidebarProps = {
+  setPage: (page: string) => void;
+};
+
+export default function Sidebar({ setPage }: SidebarProps) {
   const menu = [
-    {title: "Vnos", icon: "bi-file-earmark-plus", link: ""},
-    {title: "Urejanje", icon: "bi-pencil", link: ""},
-    {title: "Tiskanje", icon: "bi-printer", link: ""},
-    {title: "Plačila", icon: "bi-cash", link: ""},
-    {title: "Komitenti", icon: "bi-person", link: ""},
+    { title: "Vnos", icon: "bi-file-earmark-plus", link: "" },
+    { title: "Urejanje", icon: "bi-pencil", link: "" },
+    { title: "Tiskanje", icon: "bi-printer", link: "" },
+    { title: "Plačila", icon: "bi-cash", link: "bills" },
+    { title: "Komitenti", icon: "bi-person", link: "" },
   ];
 
   const [active, setActive] = useState(null);
@@ -18,7 +22,10 @@ export default function Sidebar() {
       <ul className="space-y-2 mt-8 text-left">
         {menu.map((item, index: any) => (
           <li key={index}
-            onClick={() => setActive(index)}
+            onClick={() => {
+              setActive(index);
+              setPage(item.link);
+            }}
             className={`p-2 text-sm rounded cursor-pointer transition
               ${active === index ? "bg-gray-200 text-gray-900" : "text-gray-600 hover:bg-gray-100"}
             `}
