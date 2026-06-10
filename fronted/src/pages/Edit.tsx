@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 // import styled from 'styled-components'
 import BillsTable from '../components/BillTable'
+import BillLinesTable from '../components/BillLinesTable'
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
@@ -122,7 +123,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
             setIsError(false);
             setMessage("");
 
-            setTimeout(() => {navigate("/bills"), 500})
+            setTimeout(() => { navigate("/bills"), 500 })
         } catch (err: any) {
             setIsVisible(true);
             setIsError(true);
@@ -180,129 +181,136 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                     </>
                 ) :
                     (
-                        <div className="mt-6 mb-6 bg-white shadow rounded-xl p-6 w-full grid md:grid-cols-6 gap-8 text-left">
+                        <>
+                            <div className="mt-6 mb-6 bg-white shadow rounded-xl p-6 w-full grid md:grid-cols-6 gap-8 text-left">
 
-                            {/* LEFT: invoice form */}
-                            <div className="md:col-span-3">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-5">
-                                    Podatki računa
-                                </h3>
+                                {/* LEFT: invoice form */}
+                                <div className="md:col-span-3">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-5">
+                                        Podatki računa
+                                    </h3>
 
-                                <form onSubmit={updateBill} className="space-y-5">
+                                    <form onSubmit={updateBill} className="space-y-5">
 
-                                    {/* Field */}
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                                            Datum izpisa
-                                        </label>
-                                        <input
-                                            id="date_out"
-                                            type="date"
-                                            value={dateOut}
-                                            onChange={(e) => {
-                                                setDateOut(e.target.value);
-                                            }}
-                                            className="w-full border border-gray-400 rounded-lg px-3 py-2
+                                        {/* Field */}
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                                                Datum izpisa
+                                            </label>
+                                            <input
+                                                id="date_out"
+                                                type="date"
+                                                value={dateOut}
+                                                onChange={(e) => {
+                                                    setDateOut(e.target.value);
+                                                }}
+                                                className="w-full border border-gray-400 rounded-lg px-3 py-2
                                             outline-none bg-gray-50"
-                                        />
-                                    </div>
+                                            />
+                                        </div>
 
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                                            Datum valute
-                                        </label>
-                                        <input
-                                            id="date_value"
-                                            type="date"
-                                            value={dateValue}
-                                            onChange={(e) => {
-                                                setDateValue(e.target.value);
-                                            }}
-                                            className="w-full border border-gray-400 rounded-lg px-3 py-2
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                                                Datum valute
+                                            </label>
+                                            <input
+                                                id="date_value"
+                                                type="date"
+                                                value={dateValue}
+                                                onChange={(e) => {
+                                                    setDateValue(e.target.value);
+                                                }}
+                                                className="w-full border border-gray-400 rounded-lg px-3 py-2
                                             outline-none bg-gray-50"
-                                        />
-                                    </div>
+                                            />
+                                        </div>
 
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                                            Datum plačila
-                                        </label>
-                                        <input
-                                            id="date_payment"
-                                            type="date"
-                                            value={datePayment}
-                                            onChange={(e) => {
-                                                setDatePayment(e.target.value);
-                                            }}
-                                            className="w-full border border-gray-400 rounded-lg px-3 py-2
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                                                Datum plačila
+                                            </label>
+                                            <input
+                                                id="date_payment"
+                                                type="date"
+                                                value={datePayment}
+                                                onChange={(e) => {
+                                                    setDatePayment(e.target.value);
+                                                }}
+                                                className="w-full border border-gray-400 rounded-lg px-3 py-2
                                             outline-none bg-gray-50"
-                                        />
-                                    </div>
+                                            />
+                                        </div>
 
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                                        Znesek
-                                    </label>
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                                            Znesek
+                                        </label>
 
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        
-                                        <input
-                                            type="text"
-                                            value={bill?.znesek + ' €'}
-                                            readOnly
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 col-span-1"
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="col-span-1 inline-flex items-center gap-2 rounded-lg border-2 text-blue-600 hover:text-white border-blue-500 hover:bg-blue-500 px-3 py-2 font-medium text-sm shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        <div className="grid md:grid-cols-2 gap-4">
+
+                                            <input
+                                                type="text"
+                                                value={bill?.znesek + ' €'}
+                                                readOnly
+                                                className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 col-span-1"
+                                            />
+                                            <button
+                                                type="submit"
+                                                className="col-span-1 inline-flex items-center gap-2 rounded-lg border-2 text-blue-600 hover:text-white border-blue-500 hover:bg-blue-500 px-3 py-2 font-medium text-sm shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                             >
-                                            <i className="bi bi-floppy"></i>
-                                            Shrani spremembe
-                                        </button>
-                                    </div>
+                                                <i className="bi bi-floppy"></i>
+                                                Shrani spremembe
+                                            </button>
+                                        </div>
 
-                                </form>
-                            </div>
+                                    </form>
+                                </div>
 
-                            {/* RIGHT: customer info */}
-                            <div className="md:col-span-3">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-5">
-                                    Podatki o komitantu
-                                </h3>
+                                {/* RIGHT: customer info */}
+                                <div className="md:col-span-3">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-5">
+                                        Podatki o komitantu
+                                    </h3>
 
-                                <Message $error={isError} $visible={isVisible}>{message}</Message>
+                                    <Message $error={isError} $visible={isVisible}>{message}</Message>
 
-                                <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
-                                    <div>
-                                        <p className="text-xs text-gray-500">Naziv</p>
-                                        <p className="text-gray-800 font-medium">
-                                            {bill?.naziv_komitenta || "-"}
-                                        </p>
-                                    </div>
+                                    <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
+                                        <div>
+                                            <p className="text-xs text-gray-500">Naziv</p>
+                                            <p className="text-gray-800 font-medium">
+                                                {bill?.naziv_komitenta || "-"}
+                                            </p>
+                                        </div>
 
-                                    <div>
-                                        <p className="text-xs text-gray-500">Pravni naziv</p>
-                                        <p className="text-gray-800">
-                                            {bill?.pravni_naziv_komitenta || "-"}
-                                        </p>
-                                    </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500">Pravni naziv</p>
+                                            <p className="text-gray-800">
+                                                {bill?.pravni_naziv_komitenta || "-"}
+                                            </p>
+                                        </div>
 
-                                    <div>
-                                        <p className="text-xs text-gray-500">Dodatni naziv</p>
-                                        <p className="text-gray-800">
-                                            {bill?.dodatni_naziv || "-"}
-                                        </p>
-                                    </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500">Dodatni naziv</p>
+                                            <p className="text-gray-800">
+                                                {bill?.dodatni_naziv || "-"}
+                                            </p>
+                                        </div>
 
-                                    <div>
-                                        <p className="text-xs text-gray-500">Naslov</p>
-                                        <p className="text-gray-800">
-                                            {bill?.ulica || "-"}, {bill?.mesto || "-"}
-                                        </p>
+                                        <div>
+                                            <p className="text-xs text-gray-500">Naslov</p>
+                                            <p className="text-gray-800">
+                                                {bill?.ulica || "-"}, {bill?.mesto || "-"}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
 
-                        </div>
+                            <BillLinesTable 
+                                chosenID={chosenBill}
+                            />
+                        </>
+
                     )
             }
 

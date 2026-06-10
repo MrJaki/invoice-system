@@ -56,7 +56,6 @@ pids
 # pnpm-lock.yaml
 
 # SQL dumps/backups (optional)
-*.sql
 *.bak
 
 # Frontend build artifacts

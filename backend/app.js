@@ -14,5 +14,6 @@ app.get('/api/tasks', (req, res) => {
 });
 
 app.use('/api/bills', require('./routes/bills'));
+app.use('/api/bill_lines', require('./routes/billLines'));
 
 app. listen(3002, () => console.log('Server running on port 3002'));
