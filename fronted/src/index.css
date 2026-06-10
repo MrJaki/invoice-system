@@ -32,6 +32,7 @@
 
 /* @tailwindcss/recommended */
 @import "tailwindcss";
+@custom-variant hover (&:hover);
 
 @media (prefers-color-scheme: dark) {
   :root {

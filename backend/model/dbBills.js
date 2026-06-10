@@ -10,3 +10,13 @@ module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
     return client.query(query, [limitNum, offsetNum, start, end])
         .then(res => res.rows);
 };
+
+module.exports.getBillByID = function(id) {
+    const query = `SELECT r.*, k.naziv AS naziv_komitenta, k.pravni_naziv AS pravni_naziv_komitenta, k.dodatni_naziv, k.ulica, k.mesto
+                   FROM racuni r 
+                   LEFT JOIN komitenti k ON k.id = r.id_komitenta 
+                   WHERE r.id = $1
+                   LIMIT 1`;
+    return client.query(query, [id])
+        .then(res => res.rows[0]);
+};
