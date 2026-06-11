@@ -1,27 +1,19 @@
 import axios from 'axios';
 import { useState } from "react";
-import styled from 'styled-components';
+import Message from "./Message";
 
-const Message = styled.p<{ $error: boolean, $visible: boolean }>`
-    color: ${(props) => (props.$error ? "red" : "green")};
-    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
-    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
-    display: ${(props) => (props.$visible ? 'block' : 'none')};
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 12px;
-    margin-right: 12px;
-`;
-
-function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
+function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
+    // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
     const API_URL = 'http://localhost:3002/api';
 
+    /**
+     * Updating bill line
+     * @param e 
+     */
     const updateBillLine = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
@@ -40,7 +32,10 @@ function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
             setIsError(false);
             setMessage("");
 
+            // Refreshing  bill lines table
             refreshBillLines();
+
+            // Closing modal
             modal(false)
         } catch (err: any) {
             setIsVisible(true);
@@ -59,10 +54,12 @@ function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
 
     return (
         <>
-            <Message $error={isError} $visible={isVisible}>{message}</Message>
+            <Message error={isError} visible={isVisible}>{message}</Message>
         
+            {/* Form for editing bill lines */}
             <form onSubmit={updateBillLine} className="grid md:grid-cols-16 gap-4 items-end">
 
+                {/* Quantity input */}
                 <div className="md:col-span-2 ">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Količina
@@ -77,6 +74,7 @@ function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
                     />
                 </div>
 
+                {/* Quantity type input */}
                 <div className="md:col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Tip Količine
@@ -91,6 +89,7 @@ function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
                     />
                 </div>
 
+                {/* Description input */}
                 <div className="md:col-span-8">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Opis
@@ -104,6 +103,7 @@ function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
                     />
                 </div>
 
+                {/* Price input */}
                 <div className="md:col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Cena
@@ -134,4 +134,4 @@ function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
     );
 }
 
-export default ModalEditTask;
+export default BillLineForm;

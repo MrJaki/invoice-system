@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import styled from 'styled-components'
-import { useNavigate } from "react-router-dom";
 import Modal from '../components/ModalWindow';
 import BillLinesForm from '../components/BillLinesForm'
-// import { exit } from "process";
+import Message from "./Message";
 
+// Custom bill line type
 type Bill = {
     id: number;
     id_racuna: number;
@@ -15,21 +14,11 @@ type Bill = {
     cena: number;
 }
 
-const Message = styled.p<{ $error: boolean, $visible: boolean }>`
-    color: ${(props) => (props.$error ? "red" : "green")};
-    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
-    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
-    display: ${(props) => (props.$visible ? 'block' : 'none')};
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 12px;
-    margin-right: 12px;
-`;
-
-function BillsPage({chosenID, updateAmount, currentAmount}: {chosenID: number, updateAmount: any, currentAmount: number | null}) {
+function BillLinesTable({chosenID, updateAmount, currentAmount}: {chosenID: number, updateAmount: any, currentAmount: number | null}) {
+    // Array for storing bill lines with custom type
     const [bills, setBills] = useState<Bill[]>([]);
+
+    // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
@@ -43,14 +32,13 @@ function BillsPage({chosenID, updateAmount, currentAmount}: {chosenID: number, u
         cena: 0,
     })
 
+    // Managing opening modal window
     const [openEditLineModal, setOpenEditLineModal] = useState(false);
-
-
-    const navigate = useNavigate();
 
     const API_URL = 'http://localhost:3002/api';
 
-    const loadBills = async () => {
+    // Loading bill lines
+    const loadBillLines = async () => {
         try {
             const bill = await axios.get(
                 `${API_URL}/bill_lines`,
@@ -73,6 +61,7 @@ function BillsPage({chosenID, updateAmount, currentAmount}: {chosenID: number, u
                 amount += (z.cena * z.kolicina);
             });
 
+            // If total amount doesn't match we update it
             if (currentAmount != amount)
                 updateAmount(amount);
 
@@ -91,15 +80,16 @@ function BillsPage({chosenID, updateAmount, currentAmount}: {chosenID: number, u
     }
 
     useEffect(() => {
-        loadBills();
+        loadBillLines();
     }, [])
 
     return (
         <>
             <h2 className="text-left font-bold  mb-5"> Vrstice Računa </h2>
 
-            <Message $error={isError} $visible={isVisible}>{message}</Message>
+            <Message error={isError} visible={isVisible}>{message}</Message>
 
+            {/* Bill lines table */}
             <div className="overflow-x-auto bg-white shadow rounded-lg mt-4">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-[#242996] text-white uppercase text-xs">
@@ -144,18 +134,19 @@ function BillsPage({chosenID, updateAmount, currentAmount}: {chosenID: number, u
                     </tbody>
                 </table>
             </div>
-
+            
+            {/* Modal for editing bill line */}
             <Modal 
                 openModal={openEditLineModal}
                 setOpenModal={setOpenEditLineModal}
                 Form={BillLinesForm}
                 Data={billLineData}
                 setData={setBillLineData}
-                refreshBillLines={loadBills}
+                refreshBillLines={loadBillLines}
                 modal={setOpenEditLineModal}
             />
         </>
     );
 }
 
-export default BillsPage;
+export default BillLinesTable;

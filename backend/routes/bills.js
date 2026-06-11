@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const dbBills = require('../model/dbBills');
 
+// Getting all bills
+// In query: limit, offset, start, end
 router.get('/',  async (req, res) => {
     const { limit, offset, start, end } = req.query;
 
@@ -18,6 +20,8 @@ router.get('/',  async (req, res) => {
     }
 });
 
+// Getting specifc bill via ID
+// In query: id
 router.get('/selected_id',  async (req, res) => {
     const { id } = req.query;
 
@@ -36,6 +40,8 @@ router.get('/selected_id',  async (req, res) => {
     }
 });
 
+// Getting next bill number
+// In query: date
 router.get('/get_next_bill_num',  async (req, res) => {
     const { date } = req.query;
 
@@ -50,6 +56,8 @@ router.get('/get_next_bill_num',  async (req, res) => {
     }
 });
 
+// Updating selected bill
+// In body: dateOut, dateValue, datePayment, id_bill
 router.patch('/',  async (req, res) => {
     const { dateOut, dateValue, datePayment } = req.body;
 
@@ -68,6 +76,8 @@ router.patch('/',  async (req, res) => {
     }
 });
 
+// Updating total amount on bill
+// In body: amount
 router.patch('/update_amount',  async (req, res) => {
     const { amount } = req.body;
 
@@ -86,6 +96,8 @@ router.patch('/update_amount',  async (req, res) => {
     }
 });
 
+// Adding new bill
+// In body: id_client, dateOut, dateValue, datePayment, bill_num
 router.post('/',  async (req, res) => {
     const { id_client, dateOut, dateValue, datePayment, bill_num } = req.body;
 

@@ -1,7 +1,6 @@
-// Uvoz Cliet razred iz paketa 'pg'
 const { Client } = require('pg');
 
-// Definiranje novega objekta odjemalca client z nastavitvami povezave
+// Defining a new client object with connection settings
 const client = new Client({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),
@@ -10,10 +9,10 @@ const client = new Client({
     password: process.env.DB_PASSWORD
 });
 
-// Poiskus povezave na bazo pri čemer sporočimo če je poiskus uspešenali pa vrnemo napko če ni
+// Attempt to connect to the database, reporting if the attempt was successful or returning a message if it was not.
 client.connect()
     .then(() => console.log('Povezan nabazo praksa_db'))
     .catch(err => console.error('Napaka pri povezavi na bazo:', err));
 
-// Izvoz objekta client da omogočimo uporabo te povezave v drugih dattekah
+// Export the client object to enable the use of this link in other files
 module.exports = client;

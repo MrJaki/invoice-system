@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const dbClients = require('../model/dbClients');
 
+// Getting all clients
+// In query: limit, offset
 router.get('/',  async (req, res) => {
     const { limit, offset } = req.query;
 

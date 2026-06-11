@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import styled from 'styled-components'
 import { useNavigate } from "react-router-dom";
-// import { exit } from "process";
+import Message from "./Message";
 
+// Custom bill type
 type Bill = {
     id: number;
     id_komitenta: number;
@@ -15,20 +15,7 @@ type Bill = {
     stevilka_racuna: number;
 }
 
-const Message = styled.p<{ $error: boolean, $visible: boolean }>`
-    color: ${(props) => (props.$error ? "red" : "green")};
-    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
-    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
-    display: ${(props) => (props.$visible ? 'block' : 'none')};
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 12px;
-    margin-right: 12px;
-`;
-
-function BillsPage({setTotalRevenue,
+function BillsTable({setTotalRevenue,
                     setTotalUnpaid,
                     setChosenBill,
                     setPage
@@ -38,22 +25,29 @@ function BillsPage({setTotalRevenue,
                     setChosenBill?: (value: number) => void;
                     setPage?: (value: string) => void;
                 }) {
+    // Array for storing bills with custom type
     const [bills, setBills] = useState<Bill[]>([]);
+
+    // Constants for defining number of loaded bills
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(10);
+
+    // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
+
+    // Constants for managing filtering 
     const [searchTerm, setSearchTerm] = useState("");
     const [filterVisible, setFilterVisible] = useState(true);
 
+    // Filters for from and to date
     const [start, setStart] = useState(
         new Date(new Date().getFullYear(), 0, 1)
         .toISOString()
         .split("T")[0]
         
     );
-
     const [end, setEnd] = useState(
         new Date(new Date().toLocaleDateString("sl"))
         .toISOString()
@@ -64,6 +58,9 @@ function BillsPage({setTotalRevenue,
 
     const API_URL = 'http://localhost:3002/api';
 
+    /**
+     * Loading all bills
+     */
     const loadBills = async () => {
         try {
             const bill = await axios.get(
@@ -91,8 +88,6 @@ function BillsPage({setTotalRevenue,
 
                 setTotalRevenue(totalRevenue);
             }
-
-            
 
             if (setTotalUnpaid) {
                 const totalUnpaid = data.reduce((sum: number, bill: any) => {
@@ -126,8 +121,9 @@ function BillsPage({setTotalRevenue,
 
     return (
         <>
-            <Message $error={isError} $visible={isVisible}>{message}</Message>
+            <Message error={isError} visible={isVisible}>{message}</Message>
 
+            {/* Filter and 'settings' container */}
             <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5">
                 <div className="flex items-center justify-between">
                     <h3 className="text font-semibold text-gray-800">
@@ -140,6 +136,7 @@ function BillsPage({setTotalRevenue,
                 </div>
 
                 <div className={`grid grid-cols-1 md:grid-cols-24 gap-3 mt-4 ${filterVisible ? '' : 'hidden'}`}>
+                    {/* Search filter */}
                     <input
                         id="iskanje"
                         type="text"
@@ -149,6 +146,7 @@ function BillsPage({setTotalRevenue,
                         className=" md:col-span-8 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
                     />
 
+                    {/* Limit */}
                     <label className="md:col-span-2 md:text-right self-center">St. prikazov: </label>
 
                     <input
@@ -163,6 +161,7 @@ function BillsPage({setTotalRevenue,
                         className="  md:col-span-2  border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
                     />
 
+                    {/* Start / From date */}
                     <label className="md:col-span-3 md:text-right self-center">Datum valute od: </label>
 
                     <input
@@ -176,6 +175,7 @@ function BillsPage({setTotalRevenue,
                         className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
                     />
 
+                    {/* End / To date */}
                     <label className="md:col-span-1 md:text-right self-center">Do: </label>
 
                     <input
@@ -189,6 +189,7 @@ function BillsPage({setTotalRevenue,
                         className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
                     />
 
+                    {/* Refresh button */}
                     <button
                         className=" md:col-span-2 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
                         onClick={() => {
@@ -201,6 +202,7 @@ function BillsPage({setTotalRevenue,
                 </div>
             </div>
 
+            {/* Bills table */}
             <div className="overflow-x-auto bg-white shadow rounded-lg">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-[#242996] text-white uppercase text-xs">
@@ -255,6 +257,8 @@ function BillsPage({setTotalRevenue,
                     </tbody>
                 </table>
             </div>
+
+            {/* Page shift bar */}
             <div className="flex items-center justify-center gap-2 my-4">
                 <button
                     disabled={offset === 0}
@@ -283,4 +287,4 @@ function BillsPage({setTotalRevenue,
     );
 }
 
-export default BillsPage;
+export default BillsTable;

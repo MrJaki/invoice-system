@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 type SidebarProps = {
@@ -31,9 +30,8 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
                             navigate("/" + item.link)
                         }}
                         className={`p-2 text-sm rounded cursor-pointer transition
-              ${page == item.link ? "bg-gray-200 text-gray-900" : "text-gray-600 hover:bg-gray-100"}
-            `}
-                    >
+                                        ${page == item.link ? "bg-gray-200 text-gray-900" : "text-gray-600 hover:bg-gray-100"}  
+                                `}>
                         <i className={`bi ${item.icon} mr-3`}></i>
                         {item.title}
                     </li>

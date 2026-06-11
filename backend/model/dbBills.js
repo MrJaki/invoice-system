@@ -1,11 +1,24 @@
 const client = require('./db');
 
+/**
+ * Getting all bill data via using bills id
+ * @param {number} id 
+ * @returns 
+ */
 module.exports.checkBillByID = function(id) {
     const query = `SELECT * FROM racuni WHERE id = $1 LIMIT 1`
     return client.query(query, [id])
         .then(res => res.rows[0]);
 }
 
+/**
+ * Retrieving all bills within a start and end date, limited by a limit and offset to prevent database overload
+ * @param {number} limitNum 
+ * @param {number} offsetNum 
+ * @param {string} start 
+ * @param {string} end 
+ * @returns 
+ */
 module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
     const query = `SELECT r.*, k.naziv AS naziv_komitenta 
                    FROM racuni r 
@@ -17,6 +30,11 @@ module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
         .then(res => res.rows);
 };
 
+/**
+ * Getting all bill data with additional client titles
+ * @param {number} id 
+ * @returns 
+ */
 module.exports.getBillByID = function(id) {
     const query = `SELECT r.*, k.naziv AS naziv_komitenta, k.pravni_naziv AS pravni_naziv_komitenta, k.dodatni_naziv, k.ulica, k.mesto
                    FROM racuni r 
@@ -27,6 +45,11 @@ module.exports.getBillByID = function(id) {
         .then(res => res.rows[0]);
 };
 
+/**
+ * Retreiving following bill number
+ * @param {string} year 
+ * @returns 
+ */
 module.exports.getNextBillNum = async function (year) {
     const query = `SELECT
                        COALESCE(
@@ -42,6 +65,14 @@ module.exports.getNextBillNum = async function (year) {
     return `${year}-${res.rows[0].next_number}`;
 };
 
+/**
+ * Updating bill data
+ * @param {string} dateOut 
+ * @param {string} dateValue 
+ * @param {string} datePayment 
+ * @param {number} id 
+ * @returns 
+ */
 module.exports.updateBill = function(dateOut, dateValue, datePayment, id) {
     const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
     const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
@@ -54,6 +85,12 @@ module.exports.updateBill = function(dateOut, dateValue, datePayment, id) {
         .then(res => res.rows[0]);
 };
 
+/**
+ * Updating total amount on bill
+ * @param {number} amount 
+ * @param {number} id 
+ * @returns 
+ */
 module.exports.updateBillAmount = function(amount, id) {
     const query = `UPDATE racuni
                    SET znesek=$1
@@ -63,6 +100,15 @@ module.exports.updateBillAmount = function(amount, id) {
         .then(res => res.rows[0]);
 };
 
+/**
+ * Adding new bill
+ * @param {number} id_client 
+ * @param {string} dateOut 
+ * @param {string} dateValue 
+ * @param {string} datePayment 
+ * @param {number} bill_num 
+ * @returns 
+ */
 module.exports.newBill = function(id_client, dateOut, dateValue, datePayment, bill_num) {
     const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
     const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;

@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-// import axios from 'axios';
-// import styled from 'styled-components'
+import { useState } from "react";
 import BillsTable from '../components/BillTable'
 
 function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => void; setChosenBill?: (value: number) => void }) {
@@ -14,6 +12,8 @@ function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => vo
             </p>
 
             <div className="grid grid-cols-3 gap-4 mb-6 mt-6">
+
+                {/* Total revenue */}
                 <div className="bg-white shadow rounded-lg p-4">
                     <p className="text-sm text-gray-500">Skupna Plačila</p>
                     <p className="text-xl font-bold text-green-600">
@@ -21,6 +21,7 @@ function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => vo
                     </p>
                 </div>
 
+                {/* Total unpaid */}
                 <div className="bg-white shadow rounded-lg p-4">
                     <p className="text-sm text-gray-500">Neplačano</p>
                     <p className="text-xl font-bold text-red-600">
@@ -29,6 +30,7 @@ function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => vo
                 </div>
             </div>
 
+            {/* Bills table */}
             <BillsTable 
                 setTotalUnpaid={setTotalUnpaid}
                 setTotalRevenue={setTotalRevenue}

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-// import styled from 'styled-components'
 import BillsTable from '../components/BillTable'
 import BillLinesTable from '../components/BillLinesTable'
-import styled from "styled-components";
+import Message from "../components/Message";
 import { useNavigate } from "react-router-dom";
 
+// Custom bill type
 type Bill = {
     id: number;
     id_komitenta: number;
@@ -21,41 +21,29 @@ type Bill = {
     dodatni_naziv: string;
 }
 
-
 type bills = {
     chosenBill: number;
     setChosenBill: (value: number) => void;
 }
 
-const Message = styled.p<{ $error: boolean, $visible: boolean }>`
-    color: ${(props) => (props.$error ? "red" : "green")};
-    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
-    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
-    display: ${(props) => (props.$visible ? 'block' : 'none')};
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 12px;
-    margin-right: 12px;
-`;
-
 function EditPage({ chosenBill, setChosenBill }: bills) {
+    // Chosen bill ID
     const [chosenNumber, setChosenNumber] = useState(0);
+
     const [bill, setBill] = useState<Bill | null>(null);
 
+    // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
+    // Date constants
     const [dateOut, setDateOut] = useState(
         new Date().toISOString().split("T")[0]
     );
-
     const [dateValue, setDateValue] = useState(
         new Date().toISOString().split("T")[0]
     );
-
     const [datePayment, setDatePayment] = useState(
         new Date().toISOString().split("T")[0]
     );
@@ -64,6 +52,11 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
 
     const navigate = useNavigate();
 
+    /**
+     * Formating date into local version
+     * @param dateString 
+     * @returns 
+     */
     const formatDate = (dateString?: string) => {
         if (!dateString) return "";
 
@@ -76,6 +69,10 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         ].join("-");
     };
 
+    /**
+     * Loading chosen bill data
+     * @returns 
+     */
     const loadChosenBill = async () => {
         if (chosenBill == 0) return;
         try {
@@ -110,6 +107,10 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         }
     }
 
+    /**
+     * Updating bill
+     * @param e 
+     */
     const updateBill = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
@@ -139,6 +140,10 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         }
     }
 
+    /**
+     * Updating total bill amount
+     * @param amount 
+     */
     const updateAmount = async (amount: number) => {
         try {
             await axios.patch(
@@ -175,9 +180,12 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                 Uredi plačilo
             </p>
 
+            {/* If bill is not chosen / set to zero we show table of bills */}
+            {/* If bill is chosen / not zero we show bills data */}
             {
                 chosenBill == 0 ? (
                     <>
+                        {/* Input for manualy inserting bill ID */}
                         <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5 md:w-2/4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text font-semibold text-gray-800">
@@ -186,11 +194,11 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
 
                             </div>
 
+                            {/* Bill ID input */}
                             <div className="grid md:grid-cols-6 gap-3 mt-4 mb-2">
                                 <input
                                     id="iskanje"
                                     type="number"
-                                    placeholder="Išči po računih..."
                                     value={chosenNumber}
                                     onChange={(e) => setChosenNumber(Number(e.target.value))}
                                     className=" md:col-span-5 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
@@ -208,7 +216,8 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 Če številke računa ne veste na pamet ga lahko izberete iz tabele spodaj.
                             </p>
                         </div>
-
+                        
+                        {/* Bills table */}
                         <BillsTable
                             setChosenBill={setChosenBill}
                         />
@@ -218,7 +227,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                         <>
                             <div className="mt-6 mb-6 bg-white shadow rounded-xl p-6 w-full grid md:grid-cols-6 gap-8 text-left">
 
-                                {/* LEFT: invoice form */}
+                                {/* LEFT: Bill form */}
                                 <div className="md:col-span-3">
                                     <h3 className="text-lg font-semibold text-gray-800 mb-5">
                                         Podatki računa
@@ -226,7 +235,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
 
                                     <form onSubmit={updateBill} className="space-y-5">
 
-                                        {/* Field */}
+                                        {/* Date out input */}
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 mb-1">
                                                 Datum izpisa
@@ -244,6 +253,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             />
                                         </div>
 
+                                        {/* Date value input */}
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 mb-1">
                                                 Datum valute
@@ -261,6 +271,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             />
                                         </div>
 
+                                        {/* Date paid input */}
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 mb-1">
                                                 Datum plačila
@@ -276,7 +287,8 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             outline-none bg-gray-50"
                                             />
                                         </div>
-
+                                            
+                                        {/* Total bill amount info */}
                                         <label className="block text-xs font-medium text-gray-500 mb-1">
                                             Znesek
                                         </label>
@@ -301,13 +313,13 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                     </form>
                                 </div>
 
-                                {/* RIGHT: customer info */}
+                                {/* RIGHT: Customer info */}
                                 <div className="md:col-span-3">
                                     <h3 className="text-lg font-semibold text-gray-800 mb-5">
                                         Podatki o komitantu
                                     </h3>
 
-                                    <Message $error={isError} $visible={isVisible}>{message}</Message>
+                                    <Message error={isError} visible={isVisible}>{message}</Message>
 
                                     <div className="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
                                         <div>

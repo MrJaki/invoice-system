@@ -1,45 +1,37 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import styled from "styled-components";
+import Message from "../components/Message";
 import ClientTable from '../components/ClientsTableChoose'
 import BillLinesAdd from '../components/BillLineAdd'
 import { useNavigate } from "react-router-dom";
 
-
-const Message = styled.p<{ $error: boolean, $visible: boolean }>`
-    color: ${(props) => (props.$error ? "red" : "green")};
-    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
-    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
-    display: ${(props) => (props.$visible ? 'block' : 'none')};
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 12px;
-    margin-right: 12px;
-`;
-
 function EditPage() {
+    // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
+    // Bill lines add form number array
     const [billLines, setBillLines] = useState([0]);
 
     const API_URL = 'http://localhost:3002/api';
 
+    // Constants used to show steps to creating bill
     const [stepOne, setStepOne] = useState(true);
     const [stepTwo, setStepTwo] = useState(false);
     const [stepThree, setStepThree] = useState(false);
 
+    // Client data
     const [clientId, setClientId] = useState(0);
     const [billSaved, setBillSaved] = useState(false);
 
+    // Bill data
     const [billNum, setBillNum] = useState("");
     const [billId, setBillId] = useState(0);
 
     const navigate = useNavigate();
 
+    // Date constants
     const [dateOut, setDateOut] = useState(
         new Date(new Date()).toISOString().split("T")[0]
     );
@@ -50,6 +42,10 @@ function EditPage() {
     });
     const [datePayment, setDatePayment] = useState("");
 
+    /**
+     * Getting next bill number 
+     * @param date 
+     */
     const getNextBillNum = async (date: Date) => {
         try {
             const newBill = await axios.get(
@@ -75,6 +71,10 @@ function EditPage() {
         }
     }
 
+    /**
+     * Saving new bill
+     * @param e 
+     */
     const saveNewBill = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
@@ -114,6 +114,9 @@ function EditPage() {
         }
     }
 
+    /**
+     * Creating new container for bill lines
+     */
     const addBillLine = () => {
         setBillLines(prev => [...prev, prev.length]);
     };
@@ -128,14 +131,16 @@ function EditPage() {
                 Vnos novega računa
             </p>
 
-            <Message $error={isError} $visible={isVisible}>{message}</Message>
+            <Message error={isError} visible={isVisible}>{message}</Message>
 
+            {/* Step one */}
             <div className="mt-10 mb-4 bg-white shadow rounded-lg p-5 w-full">
                 <p className="text-lg font-bold text-gray-800 mb-6 text-left">
                     Korak 1: Izberite komitenta iz spodnje tabele
                     <button className="bi bi-arrow-down-up ml-5 cursor-pointer" onClick={() => setStepOne(!stepOne)}></button>
                 </p>
                 <div className={`${stepOne && !billSaved ? "" : "hidden"}`}>
+                    {/* Clients table */}
                     <ClientTable
                         setClientId={setClientId}
                         clientId={clientId}
@@ -145,16 +150,17 @@ function EditPage() {
                 </div>
             </div>
 
-            
+            {/* Step two */}
             <div className="mb-4 bg-white shadow rounded-lg p-5 w-full">
                 <p className="text-lg font-bold text-gray-800 mb-6 text-left">
                     Korak 2: Vnesite podatke računa
                     <button className="bi bi-arrow-down-up ml-5 cursor-pointer" onClick={() => setStepTwo(!stepTwo)}></button>
                 </p>
 
-
+                {/* Form for adding data for new bill */}
                 <form onSubmit={saveNewBill} className={`grid md:grid-cols-38 gap-4 items-end mt-6 ${stepTwo && clientId != 0 && !billSaved ? "" : "hidden"}`}>
 
+                    {/* Bill number input */}
                     <label className="block font-medium text-gray-800 mb-1 text-end self-center md:col-span-3">
                         Št. Računa
                     </label>
@@ -167,6 +173,7 @@ function EditPage() {
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50 md:col-span-4"
                     />
 
+                    {/* Date out input */}
                     <label className="block font-medium text-gray-800 mb-1 text-end self-center md:col-span-4">
                         Datum izpisa:
                     </label>
@@ -181,6 +188,8 @@ function EditPage() {
                         }}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none bg-gray-50 md:col-span-5"
                     />
+
+                    {/* Date value input */}
                     <label className="block font-medium text-gray-800 mb-1 text-end self-center md:col-span-4">
                         Datum valute:
                     </label>
@@ -195,6 +204,7 @@ function EditPage() {
                         className="w-full border border-gray-400 rounded-lg px-3 py-2  outline-none bg-gray-50 md:col-span-5"
                     />
 
+                    {/* Date payment input */}
                     <label className="block font-medium text-gray-800 mb-1 text-end self-center md:col-span-4">
                         Datum plačila:
                     </label>
@@ -219,14 +229,15 @@ function EditPage() {
                 </form>
             </div>
 
-
+            {/* Step three */}
             <div className="mb-4 bg-white shadow rounded-lg p-5 w-full">
                 <p className="text-lg font-bold text-gray-800 mb-6 text-left">
                     Korak 3: Dodajte ter vnesite vrtsice računa
                     <button className="bi bi-arrow-down-up ml-5 cursor-pointer" onClick={() => setStepThree(!stepThree)}></button>
                 </p>
                 <div className={`${stepThree && billSaved && billId != 0 ? "space-y-4" : "hidden"} mt-5`}>
-        
+                    
+                    {/* Displaying all bill lines add forms */}
                     <div className="space-y-4">
                         {billLines.map((id, index) => (
                             <div
@@ -241,6 +252,7 @@ function EditPage() {
                     </div>
 
                     <div className="flex justify-start">
+                        {/* Adding new container bill line */}
                         <button
                             onClick={addBillLine}
                             type="button"
@@ -252,6 +264,7 @@ function EditPage() {
                             Dodaj vrstico
                         </button>
 
+                        {/* Closing insert page */}
                         <button
                             onClick={() =>
                                 navigate("/bills")

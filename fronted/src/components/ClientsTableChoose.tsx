@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import styled from 'styled-components'
+import Message from "./Message";
 
+// Custom client type
 type Client = {
     id: number;
     naziv: string;
@@ -11,23 +12,15 @@ type Client = {
     mesto: string;
 }
 
-const Message = styled.p<{ $error: boolean, $visible: boolean }>`
-    color: ${(props) => (props.$error ? "red" : "green")};
-    border: 1px solid ${(props) => (props.$error ? "#dc2626" : "#16a34a")};
-    background-color: ${(props) => (props.$error ? "#fef2f2" : "#f0fdf4")};
-    display: ${(props) => (props.$visible ? 'block' : 'none')};
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    margin-left: 12px;
-    margin-right: 12px;
-`;
-
 function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClientId: (value: number) => void, clientId?: number, setStepOne: (value: boolean) => void, setStepTwo: (value: boolean) => void}) {
+    // Array for storing clients with custom type
     const [clients, setClients] = useState<Client[]>([]);
+
+    // Constants for defining number of loaded clients
     const [offset, setOffset] = useState(0);
     const [limit, setLimit] = useState(10);
+
+    // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
@@ -35,6 +28,9 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
 
     const API_URL = 'http://localhost:3002/api';
 
+    /**
+     * Loading all clients
+     */
     const loadClients = async () => {
         try {
             const client = await axios.get(
@@ -72,10 +68,11 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
 
     return (
         <>
-            <Message $error={isError} $visible={isVisible}>{message}</Message>
+            <Message error={isError} visible={isVisible}>{message}</Message>
 
+            {/* Filter and 'settings' container */}
             <div className="grid grid-cols-1 md:grid-cols-10 gap-3 mt-6 mb-4 ">
-
+                {/* Search filter */}
                 <input
                         id="iskanje"
                         type="text"
@@ -85,6 +82,7 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
                         className=" md:col-span-4 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
                     />
 
+                {/* Limit */}
                 <label className="md:col-span-1 md:text-right self-center">St. prikazov: </label>
 
                 <input
@@ -99,6 +97,9 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
                     className="  md:col-span-1  border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
                 />
 
+
+
+                {/* Page shift bar -------------*/} 
                 <button
                     disabled={offset === 0}
                     className="px-3 py-1 border bg-white rounded-md hover:bg-gray-200 disabled:opacity-50"
@@ -121,7 +122,10 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
                 >
                     Next →
                 </button>
+                {/* Page shift bar -------------*/} 
 
+
+                {/* Refresh button */}
                 <button
                     className=" md:col-span-1 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
                     onClick={() => {
@@ -132,6 +136,7 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
                 </button>
             </div>
 
+            {/* Client table */}
             <div className="overflow-x-auto rounded-lg">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-[#242996] text-white uppercase text-xs">

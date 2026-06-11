@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const dbBillLines = require('../model/dbBillLines');
 
+// Getting all bill lines
 router.get('/',  async (req, res) => {
     const id = parseInt(req.query.id, 10);
 
     try {
-        const bills = await dbBillLines.getAllBills(id);
+        const bills = await dbBillLines.getAllBillLines(id);
         res.json({success: true, data: bills});
     }
     catch (err) {
@@ -15,6 +16,8 @@ router.get('/',  async (req, res) => {
     }
 });
 
+// Updating bill lines
+// In body: quantity, quantity_type, desc, price, id_bill_line
 router.patch('/',  async (req, res) => {
     const { quantity, quantity_type, desc, price, } = req.body;
 
@@ -30,6 +33,8 @@ router.patch('/',  async (req, res) => {
     }
 });
 
+// Adding new bill line to selected bill
+// In body: quantity, quantity_type, desc, price, id_bill
 router.post('/',  async (req, res) => {
     const { quantity, quantity_type, desc, price } = req.body;
 
