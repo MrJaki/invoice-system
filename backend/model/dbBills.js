@@ -27,6 +27,21 @@ module.exports.getBillByID = function(id) {
         .then(res => res.rows[0]);
 };
 
+module.exports.getNextBillNum = async function (year) {
+    const query = `SELECT
+                       COALESCE(
+                           MAX(
+                              CAST(SPLIT_PART(stevilka_racuna, '-', 2) AS INTEGER)
+                           ), 0
+                       ) + 1 AS next_number
+                    FROM racuni
+                    WHERE SPLIT_PART(stevilka_racuna, '-', 1) = $1
+                   `
+    const res = await client.query(query, [String(year)]);
+
+    return `${year}-${res.rows[0].next_number}`;
+};
+
 module.exports.updateBill = function(dateOut, dateValue, datePayment, id) {
     const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
     const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
@@ -47,3 +62,14 @@ module.exports.updateBillAmount = function(amount, id) {
     return client.query(query, [amount, id])
         .then(res => res.rows[0]);
 };
+
+module.exports.newBill = function(id_client, dateOut, dateValue, datePayment, bill_num) {
+    const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
+    const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
+    const date_payment = (typeof datePayment === 'string' ? datePayment.trim() : datePayment) || null;
+    const query = `INSERT INTO racuni (id_komitenta, datum_izstavitve, datum_valute, datum_plačila, stevilka_racuna)
+                   VALUES ($1, $2, $3, $4, $5)
+                   RETURNING *`;
+    return client.query(query, [id_client, date_out, date_value, date_payment, bill_num])
+        .then(res => res.rows[0]);
+}

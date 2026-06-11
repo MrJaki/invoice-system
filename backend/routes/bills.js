@@ -36,6 +36,20 @@ router.get('/selected_id',  async (req, res) => {
     }
 });
 
+router.get('/get_next_bill_num',  async (req, res) => {
+    const { date } = req.query;
+
+    try {
+        const nextBillNum = await dbBills.getNextBillNum(date);
+
+        res.json({success: true, data: nextBillNum});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
 router.patch('/',  async (req, res) => {
     const { dateOut, dateValue, datePayment } = req.body;
 
@@ -65,6 +79,19 @@ router.patch('/update_amount',  async (req, res) => {
 
         const updated = await dbBills.updateBillAmount(amount, id_bill_line);
         res.json({success: true, data: updated});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
+router.post('/',  async (req, res) => {
+    const { id_client, dateOut, dateValue, datePayment, bill_num } = req.body;
+
+    try {
+        const newBill = await dbBills.newBill(id_client, dateOut, dateValue, datePayment, bill_num);
+        res.json({success: true, data: newBill});
     }
     catch (err) {
         console.log(err);

@@ -232,6 +232,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                                 Datum izpisa
                                             </label>
                                             <input
+                                                required
                                                 id="date_out"
                                                 type="date"
                                                 value={dateOut}
@@ -248,6 +249,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                                 Datum valute
                                             </label>
                                             <input
+                                                required
                                                 id="date_value"
                                                 type="date"
                                                 value={dateValue}
