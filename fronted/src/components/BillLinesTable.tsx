@@ -28,7 +28,7 @@ const Message = styled.p<{ $error: boolean, $visible: boolean }>`
     margin-right: 12px;
 `;
 
-function BillsPage({chosenID}: {chosenID: number}) {
+function BillsPage({chosenID, updateAmount, currentAmount}: {chosenID: number, updateAmount: any, currentAmount: number | null}) {
     const [bills, setBills] = useState<Bill[]>([]);
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
@@ -67,13 +67,26 @@ function BillsPage({chosenID}: {chosenID: number}) {
 
             setBills(data);
 
+            var amount = 0;
+
+            data.forEach((z: { cena: number; kolicina: number; }) => {
+                amount += (z.cena * z.kolicina);
+            });
+
+            if (currentAmount != amount)
+                updateAmount(amount);
+
             setIsVisible(false);
             setIsError(false);
             setMessage("");
         } catch (err: any) {
             setIsVisible(true);
             setIsError(true);
-            setMessage("Napaka pri nalaganju vrstic računa!");
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri nalaganju vrstic računa!"
+            );
         }
     }
 
@@ -138,6 +151,8 @@ function BillsPage({chosenID}: {chosenID: number}) {
                 Form={BillLinesForm}
                 Data={billLineData}
                 setData={setBillLineData}
+                refreshBillLines={loadBills}
+                modal={setOpenEditLineModal}
             />
         </>
     );

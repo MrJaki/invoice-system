@@ -15,7 +15,7 @@ const Message = styled.p<{ $error: boolean, $visible: boolean }>`
     margin-right: 12px;
 `;
 
-function ModalEditTask({ Data, setData }: any) {
+function ModalEditTask({ Data, setData, refreshBillLines, modal }: any) {
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
@@ -39,10 +39,17 @@ function ModalEditTask({ Data, setData }: any) {
             setIsVisible(false);
             setIsError(false);
             setMessage("");
+
+            refreshBillLines();
+            modal(false)
         } catch (err: any) {
             setIsVisible(true);
             setIsError(true);
-            setMessage("Napaka pri nalaganju računa!");
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri posodabljanju vrstice računa!"
+            );
         }
     }
 
@@ -54,9 +61,9 @@ function ModalEditTask({ Data, setData }: any) {
         <>
             <Message $error={isError} $visible={isVisible}>{message}</Message>
 
-            <form onSubmit={updateBillLine} className="grid grid-cols-16 gap-4 items-end">
+            <form onSubmit={updateBillLine} className="grid md:grid-cols-16 gap-4 items-end">
 
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 ">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Količina
                     </label>

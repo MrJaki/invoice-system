@@ -1,5 +1,11 @@
 const client = require('./db');
 
+module.exports.checkBillByID = function(id) {
+    const query = `SELECT * FROM racuni WHERE id = $1 LIMIT 1`
+    return client.query(query, [id])
+        .then(res => res.rows[0]);
+}
+
 module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
     const query = `SELECT r.*, k.naziv AS naziv_komitenta 
                    FROM racuni r 
@@ -30,5 +36,14 @@ module.exports.updateBill = function(dateOut, dateValue, datePayment, id) {
                    WHERE id=$4
                    RETURNING *`;
     return client.query(query, [date_out, date_value, date_payment, id])
+        .then(res => res.rows[0]);
+};
+
+module.exports.updateBillAmount = function(amount, id) {
+    const query = `UPDATE racuni
+                   SET znesek=$1
+                   WHERE id=$2
+                   RETURNING *`;
+    return client.query(query, [amount, id])
         .then(res => res.rows[0]);
 };

@@ -14,7 +14,7 @@ router.get('/',  async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
 
@@ -24,8 +24,11 @@ router.get('/selected_id',  async (req, res) => {
     const id_bill = parseInt(req.query.id, 10);
 
     try {
-        const bill = await dbBills.getBillByID(id_bill);
-        res.json({success: true, data: bill});
+        const bill = await dbBills.checkBillByID(id_bill);
+        if (!bill) return res.status(404).json({ success: false, error: "Račun z izbranim ID-jem ni najden!"});
+
+        const selected = await dbBills.getBillByID(id_bill);
+        res.json({success: true, data: selected});
     }
     catch (err) {
         console.log(err);
@@ -39,8 +42,29 @@ router.patch('/',  async (req, res) => {
     const id_bill = parseInt(req.body.id, 10);
 
     try {
-        const bill = await dbBills.updateBill(dateOut, dateValue, datePayment, id_bill);
-        res.json({success: true, data: bill});
+        const bill = await dbBills.checkBillByID(id_bill);
+        if (!bill) return res.status(404).json({ success: false, error: "Račun z izbranim ID-jem ni najden!"});
+
+        const updated = await dbBills.updateBill(dateOut, dateValue, datePayment, id_bill);
+        res.json({success: true, data: updated});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
+router.patch('/update_amount',  async (req, res) => {
+    const { amount } = req.body;
+
+    const id_bill_line = parseInt(req.body.id, 10);
+
+    try {
+        const bill = await dbBills.checkBillByID(id_bill_line);
+        if (!bill) return res.status(404).json({ success: false, error: "Račun z izbranim ID-jem ni najden!"});
+
+        const updated = await dbBills.updateBillAmount(amount, id_bill_line);
+        res.json({success: true, data: updated});
     }
     catch (err) {
         console.log(err);

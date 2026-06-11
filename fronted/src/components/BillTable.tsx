@@ -112,7 +112,11 @@ function BillsPage({setTotalRevenue,
         } catch (err: any) {
             setIsVisible(true);
             setIsError(true);
-            setMessage("Napaka pri nalaganju računov!");
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri nalaganju računa!"
+            );
         }
     }
 
@@ -145,7 +149,7 @@ function BillsPage({setTotalRevenue,
                         className=" md:col-span-8 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
                     />
 
-                    <label className="md:col-span-2 text-right self-center">St. prikazov: </label>
+                    <label className="md:col-span-2 md:text-right self-center">St. prikazov: </label>
 
                     <input
                         id="limit"
@@ -159,7 +163,7 @@ function BillsPage({setTotalRevenue,
                         className="  md:col-span-2  border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
                     />
 
-                    <label className="md:col-span-3 text-right self-center">Datum valute od: </label>
+                    <label className="md:col-span-3 md:text-right self-center">Datum valute od: </label>
 
                     <input
                         id="start"
@@ -172,7 +176,7 @@ function BillsPage({setTotalRevenue,
                         className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
                     />
 
-                    <label className="md:col-span-1 text-right self-center">Do: </label>
+                    <label className="md:col-span-1 md:text-right self-center">Do: </label>
 
                     <input
                         id="end"

@@ -3,6 +3,7 @@ import './App.css'
 import Sidebar from './components/Sidebar'
 import Bills from './pages/Bills'
 import Edit from './pages/Edit'
+import Insert from './pages/Insert'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -16,10 +17,11 @@ function App() {
             setPage={setPage}
             page={page}
         />
-        <div className="ml-48">
+        <div className="md:ml-48">
             <Routes>
-            <Route path="/bills" element={<Bills setPage={setPage} setChosenBill={setChosenBill}/>} />
-            <Route path="/edit" element={<Edit chosenBill={chosenBill} setChosenBill={setChosenBill}/>} />
+                <Route path="/bills" element={<Bills setPage={setPage} setChosenBill={setChosenBill}/>} />
+                <Route path="/edit" element={<Edit chosenBill={chosenBill} setChosenBill={setChosenBill}/>} />
+                <Route path="/insert" element={<Insert />} />
             </Routes>
         </div>
         </BrowserRouter>

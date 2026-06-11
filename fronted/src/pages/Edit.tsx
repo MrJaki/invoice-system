@@ -102,7 +102,11 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         } catch (err: any) {
             setIsVisible(true);
             setIsError(true);
-            setMessage("Napaka pri nalaganju računa!");
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri nalaganju izbranega računa!"
+            );
         }
     }
 
@@ -127,7 +131,37 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         } catch (err: any) {
             setIsVisible(true);
             setIsError(true);
-            setMessage("Napaka pri nalaganju računa!");
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri posodabljanju računa!"
+            );
+        }
+    }
+
+    const updateAmount = async (amount: number) => {
+        try {
+            await axios.patch(
+                `${API_URL}/bills/update_amount`,
+                {
+                    amount,
+                    id: chosenBill
+                }
+            );
+
+            loadChosenBill();
+
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri posodabljanju zneska računa!"
+            );
         }
     }
 
@@ -144,7 +178,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
             {
                 chosenBill == 0 ? (
                     <>
-                        <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5 w-2/4">
+                        <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5 md:w-2/4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text font-semibold text-gray-800">
                                     Vnesite ID računa
@@ -308,6 +342,8 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
 
                             <BillLinesTable 
                                 chosenID={chosenBill}
+                                updateAmount={updateAmount}
+                                currentAmount={bill?.znesek ?? null}
                             />
                         </>
 
