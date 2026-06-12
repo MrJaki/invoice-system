@@ -18,8 +18,11 @@ function DeleteBillModal({ billId, openModal, setOpenModal }: BillLinesFormProps
 
     const navigate = useNavigate();
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
+    /**
+     * Deleting bill
+     */
     const deleteBill = async () => {
         try {
             await axios.delete(

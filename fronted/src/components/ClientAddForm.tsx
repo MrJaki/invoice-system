@@ -34,8 +34,11 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
 
     const [statements, setStatements] = useState<statement_type[]>([]);
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
+    /**
+     * Getting tax statement types and pushing them in options element
+     */
     const getStatementTypes = async () => {
         try {
 
@@ -63,6 +66,10 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
         }
     }
 
+    /**
+     * Adding new client
+     * @param e 
+     */
     const addNewClient = async (e: { preventDefault: () => void; target: HTMLFormElement | undefined; }) => {
         e.preventDefault()
         const formData = new FormData(e.target);

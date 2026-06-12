@@ -35,7 +35,7 @@ function BillLinesTable({chosenID, updateAmount, currentAmount, refreshLines}: {
     // Managing opening modal window
     const [openEditLineModal, setOpenEditLineModal] = useState(false);
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
     // Loading bill lines
     const loadBillLines = async () => {

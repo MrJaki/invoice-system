@@ -14,7 +14,7 @@ function EditPage() {
     // Bill lines add form number array
     const [billLines, setBillLines] = useState([0]);
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
     // Constants used to show steps to creating bill
     const [stepOne, setStepOne] = useState(true);

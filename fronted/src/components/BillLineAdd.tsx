@@ -25,7 +25,7 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
         price: 0,
     })
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
     // Adding new bill line
     const addBillLine = async (e: { preventDefault: () => void; }) => {

@@ -111,6 +111,8 @@ router.post('/',  async (req, res) => {
     }
 });
 
+// Deleting bill
+// In query: id
 router.delete('/', async (req, res) => {
     const id_bill = parseInt(req.query.id, 10);
 

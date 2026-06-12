@@ -6,6 +6,7 @@ import Edit from './pages/Edit';
 import Insert from './pages/Insert';
 import Clients from './pages/Clients';
 import EditClient from './pages/EditClient';
+import Tax from './pages/Tax';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/insert" element={<Insert />} />
                 <Route path="/clients" element={<Clients />} />
                 <Route path="/clients/:id" element={<EditClient />} />
+                <Route path="/tax" element={<Tax />} />
             </Routes>
         </div>
         </BrowserRouter>

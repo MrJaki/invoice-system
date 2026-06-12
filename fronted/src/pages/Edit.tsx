@@ -59,7 +59,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         new Date().toISOString().split("T")[0]
     );
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const navigate = useNavigate();
 

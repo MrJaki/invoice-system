@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom"
 import DeleteClient from '../components/DeleteClientModal';
 
+// Custom statemetn type
 type statement_type = {
     id: number;
     tarifa: string;
@@ -35,11 +36,13 @@ function ClientsPage() {
     const [statements, setStatements] = useState<statement_type[]>([]);
 
     const navigate = useNavigate();
-
-    const API_URL = 'http://localhost:3002/api';
-
     const { id } = useParams();
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
+    /**
+     * Getting client info and pushing them in form
+     */
     const getClientInfo = async () => {
         try {
 
@@ -65,6 +68,9 @@ function ClientsPage() {
         }
     }
 
+    /**
+     * Getting tax statement types and pushing them in options element
+     */
     const getStatementTypes = async () => {
         try {
 
@@ -92,6 +98,10 @@ function ClientsPage() {
         }
     }
 
+    /**
+     * Updating client data
+     * @param e 
+     */
     const updateClient = async (e: { preventDefault: () => void; }) => {
         e.preventDefault()
         try {
@@ -126,6 +136,7 @@ function ClientsPage() {
         }
     }
 
+    // Handling changes for client constant
     const handleChange = (e: { target: { name: any; value: any; }; }) => {
         setClient({ ...client, [e.target.name]: e.target.value });
     };
@@ -149,7 +160,7 @@ function ClientsPage() {
                 className="
                     bg-white rounded-2xl shadow-sm border border-gray-200
                     p-6 md:p-8
-                    grid md:grid-cols-8 gap-6 mt-5 text-left
+                    grid md:grid-cols-8 gap-5 mt-5 text-left
                 ">
 
                 {/* Title input */}
@@ -280,16 +291,18 @@ function ClientsPage() {
                     </select>
                 </div>
 
+                {/* Save button */}
                 <button
                     type="submit"
                     className="md:col-span-1 inline-flex items-center justify-center gap-2 rounded-lg
-                                border-2 bg-green-600
-                                hover:bg-green-700 text-white
+                                border-2 bg-green-700
+                                hover:bg-green-800 text-white
                                 px-4 py-2 font-medium text-sm transition">
                     <i className="bi bi-floppy"></i>
                     Shrani
                 </button>
 
+                {/* Delete button */}
                 <button
                     onClick={() => setDeleteModal(true)}
                     type="button"

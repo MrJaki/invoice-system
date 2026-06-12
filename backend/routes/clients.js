@@ -20,6 +20,8 @@ router.get('/',  async (req, res) => {
     }
 });
 
+// Getting client by id
+// In params: id
 router.get('/:id',  async (req, res) => {
     const id = parseInt(req.params.id, 10);
 
@@ -33,7 +35,8 @@ router.get('/:id',  async (req, res) => {
     }
 });
 
-
+// Creating new client
+// In body: title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id
 router.post('/',  async (req, res) => {
     const { title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
 
@@ -47,6 +50,9 @@ router.post('/',  async (req, res) => {
     }
 });
 
+// Updating client by id
+// In body: title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id
+// In params: id
 router.patch('/:id',  async (req, res) => {
     const { title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
     const id = parseInt(req.params.id, 10);
@@ -61,6 +67,8 @@ router.patch('/:id',  async (req, res) => {
     }
 });
 
+// Deleting client by id
+// In query: id
 router.delete('/', async (req, res) => {
     const id = parseInt(req.query.id, 10);
 

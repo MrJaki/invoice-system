@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState } from "react";
 import Message from "./Message";
 
-function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
+function AddTaxStatement({refresh, modal }: any) {
     // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
@@ -10,21 +10,25 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
 
     const API_URL = import.meta.env.VITE_API_URL;
 
-    /**
-     * Updating bill line
-     * @param e 
-     */
-    const updateBillLine = async (e: { preventDefault: () => void; }) => {
+    const [statements, setStatements] = useState({
+        tarifa: "",
+        opis_davka: "",
+        tip_davka: "",
+        stopnja: 0,
+        opis: "",
+    })
+
+    const addNewStatement = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            await axios.patch(
-                `${API_URL}/bill_lines`,
+            await axios.post(
+                `${API_URL}/tax`,
                 {
-                    quantity: Data.kolicina,
-                    quantity_type: Data.tip_kolicine,
-                    desc: Data.opis,
-                    price: Data.cena,
-                    id: Data.id,
+                    tarif: statements.tarifa,
+                    desc: statements.opis_davka,
+                    type: statements.tip_davka,
+                    level: statements.stopnja,
+                    longer_desc: statements.opis,
                 }
             );
 
@@ -33,7 +37,7 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
             setMessage("");
 
             // Refreshing  bill lines table
-            refreshBillLines();
+            refresh();
 
             // Closing modal
             modal(false)
@@ -49,7 +53,7 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
     }
 
     const handleChange = (e: { target: { name: any; value: any; }; }) => {
-        setData({ ...Data, [e.target.name]: e.target.value });
+        setStatements({ ...statements, [e.target.name]: e.target.value });
     };
 
     return (
@@ -57,62 +61,76 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
             <Message error={isError} visible={isVisible}>{message}</Message>
         
             {/* Form for editing bill lines */}
-            <form onSubmit={updateBillLine} className="grid md:grid-cols-16 gap-4 items-end">
+            <form onSubmit={addNewStatement} className="grid md:grid-cols-16 gap-4 items-end">
 
-                {/* Quantity input */}
+                {/* Tarif input*/}
                 <div className="md:col-span-2 ">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Količina
+                        Tarifa
                     </label>
                     <input
                         required
-                        name='kolicina'
-                        type="number"
-                        value={Data?.kolicina}
+                        name='tarifa'
+                        type="text"
+                        value={statements?.tarifa}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
-                {/* Quantity type input */}
+                {/* Desc input */}
+                <div className="md:col-span-3">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Opis Davka
+                    </label>
+                    <input
+                        name='opis_davka'
+                        type="text"
+                        value={statements?.opis_davka}
+                        onChange={handleChange}
+                        className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
+                    />
+                </div>
+
+                {/* Type input */}
+                <div className="md:col-span-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Tip
+                    </label>
+                    <input
+                        name='tip_davka'
+                        type="text"
+                        value={statements?.tip_davka}
+                        onChange={handleChange}
+                        className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
+                    />
+                </div>
+
+                {/* Level input */}
                 <div className="md:col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Tip Količine
+                        Stopnja
                     </label>
                     <input
                         required
-                        name='tip_kolicine'
-                        type="text"
-                        value={Data?.tip_kolicine}
+                        name='stopnja'
+                        type="number"
+                        value={statements?.stopnja}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
-                {/* Description input */}
-                <div className="md:col-span-8">
+                {/* Longer desc input */}
+                <div className="md:col-span-6">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Opis
                     </label>
                     <input
+                        required
                         name='opis'
                         type="text"
-                        value={Data?.opis}
-                        onChange={handleChange}
-                        className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
-                    />
-                </div>
-
-                {/* Price input */}
-                <div className="md:col-span-2">
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Cena
-                    </label>
-                    <input
-                        required
-                        name='cena'
-                        type="number"
-                        value={Data?.cena}
+                        value={statements?.opis}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
@@ -134,4 +152,4 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
     );
 }
 
-export default BillLineForm;
+export default AddTaxStatement;

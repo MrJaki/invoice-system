@@ -19,9 +19,12 @@ function DeleteBillModal({  openModal, setOpenModal }: BillLinesFormProps) {
 
     const { id } = useParams();
 
-    const API_URL = 'http://localhost:3002/api';
+    const API_URL = import.meta.env.VITE_API_URL;
 
-    const deleteBill = async () => {
+    /**
+     * Deleting client
+     */
+    const deleteClient = async () => {
         try {
             await axios.delete(
                 `${API_URL}/clients`,
@@ -109,7 +112,7 @@ function DeleteBillModal({  openModal, setOpenModal }: BillLinesFormProps) {
                                 </button>
 
                                 <button
-                                    onClick={deleteBill}
+                                    onClick={deleteClient}
                                     className="
                                         rounded-lg
                                         bg-red-600
