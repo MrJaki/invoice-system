@@ -4,10 +4,12 @@ import Message from "./Message";
 
 type BillLinesFormProps = {
     index: number;
-    billIds: number;
+    billId: number;
+    refreshAmount?: any;
+    refreshLines?: any
 };
 
-function AddBillLine({ billIds }: BillLinesFormProps) {
+function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps) {
     // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
@@ -28,7 +30,7 @@ function AddBillLine({ billIds }: BillLinesFormProps) {
     // Adding new bill line
     const addBillLine = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        if (billIds == 0 || !billIds) return;
+        if (billId == 0 || !billId) return;
         try {
             // Adding bill line
             const newLine = await axios.post(
@@ -38,7 +40,7 @@ function AddBillLine({ billIds }: BillLinesFormProps) {
                     quantity_type: billLine.quantity_type,
                     desc: billLine.desc,
                     price: billLine.price,
-                    id_bill: billIds,
+                    id_bill: billId,
                 }
             );
 
@@ -65,7 +67,7 @@ function AddBillLine({ billIds }: BillLinesFormProps) {
                 `${API_URL}/bills/selected_id`,
                 {
                     params: {
-                        id: billIds
+                        id: billId
                     }
                 }
             );
@@ -95,19 +97,24 @@ function AddBillLine({ billIds }: BillLinesFormProps) {
      * @returns 
      */
     const updateBillAmount = async (amount: number) => {
-        if (billIds == 0 || !billIds) return;
+        if (billId == 0 || !billId) return;
         try {
             await axios.patch(
                 `${API_URL}/bills/update_amount`,
                 {
                     amount: amount,
-                    id: billIds
+                    id: billId
                 }
             );
 
             setIsVisible(false);
             setIsError(false);
             setMessage("");
+
+            if (refreshAmount) {
+                refreshAmount();
+                refreshLines();
+            }
 
         } catch (err: any) {
             setIsVisible(true);

@@ -20,4 +20,18 @@ router.get('/',  async (req, res) => {
     }
 });
 
+
+router.post('/',  async (req, res) => {
+    const { title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
+
+    try {
+        const newClient = await dbClients.addClient(title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id);
+        res.json({success: true, data: newClient});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
 module.exports = router;

@@ -14,7 +14,7 @@ type Bill = {
     cena: number;
 }
 
-function BillLinesTable({chosenID, updateAmount, currentAmount}: {chosenID: number, updateAmount: any, currentAmount: number | null}) {
+function BillLinesTable({chosenID, updateAmount, currentAmount, refreshLines}: {chosenID: number, updateAmount: any, currentAmount: number | null, refreshLines: number}) {
     // Array for storing bill lines with custom type
     const [bills, setBills] = useState<Bill[]>([]);
 
@@ -81,7 +81,7 @@ function BillLinesTable({chosenID, updateAmount, currentAmount}: {chosenID: numb
 
     useEffect(() => {
         loadBillLines();
-    }, [])
+    }, [refreshLines])
 
     return (
         <>

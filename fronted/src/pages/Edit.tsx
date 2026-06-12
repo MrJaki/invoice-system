@@ -3,6 +3,9 @@ import axios from 'axios';
 import BillsTable from '../components/BillTable'
 import BillLinesTable from '../components/BillLinesTable'
 import Message from "../components/Message";
+import Modal from '../components/ModalWindow';
+import AddBillLine from '../components/BillLineAdd';
+import DeleteBill from '../components/DeleteBill';
 import { useNavigate } from "react-router-dom";
 
 // Custom bill type
@@ -36,6 +39,14 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
+
+    const [openModal, setOpenModal] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+
+    const [linesRefresh, setLinesRefresh] = useState(0);
+    const refreshLines = () => {
+        setLinesRefresh(prev => prev + 1);
+    };
 
     // Date constants
     const [dateOut, setDateOut] = useState(
@@ -216,7 +227,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 Če številke računa ne veste na pamet ga lahko izberete iz tabele spodaj.
                             </p>
                         </div>
-                        
+
                         {/* Bills table */}
                         <BillsTable
                             setChosenBill={setChosenBill}
@@ -287,7 +298,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             outline-none bg-gray-50"
                                             />
                                         </div>
-                                            
+
                                         {/* Total bill amount info */}
                                         <label className="block text-xs font-medium text-gray-500 mb-1">
                                             Znesek
@@ -314,7 +325,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 </div>
 
                                 {/* RIGHT: Customer info */}
-                                <div className="md:col-span-3">
+                                <div className="md:col-span-3 flex flex-col h-full">
                                     <h3 className="text-lg font-semibold text-gray-800 mb-5">
                                         Podatki o komitantu
                                     </h3>
@@ -350,17 +361,50 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                             </p>
                                         </div>
                                     </div>
+                                    <div className="grid md:grid-cols-2 gap-4 mt-auto">
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenModal(true)}
+                                            className="col-span-1 inline-flex items-center gap-2 rounded-lg border-2 text-green-700 hover:text-white border-green-700 hover:bg-green-700 px-3 py-2 font-medium text-sm shadow-sm transition focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2"
+                                        >
+                                            <i className="bi bi-file-earmark-plus"></i>
+                                            Dodaj vrstico računa
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenDelete(true)}
+                                            className="col-span-1 inline-flex items-center gap-2 rounded-lg border-2 text-red-600 hover:text-white border-red-500 hover:bg-red-500 px-3 py-2 font-medium text-sm shadow-sm transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                            Briši račun
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>
 
-                            <BillLinesTable 
+                            <BillLinesTable
                                 chosenID={chosenBill}
                                 updateAmount={updateAmount}
                                 currentAmount={bill?.znesek ?? null}
+                                refreshLines={linesRefresh}
+                            />
+
+                            <Modal 
+                                openModal={openModal}
+                                setOpenModal={setOpenModal}
+                                Form={AddBillLine}
+                                billId={chosenBill}
+                                refreshAmount={loadChosenBill}
+                                refreshLines={refreshLines}
+                            />
+
+                            <DeleteBill 
+                                openModal={openDelete}
+                                setOpenModal={setOpenDelete}
+                                billId={chosenBill}
                             />
                         </>
-
                     )
             }
 

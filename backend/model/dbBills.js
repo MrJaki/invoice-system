@@ -119,3 +119,14 @@ module.exports.newBill = function(id_client, dateOut, dateValue, datePayment, bi
     return client.query(query, [id_client, date_out, date_value, date_payment, bill_num])
         .then(res => res.rows[0]);
 }
+
+/**
+ * Deleting bill
+ * @param {number} id
+ * @returns 
+ */
+module.exports.deleteBill = function(id) {
+    const query = `DELETE FROM racuni WHERE id = $1`;
+    return client.query(query, [id])
+        .then(res => res.rows[0]);
+}

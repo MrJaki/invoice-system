@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import './App.css'
-import Sidebar from './components/Sidebar'
-import Bills from './pages/Bills'
-import Edit from './pages/Edit'
-import Insert from './pages/Insert'
+import './App.css';
+import Sidebar from './components/Sidebar';
+import Bills from './pages/Bills';
+import Edit from './pages/Edit';
+import Insert from './pages/Insert';
+import Clients from './pages/Clients';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/bills" element={<Bills setPage={setPage} setChosenBill={setChosenBill}/>} />
                 <Route path="/edit" element={<Edit chosenBill={chosenBill} setChosenBill={setChosenBill}/>} />
                 <Route path="/insert" element={<Insert />} />
+                <Route path="/clients" element={<Clients />} />
             </Routes>
         </div>
         </BrowserRouter>

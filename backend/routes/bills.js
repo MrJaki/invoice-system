@@ -111,4 +111,17 @@ router.post('/',  async (req, res) => {
     }
 });
 
+router.delete('/', async (req, res) => {
+    const id_bill = parseInt(req.query.id, 10);
+
+    try {
+        const deletedBill = await dbBills.deleteBill(id_bill);
+        res.json({success: true, data: deletedBill});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+})
+
 module.exports = router;

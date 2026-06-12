@@ -245,7 +245,7 @@ function EditPage() {
                                 className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm"
                             >
                                 <BillLinesAdd index={index} 
-                                    billIds={billId}
+                                    billId={billId}
                                 />
                             </div>
                         ))}

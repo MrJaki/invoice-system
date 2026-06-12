@@ -1,6 +1,6 @@
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 
-function ModalEditTask({openModal, setOpenModal, Form, ...Data}: any) {
+function Modal({openModal, setOpenModal, Form, size, ...Data}: any) {
     return (
         <Dialog open={openModal} onClose={setOpenModal} className="relative z-10">
             <DialogBackdrop
@@ -11,10 +11,10 @@ function ModalEditTask({openModal, setOpenModal, Form, ...Data}: any) {
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4">
                     <DialogPanel
-                        className="
+                        className={`
                             relative
                             w-full
-                            max-w-5xl
+                            ${!size ? "max-w-5xl" : size == "small" ? "max-w-2xl" : "max-w-3xl"}
                             transform
                             overflow-hidden
                             rounded-lg
@@ -22,7 +22,7 @@ function ModalEditTask({openModal, setOpenModal, Form, ...Data}: any) {
                             text-left
                             shadow-[0_0_70px_rgba(0,0,255,0.5)]
                             transition-all
-                        "
+                        `}
                     >
                             <div className='p-5'>
                                 <Form 
@@ -38,4 +38,4 @@ function ModalEditTask({openModal, setOpenModal, Form, ...Data}: any) {
     );
 }
 
-export default ModalEditTask;
+export default Modal;
