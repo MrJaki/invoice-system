@@ -3,6 +3,7 @@ import axios from 'axios';
 import Message from "./Message";
 import Modal from './ModalWindow';
 import ClientForm from './ClientAddForm';
+import { useNavigate } from "react-router-dom";
 
 // Custom client type
 type Client = {
@@ -32,6 +33,8 @@ function ClientTable() {
     const [filterVisible, setFilterVisible] = useState(true);
 
     const [addModal, setAddModal] = useState(false);
+
+    const navigate = useNavigate();
 
 
     const API_URL = 'http://localhost:3002/api';
@@ -170,6 +173,18 @@ function ClientTable() {
                                 <td className="p-3">{client.dodatni_naziv ? client.dodatni_naziv : '-'}</td>
                                 <td className="p-3">{client.ulica}, {client.mesto}</td>
                                 <td className="p-3">{client.davcna_st}</td>
+                                <td className="p-3">
+                                    <button
+                                        className="bg-white border border-[#242996] text-[#242996] hover:bg-[#242996] hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
+                                        title="Uredi"
+                                        onClick={() => {
+                                            navigate("/clients/" + client.id)
+                                        }}
+                                    >
+                                        <i className="bi bi-pencil"></i>
+                                        Uredi
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -207,6 +222,8 @@ function ClientTable() {
                 setOpenModal={setAddModal}
                 Form={ClientForm}
                 size={"small"}
+                loadClients={loadClients}
+                setModal={setAddModal}
             />
         </>
     );

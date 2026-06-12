@@ -1,6 +1,8 @@
-import axios from 'axios';
+import Message from "../components/Message";
 import { useEffect, useState } from "react";
-import Message from "./Message";
+import axios from 'axios';
+import { useNavigate, useParams } from "react-router-dom"
+import DeleteClient from '../components/DeleteClientModal';
 
 type statement_type = {
     id: number;
@@ -11,16 +13,13 @@ type statement_type = {
     opis: string;
 }
 
-type ClientAddFormProps = {
-    loadClients: any;
-    setModal: (value: boolean) => void;
-}
-
-function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
+function ClientsPage() {
     // Constants used for displaying message
     const [isError, setIsError] = useState(false);
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
+
+    const [deleteModal, setDeleteModal] = useState(false);
 
     const [client, setClient] = useState({
         naziv: "",
@@ -29,12 +28,42 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
         ulica: "",
         mesto: "",
         davcna_st: "",
-        zavezanec: "",
+        zavezanec: false,
+        id_vrsta_izjave: 0,
     })
 
     const [statements, setStatements] = useState<statement_type[]>([]);
 
+    const navigate = useNavigate();
+
     const API_URL = 'http://localhost:3002/api';
+
+    const { id } = useParams();
+
+    const getClientInfo = async () => {
+        try {
+
+            const client = await axios.get(
+                `${API_URL}/clients/${id}`
+            )
+
+            const data = client.data.data;
+
+            setClient(data);
+
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri nalaganju vrst izjav!"
+            );
+        }
+    }
 
     const getStatementTypes = async () => {
         try {
@@ -63,13 +92,12 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
         }
     }
 
-    const addNewClient = async (e: { preventDefault: () => void; target: HTMLFormElement | undefined; }) => {
+    const updateClient = async (e: { preventDefault: () => void; }) => {
         e.preventDefault()
-        const formData = new FormData(e.target);
         try {
 
-            await axios.post(
-                `${API_URL}/clients`,
+            await axios.patch(
+                `${API_URL}/clients/${id}`,
                 {
                     title: client.naziv,
                     legal_title: client.pravni_naziv,
@@ -77,13 +105,12 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                     street: client.ulica,
                     city: client.mesto,
                     tax_num: client.davcna_st,
-                    obligee: formData.get("zavezanec"),
-                    statement_type_id: formData.get("vrsta_izjave"),
+                    obligee: client.zavezanec,
+                    statement_type_id: client.id_vrsta_izjave,
                 }
             )
 
-            loadClients();
-            setModal(false);
+            navigate("/clients");
 
             setIsVisible(false);
             setIsError(false);
@@ -94,31 +121,39 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
             setMessage(
                 err.response?.data?.error ||
                 err.message ||
-                "Prišlo je do napake pri nalaganju vrst izjav!"
+                "Prišlo je do napake pri posodabljanju komitenta!"
             );
         }
     }
 
-    useEffect(() => {
-        getStatementTypes();
-    }, [])
-
-    
     const handleChange = (e: { target: { name: any; value: any; }; }) => {
         setClient({ ...client, [e.target.name]: e.target.value });
     };
 
-    return (
-        <>
-            <Message error={isError} visible={isVisible}>{message}</Message>
-        
-            {/* Form for editing bill lines */}
-            <form onSubmit={addNewClient} className="grid md:grid-cols-2 gap-4 items-end">
+    useEffect(() => {
+        getStatementTypes();
+        getClientInfo();
+    }, [])
 
-                <h2>Dodaj novega komitenta</h2>
+    return (
+        <div className="p-6 w-full">
+            <p className="text-2xl font-bold text-gray-800 text-left">
+                Uredi Komitenta
+            </p>
+
+            <Message error={isError} visible={isVisible}>{message}</Message>
+
+            {/* Form for editing bill lines */}
+            <form
+                onSubmit={updateClient}
+                className="
+                    bg-white rounded-2xl shadow-sm border border-gray-200
+                    p-6 md:p-8
+                    grid md:grid-cols-8 gap-6 mt-5 text-left
+                ">
 
                 {/* Title input */}
-                <div className="md:col-span-2 ">
+                <div className="md:col-span-4 ">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Naziv
                     </label>
@@ -127,14 +162,14 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                         name='naziv'
                         type="text"
                         placeholder="Vnesite naziv podjetja"
-                        value={client.naziv}
+                        value={client.naziv ?? ""}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
                 {/* Legal title input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Pravni Naziv
                     </label>
@@ -142,14 +177,14 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                         name='pravni_naziv'
                         type="text"
                         placeholder="Vnesite pravni naziv (neobvezno)"
-                        value={client.pravni_naziv}
+                        value={client.pravni_naziv ?? ""}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
                 {/* Additional title input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Dodatni Naziv
                     </label>
@@ -157,14 +192,14 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                         name='dodatni_naziv'
                         type="text"
                         placeholder="Dodatni naziv (neobvezno)"
-                        value={client.dodatni_naziv}
+                        value={client.dodatni_naziv ?? ""}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
                 {/* Street input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Ulica
                     </label>
@@ -173,14 +208,14 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                         name='ulica'
                         type="text"
                         placeholder="npr. Slovenska cesta 10"
-                        value={client.ulica}
+                        value={client.ulica ?? ""}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
                 {/* City input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Mesto
                     </label>
@@ -189,14 +224,14 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                         name='mesto'
                         type="text"
                         placeholder="npr. Celje 3000"
-                        value={client.mesto}
+                        value={client.mesto ?? ""}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
                 {/* Tax num input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Davčna Št.
                     </label>
@@ -204,22 +239,23 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                         name='davcna_st'
                         type="text"
                         placeholder="npr. SI12345678"
-                        value={client.davcna_st}
+                        value={client.davcna_st ?? ""}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />
                 </div>
 
                 {/* Obligee input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Zavezanec
                     </label>
                     <select
                         required
                         name="zavezanec"
+                        value={String(client.zavezanec)}
+                        onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
-                        defaultValue="false"
                     >
                         <option value="true">DA</option>
                         <option value="false">NE</option>
@@ -227,15 +263,16 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                 </div>
 
                 {/* Statement type input */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-4">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
                         Vrsta izjave
                     </label>
                     <select
                         required
-                        name="vrsta_izjave"
+                        name="id_vrsta_izjave"
+                        value={client.id_vrsta_izjave ?? 0}
+                        onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
-                        defaultValue=""
                     >
                         {statements.map((statement) => (
                             <option key={statement.id} value={statement.id}>{statement.opis}</option>
@@ -246,17 +283,33 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
                 <button
                     type="submit"
                     className="md:col-span-1 inline-flex items-center justify-center gap-2 rounded-lg
-                   border-2 border-green-700 text-green-700
-                   hover:bg-green-700 hover:text-white
-                   px-4 py-2 font-medium text-sm transition"
-                >
+                                border-2 bg-green-600
+                                hover:bg-green-700 text-white
+                                px-4 py-2 font-medium text-sm transition">
                     <i className="bi bi-floppy"></i>
                     Shrani
                 </button>
 
+                <button
+                    onClick={() => setDeleteModal(true)}
+                    type="button"
+                    className="md:col-span-1 inline-flex items-center justify-center gap-2 rounded-lg
+                                border-2 bg-red-600
+                                hover:bg-red-700 text-white
+                                px-4 py-2 font-medium text-sm transition" >
+                    <i className="bi bi-trash"></i>
+                    Briši
+                </button>
+
             </form>
-        </>
+
+            <DeleteClient 
+                openModal={deleteModal}
+                setOpenModal={setDeleteModal}
+            />
+
+        </div>
     );
 }
 
-export default ClientAddForm;
+export default ClientsPage;

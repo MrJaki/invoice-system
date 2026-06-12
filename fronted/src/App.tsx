@@ -5,6 +5,7 @@ import Bills from './pages/Bills';
 import Edit from './pages/Edit';
 import Insert from './pages/Insert';
 import Clients from './pages/Clients';
+import EditClient from './pages/EditClient';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/edit" element={<Edit chosenBill={chosenBill} setChosenBill={setChosenBill}/>} />
                 <Route path="/insert" element={<Insert />} />
                 <Route path="/clients" element={<Clients />} />
+                <Route path="/clients/:id" element={<EditClient />} />
             </Routes>
         </div>
         </BrowserRouter>

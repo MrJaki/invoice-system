@@ -1,4 +1,3 @@
-import { useState } from "react";
 import ClientTable from '../components/ClientsTable';
 
 function ClientsPage() {

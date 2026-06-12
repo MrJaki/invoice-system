@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 type SidebarProps = {
     setPage: (page: string) => void;
@@ -17,6 +18,12 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
     ];
 
     const navigate = useNavigate();
+
+    const location = useLocation();
+
+    useEffect(() => {
+        setPage(location.pathname.split("/")[1]);
+    }, [location])
 
     return (
         <div className="w-full md:w-46 md:h-screen md:fixed bg-white shadow-sm p-2 md:p-4">
