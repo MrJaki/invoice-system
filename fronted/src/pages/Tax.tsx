@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import Message from "../components/Message";
 import axios from 'axios';
 import Modal from '../components/ModalWindow';
-import AddTaxStatement from "../components/AddTaxStatement";
+import AddTaxStatement from "../components/TaxStatementAdd";
+import EditTaxStatement from "../components/TaxStatementEdit";
+import TaxStatementDelete from "../components/TaxStatementDelete";
 
 // Custom statemetn type
 type statement_type = {
@@ -29,7 +31,23 @@ function TaxPage() {
 
     const API_URL = import.meta.env.VITE_API_URL;
 
+    // Constants to manage modals
     const [openModal, setOpenModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
+    // Saved id for deleting statement
+    const [deleteId, setDeleteId] = useState(0);
+
+    const [chosenStatement, setChosenStatement] = useState({
+        id: 0,
+        tarifa: "",
+        opis_davka: "",
+        tip_davka: "",
+        stopnja: 0,
+        opis: "",
+    })
+    
 
     const loadStataments = async () => {
         try {
@@ -153,11 +171,10 @@ function TaxPage() {
                                     <button
                                         className="bg-white border border-[#242996] text-[#242996] hover:bg-[#242996] hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
                                         title="Uredi"
-                                        // onClick={() => {
-                                        //     setChosenBill?.(bill.id);
-                                        //     setPage?.("edit");  
-                                        //     navigate("/edit")
-                                        // }}
+                                        onClick={() => {
+                                            setChosenStatement(statement);
+                                            setOpenEditModal(true);
+                                        }}
                                     >
                                         <i className="bi bi-pencil"></i>
                                         Uredi
@@ -166,11 +183,10 @@ function TaxPage() {
                                     <button
                                         className="bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
                                         title="Uredi"
-                                        // onClick={() => {
-                                        //     setChosenBill?.(bill.id);
-                                        //     setPage?.("edit");  
-                                        //     navigate("/edit")
-                                        // }}
+                                        onClick={() => {
+                                            setOpenDeleteModal(true);
+                                            setDeleteId(statement.id);
+                                        }}
                                     >
                                         <i className="bi bi-trash"></i>
                                         Briši
@@ -182,12 +198,32 @@ function TaxPage() {
                 </table>
             </div>
 
+            {/* Add tax statement modal */}
             <Modal 
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 Form={AddTaxStatement}
                 refresh={loadStataments}
                 modal={setOpenModal}
+            />
+
+            {/* Edit tax statement modal */}
+            <Modal 
+                openModal={openEditModal}
+                setOpenModal={setOpenEditModal}
+                Form={EditTaxStatement}
+                statements={chosenStatement}
+                setStatements={setChosenStatement}
+                refresh={loadStataments}
+                modal={setOpenEditModal}
+            />
+
+            {/* Delete tax stateent modal */}
+            <TaxStatementDelete 
+                openModal={openDeleteModal}
+                setOpenModal={setOpenDeleteModal}
+                refresh={loadStataments}
+                statementId={deleteId}
             />
 
         </div>

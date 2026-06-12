@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import Modal from '../components/ModalWindow';
-import BillLinesForm from '../components/BillLinesForm'
+import BillLinesForm from './BillLinesEdit'
 import Message from "./Message";
 
 // Custom bill line type
@@ -57,8 +57,20 @@ function BillLinesTable({chosenID, updateAmount, currentAmount, refreshLines}: {
 
             var amount = 0;
 
+            // Getting tarif amount
+            const tarif = await axios.get(
+                `${API_URL}/bill_lines/tarif`,
+                {
+                    params: {id_bill: chosenID},
+                }
+            );
+
+            const taxRate = Number(tarif.data.data.stopnja); // npr. 20, 8.5, 22
+
+
             data.forEach((z: { cena: number; kolicina: number; }) => {
-                amount += (z.cena * z.kolicina);
+                const lineVat = (z.cena * z.kolicina) + (z.cena * z.kolicina) * (taxRate / 100);
+                amount += lineVat;
             });
 
             // If total amount doesn't match we update it

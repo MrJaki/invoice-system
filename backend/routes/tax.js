@@ -29,4 +29,30 @@ router.post('/',  async (req, res) => {
     }
 });
 
+router.patch('/',  async (req, res) => {
+    const { tarif, desc, type, level, longer_desc, id } = req.body;
+
+    try {
+        const statements = await dbTax.updateStatement(tarif, desc, type, level, longer_desc, id);
+        res.json({success: true, data: statements});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+router.delete('/', async (req, res) => {
+    const id = parseInt(req.query.id, 10);
+
+    try {
+        const deletedStatement = await dbTax.deleteTaxStatement(id);
+        res.json({success: true, data: deletedStatement});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
 module.exports = router;

@@ -2,7 +2,7 @@ import Message from "../components/Message";
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom"
-import DeleteClient from '../components/DeleteClientModal';
+import DeleteClient from '../components/ClientModalDelete';
 
 // Custom statemetn type
 type statement_type = {

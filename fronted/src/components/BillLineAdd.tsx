@@ -72,10 +72,23 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
                 }
             );
 
-            const currentAmount = Number(bill.data.data.znesek);
-            const lineAmount = billLine.quantity * billLine.price;
+            // Getting tarif amount
+            const tarif = await axios.get(
+                `${API_URL}/bill_lines/tarif`,
+                {
+                    params: {id_bill: billId},
+                }
+            );
 
-            const newAmount = currentAmount + lineAmount;
+            const taxRate = Number(tarif.data.data.stopnja); // npr. 20, 8.5, 22
+
+            const currentAmount = Number(bill.data.data.znesek);
+
+            const lineNet = billLine.quantity * billLine.price;
+            const lineVat = lineNet * (taxRate / 100);
+            const lineGross = lineNet + lineVat;
+
+            const newAmount = currentAmount + lineGross;
 
             // Updating total bill amoutn
             updateBillAmount(newAmount);

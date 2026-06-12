@@ -47,3 +47,19 @@ module.exports.addBillLine = function(quantity, quantity_type, desc, price, id_b
     return client.query(query, [quantity, quantity_type, desc, price, id_bill])
         .then(res => res.rows[0]);
 };
+
+/**
+ * Getting tarif value from komitent so we can calcuate final bill amount
+ * @param {number} id_bill 
+ * @returns 
+ */
+module.exports.getTaxTarifStatement = function(id_bill) {
+    const query = `SELECT v.stopnja
+                   FROM vrste_izjav v
+                   JOIN komitenti k ON v.id = k.id_vrsta_izjave
+                   JOIN racuni r ON k.id = r.id_komitenta
+                   WHERE r.id = $1
+                   LIMIT 1`;
+    return client.query(query, [id_bill])
+        .then(res => res.rows[0]);
+}

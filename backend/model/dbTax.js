@@ -17,3 +17,18 @@ module.exports.newTaxStatement = function(tarif, desc, type, level, longer_desc)
     return client.query(query, [tarif, desc, type, level, longer_desc])
         .then(res => res.rows[0]);
 }
+
+module.exports.updateStatement = function(tarif, desc, type, level, longer_desc, id) {
+    const query = `UPDATE vrste_izjav SET
+                   tarifa=$1, opis_davka=$2, tip_davka=$3, stopnja=$4, opis=$5
+                   WHERE id=$6
+                   RETURNING *`
+    return client.query(query, [tarif, desc, type, level, longer_desc, id])
+        .then(res => res.rows[0]);
+}
+
+module.exports.deleteTaxStatement = function(id) {
+    const query = `DELETE FROM vrste_izjav WHERE id = $1`;
+    return client.query(query, [id])
+        .then(res => res.rows[0]);
+}

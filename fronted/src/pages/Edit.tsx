@@ -5,7 +5,7 @@ import BillLinesTable from '../components/BillLinesTable'
 import Message from "../components/Message";
 import Modal from '../components/ModalWindow';
 import AddBillLine from '../components/BillLineAdd';
-import DeleteBill from '../components/DeleteBill';
+import DeleteBill from '../components/BillDelete';
 import { useNavigate } from "react-router-dom";
 
 // Custom bill type
@@ -382,7 +382,8 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 </div>
 
                             </div>
-
+                            
+                            {/* Bill lines table */}
                             <BillLinesTable
                                 chosenID={chosenBill}
                                 updateAmount={updateAmount}
@@ -390,6 +391,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 refreshLines={linesRefresh}
                             />
 
+                            {/* Add bill line modal */}
                             <Modal 
                                 openModal={openModal}
                                 setOpenModal={setOpenModal}
@@ -399,6 +401,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                 refreshLines={refreshLines}
                             />
 
+                            {/* Delete bill modal */}
                             <DeleteBill 
                                 openModal={openDelete}
                                 setOpenModal={setOpenDelete}

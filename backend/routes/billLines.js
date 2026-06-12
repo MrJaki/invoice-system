@@ -16,6 +16,21 @@ router.get('/',  async (req, res) => {
     }
 });
 
+// Getting tarif for calculating final amount
+// In query: id_bill
+router.get('/tarif',  async (req, res) => {
+    const id_bill = parseInt(req.query.id_bill, 10);
+
+    try {
+        const tarif = await dbBillLines.getTaxTarifStatement(id_bill);
+        res.json({success: true, data: tarif});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
 // Updating bill lines
 // In body: quantity, quantity_type, desc, price, id_bill_line
 router.patch('/',  async (req, res) => {
