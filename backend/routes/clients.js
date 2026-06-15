@@ -50,6 +50,21 @@ router.post('/',  async (req, res) => {
     }
 });
 
+// Creating new client with preset id
+// In body: title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id
+router.post('/id',  async (req, res) => {
+    const { id, title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
+
+    try {
+        const newClient = await dbClients.addClientWithId(id, title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id);
+        res.json({success: true, data: newClient});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
 // Updating client by id
 // In body: title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id
 // In params: id

@@ -10,7 +10,7 @@ type SelectType = {
 }
 
 function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectType) {
-    const [value, setValue] = useState("");
+    const [value, setValue] = useState<string | null>(null);
 
     const normalize = (str: string) =>
         str
@@ -30,6 +30,7 @@ function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectTy
     }, [head, match]);
 
     const updateSelection = (selectedValue: string) => {
+        if (!selectedValue) return; 
 
         setValue(selectedValue);
 
@@ -37,11 +38,11 @@ function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectTy
             (item: any) => item.name === selectedValue
         );
 
-        if (index !== -1) {
-            const updated = [...fixedHead];
-            updated[index].name = sqlAttribute;
-            setFixedHead(updated);
-        }
+        if (index === -1) return;
+
+        const updated = [...fixedHead];
+        updated[index].name = sqlAttribute;
+        setFixedHead(updated);
     };
 
     const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -52,10 +53,11 @@ function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectTy
         <select
             required
             name="id_vrsta_izjave"
-            value={value}
+            value={value ?? ""}
             onChange={onChange}
             className="w-2/3 max-w-xs border border-gray-400 rounded-lg px-3 py-1 bg-gray-50"
         >
+            <option value="">Izberite</option>
             {head.map((cel: any) => (
                 <option key={cel.name} value={cel.name}>{cel.name}</option>
             ))}
@@ -63,7 +65,17 @@ function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectTy
     );
 }
 
-function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: any) {
+type MatchTableType = {
+    openModal: any;
+    setOpenModal: any;
+    head: any[];
+    fixedHead: any[];
+    setFixedHead: (value: any[]) => void;
+    setTable: (value: string) => void;
+    submitAndInsert: any;
+}
+
+function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead, setTable, submitAndInsert }: MatchTableType) {
     const [openTab, setOpenTab] = useState(1);
 
     const activeClasses =
@@ -105,11 +117,6 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: 
         { match: "Cena", attribute: "cena" },
     ];
 
-    const submit = () => {
-        console.log("Fixed head:");
-        console.log(fixedHead);
-    }
-
     return (
         <Dialog open={openModal} onClose={setOpenModal} className="relative z-10">
             <DialogBackdrop
@@ -138,7 +145,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: 
                             <p>Najprej iz zavihkov izberite pravilno kategorijo med zavihki. Nato preverite ali je ujemanje vrstic pravilno. Če se vrstice ne ujemajo jih popravite.</p>
                             <ul className="flex border-b mt-6">
                                 <li
-                                    onClick={() => setOpenTab(1)}
+                                    onClick={() => {setOpenTab(1); setTable("vrste_izjav");}}
                                     className={`-mb-px mr-1 cursor-pointer ${openTab === 1 ? "-mb-px" : ""}`}>
                                     <a
                                         href="#"
@@ -149,7 +156,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: 
                                 </li>
 
                                 <li
-                                    onClick={() => setOpenTab(2)}
+                                    onClick={() => {setOpenTab(2); setTable("komitenti");}}
                                     className={`mr-1 cursor-pointer ${openTab === 2 ? "-mb-px" : ""}`}>
                                     <a
                                         href="#"
@@ -160,7 +167,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: 
                                 </li>
 
                                 <li
-                                    onClick={() => setOpenTab(3)}
+                                    onClick={() => {setOpenTab(3); setTable("racuni");}}
                                     className={`mr-1 cursor-pointer ${openTab === 3 ? "-mb-px" : ""}`} >
                                     <a
                                         href="#"
@@ -171,7 +178,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: 
                                 </li>
 
                                 <li
-                                    onClick={() => setOpenTab(4)}
+                                    onClick={() => {setOpenTab(4); setTable("vrstice_racuna");}}
                                     className={`mr-1 cursor-pointer ${openTab === 4 ? "-mb-px" : ""}`} >
                                     <a
                                         href="#"
@@ -224,7 +231,8 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead }: 
                             <button
                                 className=" md:col-span-2 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
                                 onClick={() => {
-                                    submit();
+                                    submitAndInsert();
+                                    setOpenModal(false);
                                 }}
                             >
                                 <i className="bi bi-arrow-left-right mr-3 p-1"></i>

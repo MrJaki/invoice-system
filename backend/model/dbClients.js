@@ -60,6 +60,26 @@ module.exports.addClient = function(title, legal_title, additional_title, street
 };
 
 /**
+ * Adding new client
+ * @param {string} title 
+ * @param {string} legal_title 
+ * @param {string} additional_title 
+ * @param {string} street 
+ * @param {string} city 
+ * @param {string} tax_num 
+ * @param {boolean} obligee 
+ * @param {number} statement_type_id 
+ * @returns 
+ */
+module.exports.addClientWithId = function(id, title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id) {
+    const query = `INSERT INTO komitenti (id, naziv, pravni_naziv, dodatni_naziv, ulica, mesto, davcna_st, zavezanec, id_vrsta_izjave)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                   RETURNING *`;
+    return client.query(query, [id, title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id])
+        .then(res => res.rows[0]);
+};
+
+/**
  * Updating client
  * @param {string} title 
  * @param {string} legal_title 

@@ -121,6 +121,26 @@ module.exports.newBill = function(id_client, dateOut, dateValue, datePayment, bi
 }
 
 /**
+ * Adding new bill
+ * @param {number} id_client 
+ * @param {string} dateOut 
+ * @param {string} dateValue 
+ * @param {string} datePayment 
+ * @param {number} bill_num 
+ * @returns 
+ */
+module.exports.newBillWithId = function(id, id_client, dateOut, dateValue, datePayment, bill_num, amount) {
+    const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
+    const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
+    const date_payment = (typeof datePayment === 'string' ? datePayment.trim() : datePayment) || null;
+    const query = `INSERT INTO racuni (id, id_komitenta, datum_izstavitve, datum_valute, datum_plačila, stevilka_racuna, znesek)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)
+                   RETURNING *`;
+    return client.query(query, [id, id_client, date_out, date_value, date_payment, bill_num, amount])
+        .then(res => res.rows[0]);
+}
+
+/**
  * Deleting bill
  * @param {number} id
  * @returns 

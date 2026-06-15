@@ -111,6 +111,21 @@ router.post('/',  async (req, res) => {
     }
 });
 
+// Adding new bill with id
+// In body: id, id_client, dateOut, dateValue, datePayment, bill_num
+router.post('/id',  async (req, res) => {
+    const {id, id_client, dateOut, dateValue, datePayment, bill_num, amount } = req.body;
+
+    try {
+        const newBill = await dbBills.newBillWithId(id, id_client, dateOut, dateValue, datePayment, bill_num, amount);
+        res.json({success: true, data: newBill});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+    }
+});
+
 // Deleting bill
 // In query: id
 router.delete('/', async (req, res) => {

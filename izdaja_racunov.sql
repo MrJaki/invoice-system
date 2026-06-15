@@ -64,13 +64,13 @@ CREATE TABLE vrstice_racuna (
         REFERENCES racuni(id)
         ON DELETE CASCADE,
 
-    kolicina NUMERIC(12,2) NOT NULL CHECK (kolicina > 0),
+    kolicina NUMERIC(12,2) CHECK (kolicina >= 0),
 
-    tip_kolicine VARCHAR(50) NOT NULL,
+    tip_kolicine VARCHAR(50),
 
     opis TEXT,
 
-    cena NUMERIC(12,2) NOT NULL CHECK (cena >= 0)
+    cena NUMERIC(12,2) CHECK (cena >= 0)
 );
 
 -- ==========================================

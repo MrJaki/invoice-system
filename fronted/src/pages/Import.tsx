@@ -3,16 +3,27 @@ import { Dbf } from 'dbf-reader';
 import { DataTable } from 'dbf-reader/models/dbf-file';
 import { Buffer } from "buffer";
 import MatchTable from "../components/MatchTable";
+import axios from "axios";
+import Message from "../components/Message";
+
 
 globalThis.Buffer = Buffer;
 
 function Import() {
+    // Constants used for displaying message
+    const [isError, setIsError] = useState(false);
+    const [message, setMessage] = useState("");
+    const [isVisible, setIsVisible] = useState(false);
+
     const [file, setFile] = useState<File | null>(null);
     const [head, setHead] = useState<any[]>([]);
     const [rows, setRows] = useState<any[]>([]);
     const [modal, setModal] = useState(false);
 
     const [fixedHead, setFixedHead] = useState<any[]>([]);
+    const [table, setTable] = useState("vrste_izjav");
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const handleFilChange = (e: any) => {
         const selectedFile = e.target.files?.[0];
@@ -37,10 +48,154 @@ function Import() {
 
                     const clonedHead = structuredClone(head);
                     setFixedHead(clonedHead);
-                    
+
                     setRows(rows);
                 }
             };
+        }
+    }
+
+    const showError = (msg: string) => {
+        setIsVisible(true);
+        setIsError(true);
+        setMessage(msg);
+    }
+    const hideError = () => {
+        setIsVisible(false);
+        setIsError(false);
+        setMessage("");
+    }
+
+    const submitAndInsert = () => {
+        const transformedRows = renameWholeTable();
+
+        if (table === "vrste_izjav") {
+            tableTax(transformedRows);
+        } else if (table === "komitenti") {
+            tableClients(transformedRows);
+        } else if (table === "racuni") {
+            tableBills(transformedRows);
+        } else if (table === "vrstice_racuna") {
+            tableBillLines(transformedRows);
+        }
+    }
+
+    // Renaming table names sothey match for inserts
+    // Took from somewhere on internet
+    const renameWholeTable = () => {
+        return rows.map(row => {
+            const renamed: any = {};
+
+            head.forEach((originalColumn, index) => {
+                renamed[fixedHead[index].name] =
+                    row[originalColumn.name];
+            });
+
+            return renamed;
+        });
+    };
+
+    const tableTax = async (data: any[]) => {
+        for (const z of data) {
+            try {
+                await axios.post(
+                    `${API_URL}/tax`,
+                    {
+                        tarif: z.tarifa || "",
+                        code: z.sifra || "",
+                        type: z.tip_davka || "",
+                        level: z.stopnja || 0,
+                        longer_desc: z.opis || "",
+                    }
+                );
+
+                hideError();
+
+            } catch (err: any) {
+                showError(err.response?.data?.error ||
+                        err.message ||
+                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+            }
+        }
+    }
+
+    const tableClients = async (data: any[]) => {
+        for (const z of data) {
+            var zavezanec = false;
+            if (z.zavezanec === "D")  zavezanec = true;
+            try {
+                await axios.post(
+                    `${API_URL}/clients/id`,
+                    {
+                        id: z.id,
+                        title: z.naziv || "",
+                        legal_title: z.pravni_naziv || "",
+                        additional_title: z.dodatni_naziv || "",
+                        street: z.ulica || "",
+                        city: z.mesto || "",
+                        tax_num: z.davcna_st || "",
+                        obligee: zavezanec,
+                        statement_type_id: Number(z.vrsta_izjave || 0) + 1,
+                    }
+                );
+
+                hideError();
+
+            } catch (err: any) {
+                showError(err.response?.data?.error ||
+                        err.message ||
+                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+            }
+        }
+    }
+
+    const tableBills = async (data: any[]) => {
+        for (const z of data) {
+            try {
+                await axios.post(
+                    `${API_URL}/bills/id`,
+                    {
+                        id: Number(z.id),
+                        id_client: Number(z.id_komitenta || 1),
+                        dateOut: z.datum_izstavitve || "",
+                        dateValue: z.datum_valute || "",
+                        datePayment: z.datum_plačila || "",
+                        bill_num: Number(z.id),
+                        amount: Number(z.znesek || 0),
+                    }
+                );
+
+                hideError();
+
+            } catch (err: any) {
+                showError(err.response?.data?.error ||
+                        err.message ||
+                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+            }
+        }
+    }
+
+    const tableBillLines = async (data: any[]) => {
+        for (const z of data) {
+            try {
+                await axios.post(
+                    `${API_URL}/bill_lines`,
+                    {
+                        quantity: z.kolicina || 0,
+                        quantity_type: z.tip_kolicine,
+                        desc: z.opis,
+                        price: z.cena || 0,
+                        id_bill: z.id_racuna,
+                    }
+                );
+
+                hideError();
+
+            } catch (err: any) {
+                showError(err.response?.data?.error ||
+                        err.message ||
+                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+            }
         }
     }
 
@@ -86,6 +241,8 @@ function Import() {
                 </div>
             </label>
 
+            <Message error={isError} visible={isVisible}>{message}</Message>
+
             {file && (
                 <>
                     <div className="mt-6 mb-6 bg-white shadow rounded-lg p-5">
@@ -130,6 +287,8 @@ function Import() {
                         head={head}
                         fixedHead={fixedHead}
                         setFixedHead={setFixedHead}
+                        setTable={setTable}
+                        submitAndInsert={submitAndInsert}
                     />
                 </>
             )}
