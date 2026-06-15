@@ -17,6 +17,10 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
         { title: "Davki", icon: "bi-bank", link: "tax" },
     ];
 
+    const actions = [
+        { title: "Naloži", icon: "bi-box-arrow-in-down", link: "import" },
+    ];
+
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -26,20 +30,46 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
     }, [location])
 
     return (
-        <div className="w-full md:w-46 md:h-screen md:fixed bg-white shadow-sm p-2 md:p-4">
+        <div className="w-full md:w-46 md:h-screen md:fixed bg-white shadow-sm p-2 md:p-4 flex flex-col">
             <p className="text-3xl font-bold mt-6 text-gray-800">Računi</p>
 
             <ul className="flex md:block gap-4 md:space-y-2 mt-4 md:mt-8 text-left">
-                {menu.map((item, index: any) => (
-                    <li key={index}
+                {menu.map((item, index) => (
+                    <li
+                        key={index}
                         onClick={() => {
                             setPage(item.link);
                             setChosenBill(0);
-                            navigate("/" + item.link)
+                            navigate("/" + item.link);
                         }}
                         className={`p-2 text-sm rounded cursor-pointer transition
-                                        ${page == item.link ? "bg-gray-200 text-gray-900" : "text-gray-600 hover:bg-gray-100"}  
-                                `}>
+                    ${page === item.link
+                                ? "bg-gray-200 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-100"
+                            }`}
+                    >
+                        <i className={`bi ${item.icon} mr-3`}></i>
+                        {item.title}
+                    </li>
+                ))}
+            </ul>
+
+            {/* Bottom menu */}
+            <ul className="flex md:block gap-4 md:space-y-2 mt-auto text-left">
+                {actions.map((item, index) => (
+                    <li
+                        key={index}
+                        onClick={() => {
+                            setPage(item.link);
+                            setChosenBill(0);
+                            navigate("/" + item.link);
+                        }}
+                        className={`p-2 text-sm rounded cursor-pointer transition
+                    ${page === item.link
+                                ? "bg-gray-200 text-gray-900"
+                                : "text-gray-600 hover:bg-gray-100"
+                            }`}
+                    >
                         <i className={`bi ${item.icon} mr-3`}></i>
                         {item.title}
                     </li>

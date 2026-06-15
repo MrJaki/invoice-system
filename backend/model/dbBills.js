@@ -24,7 +24,7 @@ module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
                    FROM racuni r 
                    LEFT JOIN komitenti k ON k.id = r.id_komitenta 
                    WHERE r.datum_valute BETWEEN $3 AND $4
-                   ORDER BY r.datum_valute DESC
+                   ORDER BY r.datum_valute DESC, r.id DESC
                    LIMIT $1 OFFSET $2`;
     return client.query(query, [limitNum, offsetNum, start, end])
         .then(res => res.rows);

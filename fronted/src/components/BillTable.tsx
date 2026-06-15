@@ -49,7 +49,7 @@ function BillsTable({setTotalRevenue,
         
     );
     const [end, setEnd] = useState(
-        new Date(new Date().toLocaleDateString("sl"))
+        new Date(new Date())
         .toISOString()
         .split("T")[0]
     );
