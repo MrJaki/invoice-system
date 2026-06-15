@@ -2,13 +2,17 @@ import { useState } from "react";
 import { Dbf } from 'dbf-reader';
 import { DataTable } from 'dbf-reader/models/dbf-file';
 import { Buffer } from "buffer";
+import MatchTable from "../components/MatchTable";
 
 globalThis.Buffer = Buffer;
 
-function ClientsPage() {
+function Import() {
     const [file, setFile] = useState<File | null>(null);
     const [head, setHead] = useState<any[]>([]);
     const [rows, setRows] = useState<any[]>([]);
+    const [modal, setModal] = useState(false);
+
+    const [fixedHead, setFixedHead] = useState<any[]>([]);
 
     const handleFilChange = (e: any) => {
         const selectedFile = e.target.files?.[0];
@@ -30,6 +34,10 @@ function ClientsPage() {
                     const rows = Array.isArray(datatable.rows) ? datatable.rows : [datatable.rows];
 
                     setHead(head);
+
+                    const clonedHead = structuredClone(head);
+                    setFixedHead(clonedHead);
+                    
                     setRows(rows);
                 }
             };
@@ -70,7 +78,7 @@ function ClientsPage() {
                                 onChange={handleFilChange}
                             />
 
-                            <div className="flex items-center justify-center w-28 h-9 bg-indigo-600 hover:bg-indigo-700 transition rounded-full shadow text-white text-xs font-semibold">
+                            <div className="flex items-center justify-center w-28 h-9 bg-[#242996] hover:bg-[#231996] transition rounded-full shadow text-white text-xs font-semibold">
                                 Choose File
                             </div>
                         </div>
@@ -84,9 +92,10 @@ function ClientsPage() {
                         <button
                             className=" md:col-span-2 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
                             onClick={() => {
+                                setModal(true);
                             }}
-                            >
-                            <i className="bi bi-arrow-clockwise text-lg mr-2"></i>
+                        >
+                            <i className="bi bi-arrow-left-right mr-3 p-1"></i>
                             Poveži tabelo
                         </button>
                     </div>
@@ -102,14 +111,26 @@ function ClientsPage() {
                             <tbody>
                                 {rows.map((row, rowIndex) => (
                                     <tr key={rowIndex}>
-                                        {head.map((cel) => (
-                                            <th key={cel.name} className="p-3">{row[cel.name]}</th>
-                                        ))}
+                                        {head.map((cel) => {
+                                            const value = row[cel.name];
+                                            return (
+                                                <th key={cel.name} className="p-3">{value instanceof Date
+                                                    ? value.toLocaleString()
+                                                    : value}</th>)
+                                        })}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+
+                    <MatchTable
+                        openModal={modal}
+                        setOpenModal={setModal}
+                        head={head}
+                        fixedHead={fixedHead}
+                        setFixedHead={setFixedHead}
+                    />
                 </>
             )}
 
@@ -117,4 +138,4 @@ function ClientsPage() {
     );
 }
 
-export default ClientsPage;
+export default Import;

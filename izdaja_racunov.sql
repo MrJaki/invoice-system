@@ -8,8 +8,8 @@ USE izdaja_racunov
 
 CREATE TABLE vrste_izjav (
     id SERIAL PRIMARY KEY,
+    sifra VARCHAR(20) NOT NULL,
     tarifa VARCHAR(20) NOT NULL,
-    opis_davka VARCHAR(255),
     tip_davka VARCHAR(10),
     stopnja NUMERIC(5,2) NOT NULL,
     opis VARCHAR(50) NOT NULL

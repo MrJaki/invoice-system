@@ -12,7 +12,7 @@ function AddTaxStatement({refresh, modal }: any) {
 
     const [statements, setStatements] = useState({
         tarifa: "",
-        opis_davka: "",
+        sifra: "",
         tip_davka: "",
         stopnja: 0,
         opis: "",
@@ -25,7 +25,7 @@ function AddTaxStatement({refresh, modal }: any) {
                 `${API_URL}/tax`,
                 {
                     tarif: statements.tarifa,
-                    desc: statements.opis_davka,
+                    code: statements.sifra,
                     type: statements.tip_davka,
                     level: statements.stopnja,
                     longer_desc: statements.opis,
@@ -81,12 +81,12 @@ function AddTaxStatement({refresh, modal }: any) {
                 {/* Desc input */}
                 <div className="md:col-span-3">
                     <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Opis Davka
+                        Šifra
                     </label>
                     <input
-                        name='opis_davka'
+                        name='sifra'
                         type="text"
-                        value={statements?.opis_davka}
+                        value={statements?.sifra}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"
                     />

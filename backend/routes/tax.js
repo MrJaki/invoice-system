@@ -17,10 +17,10 @@ router.get('/',  async (req, res) => {
 
 
 router.post('/',  async (req, res) => {
-    const { tarif, desc, type, level, longer_desc } = req.body;
+    const { tarif, code, type, level, longer_desc } = req.body;
 
     try {
-        const statements = await dbTax.newTaxStatement(tarif, desc, type, level, longer_desc);
+        const statements = await dbTax.newTaxStatement(tarif, code, type, level, longer_desc);
         res.json({success: true, data: statements});
     }
     catch (err) {
@@ -30,10 +30,10 @@ router.post('/',  async (req, res) => {
 });
 
 router.patch('/',  async (req, res) => {
-    const { tarif, desc, type, level, longer_desc, id } = req.body;
+    const { tarif, code, type, level, longer_desc, id } = req.body;
 
     try {
-        const statements = await dbTax.updateStatement(tarif, desc, type, level, longer_desc, id);
+        const statements = await dbTax.updateStatement(tarif, code, type, level, longer_desc, id);
         res.json({success: true, data: statements});
     }
     catch (err) {

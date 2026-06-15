@@ -10,20 +10,20 @@ module.exports.getAllStatementTypes = function() {
         .then(res => res.rows);
 }
 
-module.exports.newTaxStatement = function(tarif, desc, type, level, longer_desc) {
-    const query = `INSERT INTO vrste_izjav (tarifa, opis_davka, tip_davka, stopnja, opis)
+module.exports.newTaxStatement = function(tarif, code, type, level, longer_desc) {
+    const query = `INSERT INTO vrste_izjav (tarifa, sifra, tip_davka, stopnja, opis)
                    VALUES ($1,$2, $3, $4, $5)
                    RETURNING *`
-    return client.query(query, [tarif, desc, type, level, longer_desc])
+    return client.query(query, [tarif, code, type, level, longer_desc])
         .then(res => res.rows[0]);
 }
 
-module.exports.updateStatement = function(tarif, desc, type, level, longer_desc, id) {
+module.exports.updateStatement = function(tarif, code, type, level, longer_desc, id) {
     const query = `UPDATE vrste_izjav SET
-                   tarifa=$1, opis_davka=$2, tip_davka=$3, stopnja=$4, opis=$5
+                   tarifa=$1, sifra=$2, tip_davka=$3, stopnja=$4, opis=$5
                    WHERE id=$6
                    RETURNING *`
-    return client.query(query, [tarif, desc, type, level, longer_desc, id])
+    return client.query(query, [tarif, code, type, level, longer_desc, id])
         .then(res => res.rows[0]);
 }
 

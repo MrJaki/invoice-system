@@ -9,8 +9,8 @@ import TaxStatementDelete from "../components/TaxStatementDelete";
 // Custom statemetn type
 type statement_type = {
     id: number;
+    sifra: string;
     tarifa: string;
-    opis_davka: string;
     tip_davka: string;
     stopnja: number;
     opis: string;
@@ -42,7 +42,7 @@ function TaxPage() {
     const [chosenStatement, setChosenStatement] = useState({
         id: 0,
         tarifa: "",
-        opis_davka: "",
+        sifra: "",
         tip_davka: "",
         stopnja: 0,
         opis: "",
@@ -137,8 +137,8 @@ function TaxPage() {
                     <thead className="bg-[#242996] text-white uppercase text-xs">
                         <tr>
                             <th className="p-3">ID</th>
+                            <th className="p-3">Šifra</th>
                             <th className="p-3">Tarifa</th>
-                            <th className="p-3">Opis Davka</th>
                             <th className="p-3">Tip Davka</th>
                             <th className="p-3">Stopnja</th>
                             <th className="p-3">Opis</th>
@@ -150,7 +150,7 @@ function TaxPage() {
                         {statements.filter(
                             (item) =>
                                 (item.tarifa ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                (item.opis_davka ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                (item.sifra ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                                 (item.tip_davka ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                                 (String(item.stopnja) ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                                 (item.opis ?? "").toLowerCase().includes(searchTerm.toLowerCase())
@@ -160,10 +160,10 @@ function TaxPage() {
                                 className="hover:bg-gray-100 transition"
                             >
                                 <td className="p-3">{statement.id}</td>
+                                <td className="p-3">{statement.sifra}</td>
                                 <td className="p-3 font-medium text-gray-800">
                                     {statement.tarifa}
                                 </td>
-                                <td className="p-3">{statement.opis_davka}</td>
                                 <td className="p-3">{statement.tip_davka}</td>
                                 <td className="p-3">{statement.stopnja}</td>
                                 <td className="p-3">{statement.opis}</td>
