@@ -10,13 +10,6 @@ router.get('/',  async (req, res) => {
     const limitNum = parseInt(req.query.limit, 10);
     const offsetNum = parseInt(req.query.offset, 10);
 
-    if (!limitNum || !offsetNum) {
-        return res.status(400).json({
-            success: false,
-            error: 'Manjkata limit in offset!'
-        });
-    }
-
     try {
         const bills = await dbBills.getAllBills(limitNum, offsetNum, start, end);
         res.json({success: true, data: bills});
@@ -177,8 +170,19 @@ router.post('/import',  async (req, res) => {
     }
 
     try {
-        const newBill = await dbBills.newBillWithId(id, id_client, dateOut, dateValue, datePayment, bill_num, amount);
-        res.json({success: true, data: newBill});
+        const outDate = new Date(dateOut);
+
+        const nextBillNum = await dbBills.getNextBillNum(
+            outDate.getFullYear()
+        );
+
+
+        if (nextBillNum)
+            await dbBills.newBillWithId(id, id_client, dateOut, dateValue, datePayment, nextBillNum, amount);
+        else
+            await dbBills.newBillWithId(id, id_client, dateOut, dateValue, datePayment, bill_num, amount);
+
+        res.json({success: true});
     }
     catch (err) {
         console.log(err);

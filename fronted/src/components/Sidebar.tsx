@@ -12,7 +12,7 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
         { title: "Vnos", icon: "bi-file-earmark-plus", link: "insert" },
         { title: "Urejanje", icon: "bi-pencil", link: "edit" },
         { title: "Tiskanje", icon: "bi-printer", link: "print" },
-        { title: "Plačila", icon: "bi-cash", link: "bills" },
+        { title: "Računi", icon: "bi-cash", link: "bills" },
         { title: "Komitenti", icon: "bi-person", link: "clients" },
         { title: "Davki", icon: "bi-bank", link: "tax" },
     ];

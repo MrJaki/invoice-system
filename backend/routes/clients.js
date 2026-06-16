@@ -10,13 +10,6 @@ router.get('/',  async (req, res) => {
     const limitNum = parseInt(req.query.limit, 10);
     const offsetNum = parseInt(req.query.offset, 10);
 
-    if (!limitNum || !offsetNum) {
-        return res.status(400).json({
-            success: false,
-            error: 'Manjkata limit in offset!'
-        });
-    }
-
     try {
         const clients = await dbClients.getAllClients(limitNum, offsetNum);
         res.json({success: true, data: clients});
