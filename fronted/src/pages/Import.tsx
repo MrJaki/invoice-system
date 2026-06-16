@@ -6,7 +6,6 @@ import MatchTable from "../components/MatchTable";
 import axios from "axios";
 import Message from "../components/Message";
 
-
 globalThis.Buffer = Buffer;
 
 function Import() {
@@ -15,16 +14,19 @@ function Import() {
     const [message, setMessage] = useState("");
     const [isVisible, setIsVisible] = useState(false);
 
+    // Constants used for storing data we read from files
     const [file, setFile] = useState<File | null>(null);
     const [head, setHead] = useState<any[]>([]);
     const [rows, setRows] = useState<any[]>([]);
+    const [fixedHead, setFixedHead] = useState<any[]>([]);
+
     const [modal, setModal] = useState(false);
 
-    const [fixedHead, setFixedHead] = useState<any[]>([]);
     const [table, setTable] = useState("vrste_izjav");
 
     const API_URL = import.meta.env.VITE_API_URL;
 
+    // Reading data from .dbf file and storing them in array constants
     const handleFilChange = (e: any) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile)
@@ -55,6 +57,7 @@ function Import() {
         }
     }
 
+    // Showing and hiding error
     const showError = (msg: string) => {
         setIsVisible(true);
         setIsError(true);
@@ -66,6 +69,7 @@ function Import() {
         setMessage("");
     }
 
+    // Renaming name fields in array and choosing right function to post data to db
     const submitAndInsert = () => {
         const transformedRows = renameWholeTable();
 
@@ -80,7 +84,7 @@ function Import() {
         }
     }
 
-    // Renaming table names sothey match for inserts
+    // Renaming table names so they match for inserts
     // Took from somewhere on internet
     const renameWholeTable = () => {
         return rows.map(row => {
@@ -95,6 +99,7 @@ function Import() {
         });
     };
 
+    // Posting tax data
     const tableTax = async (data: any[]) => {
         for (const z of data) {
             try {
@@ -113,19 +118,20 @@ function Import() {
 
             } catch (err: any) {
                 showError(err.response?.data?.error ||
-                        err.message ||
-                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+                    err.message ||
+                    "Prišlo je do napake pri posodabljanju vrstice računa!")
             }
         }
     }
 
+    // Posting client data
     const tableClients = async (data: any[]) => {
         for (const z of data) {
             var zavezanec = false;
-            if (z.zavezanec === "D")  zavezanec = true;
+            if (z.zavezanec === "D") zavezanec = true;
             try {
                 await axios.post(
-                    `${API_URL}/clients/id`,
+                    `${API_URL}/clients/import`,
                     {
                         id: z.id,
                         title: z.naziv || "",
@@ -143,17 +149,30 @@ function Import() {
 
             } catch (err: any) {
                 showError(err.response?.data?.error ||
-                        err.message ||
-                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+                    err.message ||
+                    "Prišlo je do napake pri posodabljanju vrstice računa!")
             }
+        }
+
+        try {
+            await axios.get(
+                `${API_URL}/clients/repairIDSequence`
+            );
+            hideError();
+
+        } catch (err: any) {
+            showError(err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri posodabljanju vrstice računa!")
         }
     }
 
+    // Posting bills data
     const tableBills = async (data: any[]) => {
         for (const z of data) {
             try {
                 await axios.post(
-                    `${API_URL}/bills/id`,
+                    `${API_URL}/bills/import`,
                     {
                         id: Number(z.id),
                         id_client: Number(z.id_komitenta || 1),
@@ -169,12 +188,25 @@ function Import() {
 
             } catch (err: any) {
                 showError(err.response?.data?.error ||
-                        err.message ||
-                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+                    err.message ||
+                    "Prišlo je do napake pri posodabljanju vrstice računa!")
             }
+        }
+
+        try {
+            await axios.get(
+                `${API_URL}/bills/repairIDSequence`
+            );
+            hideError();
+
+        } catch (err: any) {
+            showError(err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri posodabljanju vrstice računa!")
         }
     }
 
+    // Posting bill line data
     const tableBillLines = async (data: any[]) => {
         for (const z of data) {
             try {
@@ -193,8 +225,8 @@ function Import() {
 
             } catch (err: any) {
                 showError(err.response?.data?.error ||
-                        err.message ||
-                        "Prišlo je do napake pri posodabljanju vrstice računa!")
+                    err.message ||
+                    "Prišlo je do napake pri posodabljanju vrstice računa!")
             }
         }
     }
@@ -205,6 +237,7 @@ function Import() {
                 Nalaganje
             </p>
 
+            {/* Container for uploading file */}
             <label htmlFor="dbf-upload" className="block w-full py-9 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 mt-6 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition">
                 <div className="grid gap-3">
                     <div className="grid gap-1">
@@ -256,6 +289,8 @@ function Import() {
                             Poveži tabelo
                         </button>
                     </div>
+
+                    {/* Data table */}
                     <div className="overflow-x-auto bg-white shadow rounded-lg mt-6">
                         <table className="w-full text-sm text-left">
                             <thead className="bg-[#242996] text-white uppercase text-xs">

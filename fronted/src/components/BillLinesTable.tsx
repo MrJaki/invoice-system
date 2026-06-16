@@ -59,7 +59,7 @@ function BillLinesTable({chosenID, updateAmount, currentAmount, refreshLines}: {
 
             // Getting tarif amount
             const tarif = await axios.get(
-                `${API_URL}/bill_lines/tarif`,
+                `${API_URL}/bill_lines/tax`,
                 {
                     params: {id_bill: chosenID},
                 }

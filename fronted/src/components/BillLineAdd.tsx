@@ -64,17 +64,12 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
 
             // Getting bill by id so we can update amount
             const bill = await axios.get(
-                `${API_URL}/bills/selected_id`,
-                {
-                    params: {
-                        id: billId
-                    }
-                }
+                `${API_URL}/bills/${billId}`
             );
 
             // Getting tarif amount
             const tarif = await axios.get(
-                `${API_URL}/bill_lines/tarif`,
+                `${API_URL}/bill_lines/tax`,
                 {
                     params: {id_bill: billId},
                 }
@@ -113,7 +108,7 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
         if (billId == 0 || !billId) return;
         try {
             await axios.patch(
-                `${API_URL}/bills/update_amount`,
+                `${API_URL}/bills/amount`,
                 {
                     amount: amount,
                     id: billId
@@ -176,7 +171,6 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
                         Tip Količine
                     </label>
                     <input
-                        required
                         name='quantity_type'
                         type="text"
                         value={billLine.quantity_type}

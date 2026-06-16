@@ -14,14 +14,13 @@ function EditTaxStatement({refresh, modal, statements, setStatements }: any) {
         e.preventDefault();
         try {
             await axios.patch(
-                `${API_URL}/tax`,
+                `${API_URL}/tax/${statements.id}`,
                 {
                     tarif: statements.tarifa,
                     code: statements.sifra,
                     type: statements.tip_davka,
                     level: statements.stopnja,
                     longer_desc: statements.opis,
-                    id: statements.id,
                 }
             );
 

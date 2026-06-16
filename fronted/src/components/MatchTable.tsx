@@ -12,6 +12,7 @@ type SelectType = {
 function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectType) {
     const [value, setValue] = useState<string | null>(null);
 
+    // Convertng special characters in normalised form
     const normalize = (str: string) =>
         str
             .toLowerCase()
@@ -19,27 +20,32 @@ function Select({ head, match, fixedHead, setFixedHead, sqlAttribute }: SelectTy
             .replace(/[\u0300-\u036f]/g, "");
 
     useEffect(() => {
+        // If head contains similar letters with match text we set bollean true
         const found = head.find((e: any) =>
             normalize(e.name?.toLowerCase().trim()).includes(normalize(match.toLowerCase().trim()))
         );
 
+        // We set that value and rename fixed head name to sql correct one
         if (found) {
             setValue(found.name);
             updateSelection(found.name)
         }
     }, [head, match]);
 
+    // Fixing head name attributes so they match sql ones
     const updateSelection = (selectedValue: string) => {
         if (!selectedValue) return; 
 
         setValue(selectedValue);
 
+        // Finding index of currently selected option
         const index = head.findIndex(
             (item: any) => item.name === selectedValue
         );
 
         if (index === -1) return;
-
+ 
+        // If we find index we first assign old values to constant, then change that onstant and assign it back to fixed head varible
         const updated = [...fixedHead];
         updated[index].name = sqlAttribute;
         setFixedHead(updated);
@@ -143,6 +149,8 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead, se
                         <div className="p-6">
                             <h2>Kako pravilno povezati podatke v tabelah? </h2>
                             <p>Najprej iz zavihkov izberite pravilno kategorijo med zavihki. Nato preverite ali je ujemanje vrstic pravilno. Če se vrstice ne ujemajo jih popravite.</p>
+                            
+                            {/* Tabs */}
                             <ul className="flex border-b mt-6">
                                 <li
                                     onClick={() => {setOpenTab(1); setTable("vrste_izjav");}}
@@ -189,6 +197,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead, se
                                 </li>
                             </ul>
 
+                            {/* Tab data */}
                             <div className="w-full mt-4">
                                 {openTab === 1 &&
                                     <div>
@@ -228,6 +237,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead, se
                                 }
                             </div>
 
+                            {/* Submit button */}
                             <button
                                 className=" md:col-span-2 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
                                 onClick={() => {

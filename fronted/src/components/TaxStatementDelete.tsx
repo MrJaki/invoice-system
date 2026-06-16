@@ -24,12 +24,7 @@ function TaxStatementDelete({ statementId, openModal, setOpenModal, refresh }: S
     const deleteStatement = async () => {
         try {
             await axios.delete(
-                `${API_URL}/tax`,
-                {
-                    params: {
-                        id: statementId,
-                    }
-                }
+                `${API_URL}/tax/${statementId}`,
             )
 
             setOpenModal(false);

@@ -23,7 +23,7 @@ module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
     const query = `SELECT r.*, k.naziv AS naziv_komitenta 
                    FROM racuni r 
                    LEFT JOIN komitenti k ON k.id = r.id_komitenta 
-                   WHERE r.datum_valute BETWEEN $3 AND $4
+                   WHERE r.datum_izstavitve BETWEEN $3 AND $4
                    ORDER BY r.datum_valute DESC, r.id DESC
                    LIMIT $1 OFFSET $2`;
     return client.query(query, [limitNum, offsetNum, start, end])
@@ -138,7 +138,23 @@ module.exports.newBillWithId = function(id, id_client, dateOut, dateValue, dateP
                    RETURNING *`;
     return client.query(query, [id, id_client, date_out, date_value, date_payment, bill_num, amount])
         .then(res => res.rows[0]);
-}
+};
+
+/**
+ * Function that resets automatic ID counter after manually isnerting IDs
+ * @returns 
+ */
+module.exports.resetIDSequence = async function() {
+    const result = await client.query(`
+        SELECT setval(
+            pg_get_serial_sequence('racuni', 'id'),
+            COALESCE((SELECT MAX(id) FROM racuni), 1),
+            true
+        )
+    `);
+
+    return result.rows[0];
+};
 
 /**
  * Deleting bill

@@ -10,9 +10,29 @@ router.get('/',  async (req, res) => {
     const limitNum = parseInt(req.query.limit, 10);
     const offsetNum = parseInt(req.query.offset, 10);
 
+    if (!limitNum || !offsetNum) {
+        return res.status(400).json({
+            success: false,
+            error: 'Manjkata limit in offset!'
+        });
+    }
+
     try {
         const clients = await dbClients.getAllClients(limitNum, offsetNum);
         res.json({success: true, data: clients});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+// Reseting ID counter
+router.get('/repairIDSequence',  async (req, res) => {
+    try {
+        const Id = await dbClients.resetIDSequence();
+
+        res.json({success: true, data: Id});
     }
     catch (err) {
         console.log(err);
@@ -24,6 +44,13 @@ router.get('/',  async (req, res) => {
 // In params: id
 router.get('/:id',  async (req, res) => {
     const id = parseInt(req.params.id, 10);
+
+    if (Number.isNaN(id)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Neveljaven ID davka!'
+        });
+    }
 
     try {
         const clients = await dbClients.getClientById(id);
@@ -40,20 +67,34 @@ router.get('/:id',  async (req, res) => {
 router.post('/',  async (req, res) => {
     const { title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
 
+    if (!title) {
+        return res.status(400).json({
+            success: false,
+            error: 'Manjka naziv!'
+        });
+    }
+
     try {
         const newClient = await dbClients.addClient(title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id);
         res.json({success: true, data: newClient});
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
 
 // Creating new client with preset id
 // In body: title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id
-router.post('/id',  async (req, res) => {
+router.post('/import',  async (req, res) => {
     const { id, title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
+
+    if (!id || !title) {
+        return res.status(400).json({
+            success: false,
+            error: 'Manjkajo obvezni podatki!'
+        });
+    }
 
     try {
         const newClient = await dbClients.addClientWithId(id, title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id);
@@ -61,7 +102,7 @@ router.post('/id',  async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
 
@@ -72,20 +113,34 @@ router.patch('/:id',  async (req, res) => {
     const { title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id } = req.body;
     const id = parseInt(req.params.id, 10);
 
+    if (!title || !id) {
+        return res.status(400).json({
+            success: false,
+            error: 'Manjkajo obvezni podatki!'
+        });
+    }
+
     try {
         const newClient = await dbClients.updateClient(title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id, id);
         res.json({success: true, data: newClient});
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
 
 // Deleting client by id
 // In query: id
-router.delete('/', async (req, res) => {
-    const id = parseInt(req.query.id, 10);
+router.delete('/:id', async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+
+    if (Number.isNaN(id)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Neveljaven ID davka!'
+        });
+    }
 
     try {
         const deletedClient = await dbClients.deleteClient(id);
@@ -93,7 +148,7 @@ router.delete('/', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
 

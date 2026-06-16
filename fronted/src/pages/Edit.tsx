@@ -88,12 +88,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
         if (chosenBill == 0) return;
         try {
             const response = await axios.get(
-                `${API_URL}/bills/selected_id`,
-                {
-                    params: {
-                        id: chosenBill
-                    }
-                }
+                `${API_URL}/bills/${chosenBill}`,
             );
 
             const data = response.data.data;
@@ -158,7 +153,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
     const updateAmount = async (amount: number) => {
         try {
             await axios.patch(
-                `${API_URL}/bills/update_amount`,
+                `${API_URL}/bills/amount`,
                 {
                     amount,
                     id: chosenBill

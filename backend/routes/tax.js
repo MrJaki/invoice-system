@@ -19,6 +19,13 @@ router.get('/',  async (req, res) => {
 router.post('/',  async (req, res) => {
     const { tarif, code, type, level, longer_desc } = req.body;
 
+    if (!tarif || !code || !level || !longer_desc) {
+        return res.status(400).json({
+            success: false,
+            error: 'Manjkajo obvezni podatki!'
+        });
+    }
+
     try {
         const statements = await dbTax.newTaxStatement(tarif, code, type, level, longer_desc);
         res.json({success: true, data: statements});
@@ -29,8 +36,24 @@ router.post('/',  async (req, res) => {
     }
 });
 
-router.patch('/',  async (req, res) => {
-    const { tarif, code, type, level, longer_desc, id } = req.body;
+router.patch('/:id',  async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+
+    if (Number.isNaN(id)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Neveljaven ID davka!'
+        });
+    }
+
+    const { tarif, code, type, level, longer_desc } = req.body;
+
+    if (!tarif || !code || !level || !longer_desc) {
+        return res.status(400).json({
+            success: false,
+            error: 'Manjkajo obvezni podatki!'
+        });
+    }
 
     try {
         const statements = await dbTax.updateStatement(tarif, code, type, level, longer_desc, id);
@@ -42,8 +65,15 @@ router.patch('/',  async (req, res) => {
     }
 });
 
-router.delete('/', async (req, res) => {
-    const id = parseInt(req.query.id, 10);
+router.delete('/:id', async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+
+    if (Number.isNaN(id)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Neveljaven ID davka!'
+        });
+    }
 
     try {
         const deletedStatement = await dbTax.deleteTaxStatement(id);
@@ -51,7 +81,7 @@ router.delete('/', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze'});
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
 

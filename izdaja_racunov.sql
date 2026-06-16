@@ -40,7 +40,7 @@ CREATE TABLE komitenti (
 CREATE TABLE racuni (
     id SERIAL PRIMARY KEY,
 
-    id_komitenta INTEGER NOT NULL
+    id_komitenta INTEGER
         REFERENCES komitenti(id)
         ON DELETE SET NULL,
 

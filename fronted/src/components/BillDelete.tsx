@@ -26,12 +26,7 @@ function DeleteBillModal({ billId, openModal, setOpenModal }: BillLinesFormProps
     const deleteBill = async () => {
         try {
             await axios.delete(
-                `${API_URL}/bills`,
-                {
-                    params: {
-                        id: billId,
-                    }
-                }
+                `${API_URL}/bills/${billId}`
             )
 
             setOpenModal(false);

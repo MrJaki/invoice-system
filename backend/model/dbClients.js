@@ -80,6 +80,22 @@ module.exports.addClientWithId = function(id, title, legal_title, additional_tit
 };
 
 /**
+ * Function that resets automatic ID counter after manually isnerting IDs
+ * @returns 
+ */
+module.exports.resetIDSequence = async function() {
+    const result = await client.query(`
+        SELECT setval(
+            pg_get_serial_sequence('komitenti', 'id'),
+            COALESCE((SELECT MAX(id) FROM komitenti), 1),
+            true
+        )
+    `);
+
+    return result.rows[0];
+};
+
+/**
  * Updating client
  * @param {string} title 
  * @param {string} legal_title 

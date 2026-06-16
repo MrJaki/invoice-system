@@ -49,7 +49,7 @@ function EditPage() {
     const getNextBillNum = async (date: Date) => {
         try {
             const newBill = await axios.get(
-                `${API_URL}/bills/get_next_bill_num`,
+                `${API_URL}/bills/next-number`,
                 {
                     params: {
                         date: date.getFullYear(),

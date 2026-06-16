@@ -18,13 +18,12 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
         e.preventDefault();
         try {
             await axios.patch(
-                `${API_URL}/bill_lines`,
+                `${API_URL}/bill_lines/${Data.id}`,
                 {
                     quantity: Data.kolicina,
                     quantity_type: Data.tip_kolicine,
                     desc: Data.opis,
                     price: Data.cena,
-                    id: Data.id,
                 }
             );
 
@@ -80,7 +79,6 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
                         Tip Količine
                     </label>
                     <input
-                        required
                         name='tip_kolicine'
                         type="text"
                         value={Data?.tip_kolicine}

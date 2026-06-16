@@ -18,7 +18,7 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
     ];
 
     const actions = [
-        { title: "Naloži", icon: "bi-box-arrow-in-down", link: "import" },
+        { title: "Uvoz podatkov", icon: "bi-box-arrow-in-down", link: "import" },
     ];
 
     const navigate = useNavigate();
