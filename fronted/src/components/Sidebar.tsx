@@ -4,10 +4,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 type SidebarProps = {
     setPage: (page: string) => void;
     page: string;
-    setChosenBill: (value: number) => void;
 };
 
-export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) {
+export default function Sidebar({ setPage, page }: SidebarProps) {
     const menu = [
         { title: "Vnos", icon: "bi-file-earmark-plus", link: "insert" },
         { title: "Urejanje", icon: "bi-pencil", link: "edit" },
@@ -40,7 +39,6 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
                         key={index}
                         onClick={() => {
                             setPage(item.link);
-                            setChosenBill(0);
                             navigate("/" + item.link);
                         }}
                         className={`p-2 text-sm rounded cursor-pointer transition
@@ -62,7 +60,6 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
                         key={index}
                         onClick={() => {
                             setPage(item.link);
-                            setChosenBill(0);
                             navigate("/" + item.link);
                         }}
                         className={`p-2 text-sm rounded cursor-pointer transition

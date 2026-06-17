@@ -1,4 +1,4 @@
-const client = require('./db');
+const pool = require('./db');
 
 /**
  * Getting all bill data via using bills id
@@ -7,7 +7,7 @@ const client = require('./db');
  */
 module.exports.checkBillByID = function(id) {
     const query = `SELECT * FROM racuni WHERE id = $1 LIMIT 1`
-    return client.query(query, [id])
+    return pool.query(query, [id])
         .then(res => res.rows[0]);
 }
 
@@ -26,7 +26,7 @@ module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
                    WHERE r.datum_izstavitve BETWEEN $3 AND $4
                    ORDER BY r.datum_valute DESC, r.id DESC
                    LIMIT $1 OFFSET $2`;
-    return client.query(query, [limitNum, offsetNum, start, end])
+    return pool.query(query, [limitNum, offsetNum, start, end])
         .then(res => res.rows);
 };
 
@@ -41,7 +41,7 @@ module.exports.getBillByID = function(id) {
                    LEFT JOIN komitenti k ON k.id = r.id_komitenta 
                    WHERE r.id = $1
                    LIMIT 1`;
-    return client.query(query, [id])
+    return pool.query(query, [id])
         .then(res => res.rows[0]);
 };
 
@@ -60,7 +60,7 @@ module.exports.getNextBillNum = async function (year) {
                     FROM racuni
                     WHERE SPLIT_PART(stevilka_racuna, '-', 1) = $1
                    `
-    const res = await client.query(query, [String(year)]);
+    const res = await pool.query(query, [String(year)]);
 
     return `${year}-${res.rows[0].next_number}`;
 };
@@ -78,10 +78,10 @@ module.exports.updateBill = function(dateOut, dateValue, datePayment, id) {
     const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
     const date_payment = (typeof datePayment === 'string' ? datePayment.trim() : datePayment) || null;
     const query = `UPDATE racuni
-                   SET datum_izstavitve=$1, datum_valute=$2, datum_plačila=$3
+                   SET datum_izstavitve=$1, datum_valute=$2, datum_placila=$3
                    WHERE id=$4
                    RETURNING *`;
-    return client.query(query, [date_out, date_value, date_payment, id])
+    return pool.query(query, [date_out, date_value, date_payment, id])
         .then(res => res.rows[0]);
 };
 
@@ -96,7 +96,7 @@ module.exports.updateBillAmount = function(amount, id) {
                    SET znesek=$1
                    WHERE id=$2
                    RETURNING *`;
-    return client.query(query, [amount, id])
+    return pool.query(query, [amount, id])
         .then(res => res.rows[0]);
 };
 
@@ -113,10 +113,10 @@ module.exports.newBill = function(id_client, dateOut, dateValue, datePayment, bi
     const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
     const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
     const date_payment = (typeof datePayment === 'string' ? datePayment.trim() : datePayment) || null;
-    const query = `INSERT INTO racuni (id_komitenta, datum_izstavitve, datum_valute, datum_plačila, stevilka_racuna)
+    const query = `INSERT INTO racuni (id_komitenta, datum_izstavitve, datum_valute, datum_placila, stevilka_racuna)
                    VALUES ($1, $2, $3, $4, $5)
                    RETURNING *`;
-    return client.query(query, [id_client, date_out, date_value, date_payment, bill_num])
+    return pool.query(query, [id_client, date_out, date_value, date_payment, bill_num])
         .then(res => res.rows[0]);
 }
 
@@ -133,10 +133,10 @@ module.exports.newBillWithId = function(id, id_client, dateOut, dateValue, dateP
     const date_out = (typeof dateOut === 'string' ? dateOut.trim() : dateOut) || null;
     const date_value = (typeof dateValue === 'string' ? dateValue.trim() : dateValue) || null;
     const date_payment = (typeof datePayment === 'string' ? datePayment.trim() : datePayment) || null;
-    const query = `INSERT INTO racuni (id, id_komitenta, datum_izstavitve, datum_valute, datum_plačila, stevilka_racuna, znesek)
+    const query = `INSERT INTO racuni (id, id_komitenta, datum_izstavitve, datum_valute, datum_placila, stevilka_racuna, znesek)
                    VALUES ($1, $2, $3, $4, $5, $6, $7)
                    RETURNING *`;
-    return client.query(query, [id, id_client, date_out, date_value, date_payment, bill_num, amount])
+    return pool.query(query, [id, id_client, date_out, date_value, date_payment, bill_num, amount])
         .then(res => res.rows[0]);
 };
 
@@ -145,7 +145,7 @@ module.exports.newBillWithId = function(id, id_client, dateOut, dateValue, dateP
  * @returns 
  */
 module.exports.resetIDSequence = async function() {
-    const result = await client.query(`
+    const result = await pool.query(`
         SELECT setval(
             pg_get_serial_sequence('racuni', 'id'),
             COALESCE((SELECT MAX(id) FROM racuni), 1),
@@ -163,10 +163,15 @@ module.exports.resetIDSequence = async function() {
  */
 module.exports.deleteBill = function(id) {
     const query = `DELETE FROM racuni WHERE id = $1`;
-    return client.query(query, [id])
-        .then(res => res.rows[0]);
+    return pool.query(query, [id])
+        .then(res => res.rowCount);
 }
 
+/**
+ * Getting every data that is conncted to bill id inclding clients, tax statements and bill lines
+ * @param {number} id 
+ * @returns 
+ */
 module.exports.getAllBillData = function(id) {
     const query = `SELECT
                         r.*,
@@ -198,6 +203,6 @@ module.exports.getAllBillData = function(id) {
                     k.id,
                     v_i.id,
                     v_i.stopnja`;
-    return client.query(query, [id])
+    return pool.query(query, [id])
         .then(res => res.rows[0]);
 };

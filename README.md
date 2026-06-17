@@ -170,7 +170,7 @@ project-root/
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/MrJaki/sistem-za-izdajo-racunov.git
+git clone https://github.com/MrJaki/invoice-system.git
 cd sistem-za-izdajo-racunov
 ```
 
@@ -198,6 +198,7 @@ DB_PORT=5432
 DB_NAME=izdaja_racunov
 DB_USER=
 DB_PASSWORD=
+FRONTED_URL=
 ```
 
 Create `.env` file inside the fronted folder:
@@ -205,6 +206,8 @@ Create `.env` file inside the fronted folder:
 ```env
 VITE_API_URL=http://localhost:3002/api
 ```
+
+Duplicate `user_preferences_example.json` and rename it into `user_preferences.json`.
 
 ### 5. Create Database
 
@@ -252,9 +255,9 @@ http://localhost:3002
 
 ```http
 GET    /api/clients
-GET    /api/clients/repairIDSequence
 GET    /api/clients/:id
 
+POST    /api/clients/repairIDSequence
 POST   /api/clients
 POST   /api/clients/import
 
@@ -267,10 +270,10 @@ DELETE /api/clients/:id
 
 ```http
 GET    /api/bills
-GET    /api/bills/repairIDSequence
 GET    /api/bills/:id
 GET    /api/bills/next-number?date=:date
 
+POST    /api/bills/repairIDSequence
 POST   /api/bills
 POST   /api/bills/import
 

@@ -174,7 +174,7 @@ function Import() {
         }
 
         try {
-            await axios.get(
+            await axios.post(
                 `${API_URL}/clients/repairIDSequence`
             );
             hideError();
@@ -198,7 +198,7 @@ function Import() {
                         id_client: Number(z.id_komitenta || 1),
                         dateOut: z.datum_izstavitve || "",
                         dateValue: z.datum_valute || "",
-                        datePayment: z.datum_plačila || "",
+                        datePayment: z.datum_placila || "",
                         bill_num: Number(z.id),
                         amount: Number(z.znesek || 0),
                     }
@@ -214,7 +214,7 @@ function Import() {
         }
 
         try {
-            await axios.get(
+            await axios.post(
                 `${API_URL}/bills/repairIDSequence`
             );
             hideError();
@@ -553,7 +553,7 @@ function Import() {
                                 </tr>
 
                                 <tr className="border-t">
-                                    <td className="p-3">datum_plačila</td>
+                                    <td className="p-3">datum_placila</td>
                                     <td className="p-3">Datum plačila</td>
                                     <td className="p-3">Datum ali prazno</td>
                                 </tr>

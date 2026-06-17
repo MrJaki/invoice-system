@@ -20,19 +20,6 @@ router.get('/',  async (req, res) => {
     }
 });
 
-// Reseting ID counter
-router.get('/repairIDSequence',  async (req, res) => {
-    try {
-        const Id = await dbClients.resetIDSequence();
-
-        res.json({success: true, data: Id});
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
-    }
-});
-
 // Getting client by id
 // In params: id
 router.get('/:id',  async (req, res) => {
@@ -48,6 +35,19 @@ router.get('/:id',  async (req, res) => {
     try {
         const clients = await dbClients.getClientById(id);
         res.json({success: true, data: clients});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+// Reseting ID counter
+router.post('/repairIDSequence',  async (req, res) => {
+    try {
+        const Id = await dbClients.resetIDSequence();
+
+        res.json({success: true, data: Id});
     }
     catch (err) {
         console.log(err);
@@ -131,13 +131,14 @@ router.delete('/:id', async (req, res) => {
     if (Number.isNaN(id)) {
         return res.status(400).json({
             success: false,
-            error: 'Neveljaven ID davka!'
+            error: 'Neveljaven ID komitenta!'
         });
     }
 
     try {
-        const deletedClient = await dbClients.deleteClient(id);
-        res.json({success: true, data: deletedClient});
+        const stevilo = await dbClients.deleteClient(id);
+        if (stevilo === 0) return res.status(404).json({ success: false, error: 'Komitent ne obstaja' });
+        res.json({ success: true });
     }
     catch (err) {
         console.log(err);

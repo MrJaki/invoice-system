@@ -46,19 +46,6 @@ router.get('/next-number',  async (req, res) => {
     }
 });
 
-// Reseting ID counter
-router.get('/repairIDSequence',  async (req, res) => {
-    try {
-        const nextBillNum = await dbBills.resetIDSequence();
-
-        res.json({success: true, data: nextBillNum});
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
-    }
-});
-
 // Getting specifc bill via ID
 // In query: id
 router.get('/:id',  async (req, res) => {
@@ -77,6 +64,19 @@ router.get('/:id',  async (req, res) => {
 
         const selected = await dbBills.getBillByID(id);
         res.json({success: true, data: selected});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+// Reseting ID counter
+router.post('/repairIDSequence',  async (req, res) => {
+    try {
+        const nextBillNum = await dbBills.resetIDSequence();
+
+        res.json({success: true, data: nextBillNum});
     }
     catch (err) {
         console.log(err);
@@ -231,8 +231,9 @@ router.delete('/:id', async (req, res) => {
     }
 
     try {
-        const deletedBill = await dbBills.deleteBill(id_bill);
-        res.json({success: true, data: deletedBill});
+        const stevilo = await dbBills.deleteBill(id_bill);
+        if (stevilo === 0) return res.status(404).json({ success: false, error: 'Račun ne obstaja' });
+        res.json({ success: true });
     }
     catch (err) {
         console.log(err);

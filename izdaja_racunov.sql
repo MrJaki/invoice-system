@@ -1,7 +1,3 @@
-CREATE DATABASE izdaja_racunov
-GO 
-USE izdaja_racunov
-
 -- ==========================================
 -- VRSTE_IZJAV
 -- ==========================================
@@ -48,7 +44,7 @@ CREATE TABLE racuni (
 
     datum_izstavitve DATE NOT NULL,
     datum_valute DATE NOT NULL,
-    datum_plačila DATE,
+    datum_placila DATE,
 
     stevilka_racuna VARCHAR(50) NOT NULL UNIQUE
 );

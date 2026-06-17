@@ -1,7 +1,7 @@
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
-// Defining a new client object with connection settings
-const client = new Client({
+// Defining a new pool object with connection settings
+const pool = new Pool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),
     database: process.env.DB_NAME,
@@ -10,9 +10,9 @@ const client = new Client({
 });
 
 // Attempt to connect to the database, reporting if the attempt was successful or returning a message if it was not.
-client.connect()
-    .then(() => console.log('Povezan nabazo praksa_db'))
+pool.connect()
+    .then(() => console.log('Povezan na bazo izdaja_racunov'))
     .catch(err => console.error('Napaka pri povezavi na bazo:', err));
 
-// Export the client object to enable the use of this link in other files
-module.exports = client;
+// Export the pool object to enable the use of this link in other files
+module.exports = pool;

@@ -4,14 +4,12 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTED_URL,
+  credentials: true
+}));
 
 app.use(express.json());
-
-
-app.get('/api/tasks', (req, res) => {
-  res.json([{ id: 1, title: 'Learn full-stack dev', completed: false }]);
-});
 
 app.use('/api/bills', require('./routes/bills'));
 app.use('/api/bill_lines', require('./routes/billLines'));

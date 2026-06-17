@@ -76,8 +76,9 @@ router.delete('/:id', async (req, res) => {
     }
 
     try {
-        const deletedStatement = await dbTax.deleteTaxStatement(id);
-        res.json({success: true, data: deletedStatement});
+        const stevilo = await dbTax.deleteTaxStatement(id);
+        if (stevilo === 0) return res.status(404).json({ success: false, error: 'Davek ne obstaja' });
+        res.json({ success: true });
     }
     catch (err) {
         console.log(err);

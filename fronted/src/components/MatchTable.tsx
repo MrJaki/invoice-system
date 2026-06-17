@@ -112,7 +112,7 @@ function MatchTable({ openModal, setOpenModal, head, fixedHead, setFixedHead, se
         { match: "ID Komitenta", attribute: "id_komitenta" },
         { match: "Datum Izpisa", attribute: "datum_izstavitve" },
         { match: "Datum Valute" , attribute: "datum_valute"},
-        { match: "Datum Plačila", attribute: "datum_plačila" },
+        { match: "Datum Plačila", attribute: "datum_placila" },
         { match: "Znesek", attribute: "znesek" },
     ];
     const bill_lines = [

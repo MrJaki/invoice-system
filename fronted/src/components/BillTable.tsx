@@ -11,18 +11,16 @@ type Bill = {
     znesek: number;
     datum_izstavitve: string;
     datum_valute: string;
-    datum_plačila: string;
+    datum_placila: string;
     stevilka_racuna: number;
 }
 
 function BillsTable({setTotalRevenue,
                     setTotalUnpaid,
-                    setChosenBill,
                     setPage
                 }: {
                     setTotalRevenue?: (value: number) => void;
                     setTotalUnpaid?: (value: number) => void;
-                    setChosenBill?: (value: number) => void;
                     setPage?: (value: string) => void;
                 }) {
     // Array for storing bills with custom type
@@ -92,7 +90,7 @@ function BillsTable({setTotalRevenue,
             if (setTotalUnpaid) {
                 const totalUnpaid = data.reduce((sum: number, bill: any) => {
 
-                    if (!bill.datum_plačila) {
+                    if (!bill.datum_placila) {
                         return sum + Number(bill.znesek || 0);
                     }
 
@@ -277,16 +275,15 @@ function BillsTable({setTotalRevenue,
                                 <td className="p-3">{bill.naziv_komitenta}</td>
                                 <td className="p-3">{bill.datum_izstavitve ? new Date(bill.datum_izstavitve).toLocaleDateString("sl") : '-'}</td>
                                 <td className="p-3">{bill.datum_valute ? new Date(bill.datum_valute).toLocaleDateString("sl") : '-'}</td>
-                                <td className="p-3">{bill.datum_plačila ? new Date(bill.datum_plačila).toLocaleDateString("sl") : '-'}</td>
+                                <td className="p-3">{bill.datum_placila ? new Date(bill.datum_placila).toLocaleDateString("sl") : '-'}</td>
                                 <td className="p-3">{bill.znesek}</td>
                                 <td className="p-3 flex gap-2">
                                     <button
                                         className="bg-white border border-[#242996] text-[#242996] hover:bg-[#242996] hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
                                         title="Uredi"
                                         onClick={() => {
-                                            setChosenBill?.(bill.id);
+                                            navigate("/edit/" + bill.id);
                                             setPage?.("edit");  
-                                            navigate("/edit")
                                         }}
                                     >
                                         <i className="bi bi-pencil"></i>
