@@ -295,7 +295,7 @@ function EditPage({ chosenBill, setChosenBill }: bills) {
                                         </div>
 
                                         {/* Total bill amount info */}
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                                        <label className="block text-xs font-medium text-gray-500 mb-1 cols">
                                             Znesek
                                         </label>
 

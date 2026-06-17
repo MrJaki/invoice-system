@@ -115,6 +115,47 @@ function BillsTable({setTotalRevenue,
         }
     }
 
+    const getPdf = async (id: number) => {
+        try {
+            const response = await axios.post(
+                `${API_URL}/bills/${id}/pdf`,
+                {},
+                {
+                    responseType: 'blob', // had to add this one here
+                }
+            );
+
+            const pdfBlob = new Blob([response.data], {type: "application/pdf"});
+
+            const url = window.URL.createObjectURL(pdfBlob);
+
+            const tempLink = document.createElement("a");
+            tempLink.href = url;
+            tempLink.setAttribute(
+                "download",
+                `bill_${id}.pdf`
+            );
+
+            document.body.appendChild(tempLink);
+            tempLink.click();
+
+            document.body.removeChild(tempLink);
+            window.URL.revokeObjectURL(url);
+                
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri nalaganju računa!"
+            );
+        }
+    }
+
     useEffect(() => {
         loadBills();
     }, [offset, limit])
@@ -238,7 +279,7 @@ function BillsTable({setTotalRevenue,
                                 <td className="p-3">{bill.datum_valute ? new Date(bill.datum_valute).toLocaleDateString("sl") : '-'}</td>
                                 <td className="p-3">{bill.datum_plačila ? new Date(bill.datum_plačila).toLocaleDateString("sl") : '-'}</td>
                                 <td className="p-3">{bill.znesek}</td>
-                                <td className="p-3">
+                                <td className="p-3 flex gap-2">
                                     <button
                                         className="bg-white border border-[#242996] text-[#242996] hover:bg-[#242996] hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
                                         title="Uredi"
@@ -250,6 +291,17 @@ function BillsTable({setTotalRevenue,
                                     >
                                         <i className="bi bi-pencil"></i>
                                         Uredi
+                                    </button>
+
+                                    <button
+                                        className="bg-white border border-[#D97507] text-[#D97507] hover:bg-[#D97507] hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
+                                        title="Uredi"
+                                        onClick={() => {
+                                            getPdf(bill.id);
+                                        }}
+                                    >
+                                        <i className="bi bi-filetype-pdf"></i>
+                                        PDF
                                     </button>
                                 </td>
                             </tr>

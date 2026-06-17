@@ -19,6 +19,7 @@ export default function Sidebar({ setPage, page, setChosenBill }: SidebarProps) 
 
     const actions = [
         { title: "Uvoz podatkov", icon: "bi-box-arrow-in-down", link: "import" },
+        { title: "Nastavitve", icon: "bi-gear", link: "settings" },
     ];
 
     const navigate = useNavigate();

@@ -166,3 +166,38 @@ module.exports.deleteBill = function(id) {
     return client.query(query, [id])
         .then(res => res.rows[0]);
 }
+
+module.exports.getAllBillData = function(id) {
+    const query = `SELECT
+                        r.*,
+                        k.naziv AS naziv_komitenta,
+                        k.pravni_naziv AS pravni_naziv_komitenta,
+                        k.ulica,
+                        k.mesto,
+                        k.davcna_st,
+                        v_i.stopnja,
+                        json_agg(
+                            json_build_object(
+                                'id', v_r.id,
+                                'kolicina', v_r.kolicina,
+                                'tip_kolicine', v_r.tip_kolicine,
+                                'opis', v_r.opis,
+                                'cena', v_r.cena
+                            )
+                        ) AS vrstice
+                    FROM racuni r
+                    LEFT JOIN komitenti k
+                        ON k.id = r.id_komitenta
+                    LEFT JOIN vrstice_racuna v_r
+                        ON v_r.id_racuna = r.id
+                    LEFT JOIN vrste_izjav v_i 
+                        ON v_i.id = k.id_vrsta_izjave
+                    WHERE r.id = $1
+                    GROUP BY
+                    r.id,
+                    k.id,
+                    v_i.id,
+                    v_i.stopnja`;
+    return client.query(query, [id])
+        .then(res => res.rows[0]);
+};

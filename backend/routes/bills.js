@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const dbBills = require('../model/dbBills');
+const pdfModel = require('../model/pdfMaker');
+const path = require('path');
+const fs = require('fs');
 
 // Getting all bills
 // In query: limit, offset, start, end
@@ -76,6 +79,31 @@ router.get('/:id',  async (req, res) => {
         res.json({success: true, data: selected});
     }
     catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+router.post('/:id/pdf', async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+
+    try {
+        const billData = await dbBills.getAllBillData(id);
+
+        if (!billData)
+            return res.status(400).json({ success: false, error: 'Račun ne obstaja!'});
+
+        const data = fs.readFileSync('user_preferences.json', 'utf8');
+        const user = JSON.parse(data);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="racun-${billData.stevilka_racuna}.pdf"`);
+
+        const pdfStream = pdfModel.generatePdf(billData, user.company);
+        pdfStream.pipe(res);
+        pdfStream.end();
+
+    } catch(err) {
         console.log(err);
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }

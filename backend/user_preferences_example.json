@@ -1,0 +1,13 @@
+{
+  "company": {
+    "ime": "",
+    "priimek": "",
+    "naziv": "",
+    "pravni_naziv": "",
+    "ulica": "",
+    "mesto": "",
+    "davcna_st": "",
+    "iban": "",
+    "banka": ""
+  }
+}

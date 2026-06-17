@@ -71,3 +71,5 @@ backend/uploads/
 *.tgz
 
 .env
+
+user_preferences.json

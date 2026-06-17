@@ -8,6 +8,7 @@ import Clients from './pages/Clients';
 import EditClient from './pages/EditClient';
 import Tax from './pages/Tax';
 import Import from './pages/Import';
+import Settings from './pages/Settings';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/clients/:id" element={<EditClient />} />
                 <Route path="/tax" element={<Tax />} />
                 <Route path="/import" element={<Import />} />
+                <Route path="/settings" element={<Settings />} />
             </Routes>
         </div>
         </BrowserRouter>
