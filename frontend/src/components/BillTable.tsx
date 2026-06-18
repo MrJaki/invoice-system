@@ -17,11 +17,13 @@ type Bill = {
 
 function BillsTable({setTotalRevenue,
                     setTotalUnpaid,
-                    setPage
+                    setPage,
+                    setYear
                 }: {
                     setTotalRevenue?: (value: number) => void;
                     setTotalUnpaid?: (value: number) => void;
                     setPage?: (value: string) => void;
+                    setYear: (value: any) => void;
                 }) {
     // Array for storing bills with custom type
     const [bills, setBills] = useState<Bill[]>([]);
@@ -157,6 +159,10 @@ function BillsTable({setTotalRevenue,
     useEffect(() => {
         loadBills();
     }, [offset, limit])
+
+    useEffect(() => {
+        setYear(end)
+    }, [end])
 
     return (
         <>

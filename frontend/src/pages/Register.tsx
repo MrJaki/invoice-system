@@ -8,6 +8,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password_repeat, setPassword_repeat] = useState('');
+    const [invite_code, setInvite_code] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [error, setError] = useState('');
@@ -18,7 +19,7 @@ export default function Login() {
         setError('');
         setBusy(true);
         try {
-            await register( email, password, password_repeat, name, surname );
+            await register( email, password, password_repeat, name, surname, invite_code );
             navigate('/login');
         } catch (err: any) {
             setError(err.response?.data?.error || 'Napaka pri prijavi.');
@@ -90,6 +91,16 @@ export default function Login() {
                         onChange={e => setPassword_repeat(e.target.value)}
                         placeholder="Ponovite geslo"
                         autoComplete="password"
+                        required
+                        className="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    />
+
+                    <input
+                        type="txt"
+                        value={invite_code}
+                        onChange={e => setInvite_code(e.target.value)}
+                        placeholder="Koda za povabilo"
+                        autoComplete="code"
                         required
                         className="w-full border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     />

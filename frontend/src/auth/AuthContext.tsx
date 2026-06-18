@@ -14,7 +14,8 @@ interface AuthContextValue {
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     loading: boolean;
-    register: (email: string, password: string, password_repeat: string, name: string, surname: string) => Promise<void>;
+    register: (email: string, password: string, password_repeat: string, name: string, surname: string, invite_code: string) => Promise<void>;
+    generateCode: () => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -57,8 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(user);
     }
 
-    async function register(email: string, password: string, password_repeat: string, name: string, surname: string) {
-        await api.post(API_URL + '/auth/register', { email, password, password_repeat, name, surname });
+    async function register(email: string, password: string, password_repeat: string, name: string, surname: string, invite_code: string) {
+        await api.post(API_URL + '/auth/register', { email, password, password_repeat, name, surname, invite_code });
+    }
+
+    async function generateCode() {
+        const code = await api.post(API_URL + '/auth/invite-code');
+        return code.data.data.koda;
     }
 
     function logout() {
@@ -68,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading, register }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, register, generateCode }}>
             {children}
         </AuthContext.Provider>
     )

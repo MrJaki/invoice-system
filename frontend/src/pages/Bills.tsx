@@ -1,9 +1,12 @@
 import { useState } from "react";
 import BillsTable from '../components/BillTable'
+import LineChart from '../components/LineChart'
+
 
 function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => void; setChosenBill?: (value: number) => void }) {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [totalUnpaid, setTotalUnpaid] = useState(0);
+    const [end, setEnd] = useState('');
 
     return (
         <div className="p-6 w-full">
@@ -11,31 +14,53 @@ function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => vo
                 Vsa plačila
             </p>
 
-            <div className="grid grid-cols-3 gap-4 mb-6 mt-6">
+            <div className="grid md:grid-cols-3 gap-4 mb-6 mt-6">
 
-                {/* Total revenue */}
-                <div className="bg-white shadow rounded-lg p-4">
-                    <p className="text-sm text-gray-500">Skupna Plačila</p>
-                    <p className="text-xl font-bold text-green-600">
-                        {totalRevenue.toFixed(2)} €
-                    </p>
+                {/* Cards */}
+                <div className="md:col-span-1 flex flex-col gap-4">
+
+                    {/* Total revenue */}
+                    <div className="bg-white shadow rounded-lg p-4">
+                        <p className="text-sm text-gray-500">Skupna Plačila</p>
+                        <p className="text-xl font-bold text-green-600">
+                            {totalRevenue.toFixed(2)} €
+                        </p>
+                    </div>
+
+                    {/* Total unpaid */}
+                    <div className="bg-white shadow rounded-lg p-4">
+                        <p className="text-sm text-gray-500">Neplačano</p>
+                        <p className="text-xl font-bold text-red-600">
+                            {totalUnpaid.toFixed(2)} €
+                        </p>
+                    </div>
+
+                    {/* Total */}
+                    <div className="bg-white shadow rounded-lg p-4">
+                        <p className="text-sm text-gray-500">Dobiček</p>
+                        <p className="text-xl font-bold text-blue-600">
+                            {(totalRevenue- totalUnpaid).toFixed(2)} €
+                        </p>
+                    </div>
+
                 </div>
 
-                {/* Total unpaid */}
-                <div className="bg-white shadow rounded-lg p-4">
-                    <p className="text-sm text-gray-500">Neplačano</p>
-                    <p className="text-xl font-bold text-red-600">
-                        {totalUnpaid.toFixed(2)} €
-                    </p>
+
+                {/* Chart */}
+                <div className="md:col-span-2 bg-white shadow rounded-lg p-4">
+                    <LineChart
+                        end={end}
+                    />
                 </div>
+
             </div>
 
             {/* Bills table */}
-            <BillsTable 
+            <BillsTable
                 setTotalUnpaid={setTotalUnpaid}
                 setTotalRevenue={setTotalRevenue}
                 setPage={setPage}
-                setChosenBill={setChosenBill}
+                setYear={setEnd}
             />
         </div>
     );

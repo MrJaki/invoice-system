@@ -85,6 +85,17 @@ CREATE TABLE uporabniki (
 );
 
 -- ==========================================
+-- KODE ZA POVABILO
+-- ==========================================
+
+CREATE TABLE kode_povabilo (
+    id SERIAL PRIMARY KEY,
+    koda VARCHAR(50) UNIQUE NOT NULL,
+    veljavnost_do TIMESTAMP NOT NULL DEFAULT (NOW() + INTERVAL '24 hours'),
+    uporabljena BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+-- ==========================================
 -- INDEXES
 -- ==========================================
 

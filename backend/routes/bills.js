@@ -23,6 +23,22 @@ router.get('/',  async (req, res) => {
     }
 });
 
+
+// Getting all bills for selected years
+// In query: year
+router.get('/whole-year',  async (req, res) => {
+    const { year } = req.query;
+
+    try {
+        const bills = await dbBills.getWholeYearBills(year);
+        res.json({success: true, data: bills});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
 // Getting next bill number
 // In query: date
 router.get('/next-number',  async (req, res) => {

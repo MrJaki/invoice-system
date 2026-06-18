@@ -2,9 +2,14 @@
 
 const express = require('express');
 const router = express.Router();
+const requireAuth = require('../middleware/requireAuth');
+const requireRole = require('../middleware/requireRole');
 
 const fs = require('fs');
 
+/**
+ * Getting user data from json
+ */
 router.get('/company', async (req, res) => {
     fs.readFile('user_preferences.json', (err, data) => {
         if (err) throw err;
@@ -13,7 +18,11 @@ router.get('/company', async (req, res) => {
     });
 });
 
-router.patch('/company-update', async (req, res) => {
+/**
+ * Updating usr data 
+ * Only admins
+ */
+router.patch('/company-update', requireAuth, requireRole('admin'), async (req, res) => {
     const { name, surname, title, legal_title, street, city, tax_num, iban, bank } = req.body;
 
     fs.readFile('user_preferences.json', (err, data) => {

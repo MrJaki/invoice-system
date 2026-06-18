@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const dbUsers = require('../model/dbUsers');
 const { signToken } = require('../lib/auth');
+const requireAuth = require('../middleware/requireAuth');
+const requireRole = require('../middleware/requireRole');
 
 /**
  * Adding new user
  */
 router.post('/register', async (req, res) => {
-    const { email, password, password_repeat, name, surname } = req.body;
-    if (!email || !password || !password_repeat || !name || !surname) {
+    const { email, password, password_repeat, name, surname, invite_code } = req.body;
+    if (!email || !password || !password_repeat || !name || !surname || !invite_code) {
         return res.status(400).json({ success: false, error: 'Manjkajo obvezna polja.' });
     }
 
@@ -22,8 +25,13 @@ router.post('/register', async (req, res) => {
     }
 
     try {
+        const code = await dbUsers.getInviteCode(invite_code);
+        if (!code) return res.status(400).json({ success: false, error: 'Koda za povabilo ni veljavna!' });
+
         const hash = await bcrypt.hash(process.env.APP_SECRET + password, 10);
         const user = await dbUsers.create(email, hash, name, surname);
+
+        await dbUsers.updateState(invite_code);
 
         res.json({ success: true, data: user});
     } catch (err) {
@@ -73,9 +81,25 @@ router.post('/login', async (req, res) => {
 });
 
 /**
+ * Generating and storing new invite code
+ * Only admins can generate it
+ */
+router.post('/invite-code', requireAuth, requireRole('admin'), async (req, res ) =>{
+    const invite_code = crypto.randomBytes(3).toString('hex').toUpperCase() + '-' + crypto.randomBytes(3).toString('hex').toUpperCase() + '-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+    try {
+        const code = await dbUsers.addInviteCode(invite_code);
+
+        res.json({ success: true, data: code });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: 'Napaka pri prijavi.'});
+    }
+});
+
+/**
  * Returns information about current user (check token)
  */
-const requireAuth = require('../middleware/requireAuth');
 router.get('/me', requireAuth, async(req, res) => {
     const user = await dbUsers.getById(req.user.id);
     res.json({ success:true, data: user });

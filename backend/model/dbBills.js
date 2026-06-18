@@ -31,6 +31,49 @@ module.exports.getAllBills = function(limitNum, offsetNum, start, end) {
 };
 
 /**
+ * Retrieving all bills within a year grouped by months
+ * @param {number} year
+ * @returns
+ */
+module.exports.getWholeYearBills = function(year) {
+    const query = `
+        WITH months AS (
+            SELECT generate_series(
+                $1::date,
+                $2::date - INTERVAL '1 month',
+                INTERVAL '1 month'
+            ) AS mesec
+        )
+        SELECT 
+            TO_CHAR(m.mesec, 'YYYY-MM') AS mesec,
+            COUNT(r.id) AS stevilo_racunov,
+            COALESCE(SUM(r.znesek), 0) AS skupni_znesek,
+            COALESCE(
+                SUM(
+                    CASE 
+                        WHEN r.datum_placila IS NULL 
+                        THEN r.znesek 
+                        ELSE 0
+                    END
+                ), 
+                0
+            ) AS neplacano
+        FROM months m
+        LEFT JOIN racuni r
+            ON r.datum_izstavitve >= m.mesec
+           AND r.datum_izstavitve < m.mesec + INTERVAL '1 month'
+        GROUP BY m.mesec
+        ORDER BY m.mesec;
+    `;
+
+    const startDate = `${year}-01-01`;
+    const endDate = `${Number(year) + 1}-01-01`;
+
+    return pool.query(query, [startDate, endDate])
+        .then(res => res.rows);
+};
+
+/**
  * Getting all bill data with additional client titles
  * @param {number} id 
  * @returns 
