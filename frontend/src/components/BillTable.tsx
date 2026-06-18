@@ -15,16 +15,16 @@ type Bill = {
     stevilka_racuna: number;
 }
 
-function BillsTable({setTotalRevenue,
-                    setTotalUnpaid,
-                    setPage,
-                    setYear
-                }: {
-                    setTotalRevenue?: (value: number) => void;
-                    setTotalUnpaid?: (value: number) => void;
-                    setPage?: (value: string) => void;
-                    setYear: (value: any) => void;
-                }) {
+function BillsTable({ setTotalRevenue,
+    setTotalUnpaid,
+    setPage,
+    setYear
+}: {
+    setTotalRevenue?: (value: number) => void;
+    setTotalUnpaid?: (value: number) => void;
+    setPage?: (value: string) => void;
+    setYear?: (value: any) => void;
+}) {
     // Array for storing bills with custom type
     const [bills, setBills] = useState<Bill[]>([]);
 
@@ -44,14 +44,14 @@ function BillsTable({setTotalRevenue,
     // Filters for from and to date
     const [start, setStart] = useState(
         new Date(new Date().getFullYear(), 0, 1)
-        .toISOString()
-        .split("T")[0]
-        
+            .toISOString()
+            .split("T")[0]
+
     );
     const [end, setEnd] = useState(
         new Date(new Date())
-        .toISOString()
-        .split("T")[0]
+            .toISOString()
+            .split("T")[0]
     );
 
     const navigate = useNavigate();
@@ -100,7 +100,7 @@ function BillsTable({setTotalRevenue,
                 }, 0);
                 setTotalUnpaid(totalUnpaid);
             }
-            
+
             setIsVisible(false);
             setIsError(false);
             setMessage("");
@@ -125,7 +125,7 @@ function BillsTable({setTotalRevenue,
                 }
             );
 
-            const pdfBlob = new Blob([response.data], {type: "application/pdf"});
+            const pdfBlob = new Blob([response.data], { type: "application/pdf" });
 
             const url = window.URL.createObjectURL(pdfBlob);
 
@@ -141,7 +141,7 @@ function BillsTable({setTotalRevenue,
 
             document.body.removeChild(tempLink);
             window.URL.revokeObjectURL(url);
-                
+
             setIsVisible(false);
             setIsError(false);
             setMessage("");
@@ -156,12 +156,98 @@ function BillsTable({setTotalRevenue,
         }
     }
 
+    const exportCsv = async () => {
+        try {
+            const response = await api.post(
+                `${API_URL}/bills/csv`,
+                {
+                    year: end.split('-')[0],
+                },
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            const csvBlob = new Blob(
+                ['\uFEFF', response.data],
+                { type: 'text/csv;charset=utf-8;' }
+            );
+
+            const url = window.URL.createObjectURL(csvBlob);
+
+            const tempLink = document.createElement('a');
+            tempLink.href = url;
+            tempLink.download = `racuni-${end.split('-')[0]}.csv`;
+
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            tempLink.remove();
+
+            window.URL.revokeObjectURL(url);
+
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri izvažanu podatkov!"
+            );
+        }
+    }
+
+    const exportCsvLines = async () => {
+        try {
+            const response = await api.post(
+                `${API_URL}/bill_lines/csv`,
+                {
+                    year: end.split('-')[0],
+                },
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            const csvBlob = new Blob(
+                ['\uFEFF', response.data],
+                { type: 'text/csv;charset=utf-8;' }
+            );
+
+            const url = window.URL.createObjectURL(csvBlob);
+
+            const tempLink = document.createElement('a');
+            tempLink.href = url;
+            tempLink.download = `vrstice-racuna-${end.split('-')[0]}.csv`;
+
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            tempLink.remove();
+
+            window.URL.revokeObjectURL(url);
+
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri izvažanu podatkov!"
+            );
+        }
+    }
+
     useEffect(() => {
         loadBills();
     }, [offset, limit])
 
     useEffect(() => {
-        setYear(end)
+        if (setYear) setYear(end)
     }, [end])
 
     return (
@@ -173,77 +259,150 @@ function BillsTable({setTotalRevenue,
                 <div className="flex items-center justify-between">
                     <h3 className="text font-semibold text-gray-800">
                         Filtri in iskanje
-                        <button className="bi bi-arrow-down-up ml-5 cursor-pointer" onClick={() => setFilterVisible(!filterVisible)}>
-                        </button>
-                        
+                        <button
+                            className="bi bi-arrow-down-up ml-5 cursor-pointer"
+                            onClick={() => setFilterVisible(!filterVisible)}
+                        />
                     </h3>
-                    
                 </div>
 
-                <div className={`grid grid-cols-1 md:grid-cols-24 gap-3 mt-4 ${filterVisible ? '' : 'hidden'}`}>
-                    {/* Search filter */}
-                    <input
-                        id="iskanje"
-                        type="text"
-                        placeholder="Išči po komitentu..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className=" md:col-span-8 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
-                    />
+                <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 mt-4 ${filterVisible ? '' : 'hidden'} text-left`}>
+
+                    {/* Search */}
+                    <div className="md:col-span-4 flex flex-col">
+                        <label htmlFor="limit" className="text-sm font-small text-gray-500 mb-1">
+                            Iskanje po komitentu
+                        </label>
+                        <input
+                            id="iskanje"
+                            type="text"
+                            placeholder="Išči po komitentu..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        />
+                    </div>
+
 
                     {/* Limit */}
-                    <label className="md:col-span-2 md:text-right self-center">St. prikazov: </label>
+                    <div className="md:col-span-1 flex flex-col">
+                        <label htmlFor="limit" className="text-sm font-small text-gray-500 mb-1">
+                            Št. prikazov
+                        </label>
+                        <input
+                            id="limit"
+                            type="number"
+                            placeholder="Prikazanih"
+                            value={limit}
+                            onChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setOffset(0);
+                            }}
+                            className="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        />
+                    </div>
 
-                    <input
-                        id="limit"
-                        type="number"
-                        placeholder="Prikazanih"
-                        value={limit}
-                        onChange={(e) => {
-                            setLimit(Number(e.target.value));
-                            setOffset(0);
-                        }}
-                        className="  md:col-span-2  border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
-                    />
 
-                    {/* Start / From date */}
-                    <label className="md:col-span-3 md:text-right self-center">Datum valute od: </label>
+                    {/* Start date */}
+                    <div className="md:col-span-2 flex flex-col">
+                        <label htmlFor="start" className="text-sm font-small text-gray-500 mb-1">
+                            Datum valute od
+                        </label>
+                        <input
+                            id="start"
+                            type="date"
+                            value={start}
+                            onChange={(e) => {
+                                setStart(e.target.value);
+                                setOffset(0);
+                            }}
+                            className="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        />
+                    </div>
 
-                    <input
-                        id="start"
-                        type="date"
-                        value={start}
-                        onChange={(e) => {
-                            setStart(e.target.value);
-                            setOffset(0);
-                        }}
-                        className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
-                    />
 
-                    {/* End / To date */}
-                    <label className="md:col-span-1 md:text-right self-center">Do: </label>
+                    {/* End date */}
+                    <div className="md:col-span-2 flex flex-col">
+                        <label htmlFor="end" className="text-sm font-small text-gray-500 mb-1">
+                            Datum valute do
+                        </label>
+                        <input
+                            id="end"
+                            type="date"
+                            value={end}
+                            onChange={(e) => {
+                                setEnd(e.target.value);
+                                setOffset(0);
+                            }}
+                            className="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        />
+                    </div>
 
-                    <input
-                        id="end"
-                        type="date"
-                        value={end}
-                        onChange={(e) => {
-                            setEnd(e.target.value);
-                            setOffset(0);
-                        }}
-                        className="  md:col-span-3 border border-gray-300   rounded  px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500 outline-none "
-                    />
+                    {/* CSV */}
+                    <div className="md:col-span-1 flex flex-col">
+                        <label className="text-sm font-small text-gray-500 mb-1">
+                            Izvoz vrstic
+                        </label>
 
-                    {/* Refresh button */}
-                    <button
-                        className=" md:col-span-2 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
-                        onClick={() => {
-                            setMessage("");
-                            loadBills();
-                        }}
+                        <div className="relative group">
+                            <button
+                                className="rounded-lg bg-green-600 hover:bg-green-700 text-white w-full py-2 flex items-center justify-center transition"
+                                onClick={exportCsvLines}
+                            >
+                                <i className="bi bi-filetype-csv"></i>
+                            </button>
+
+                            <span
+                                className="pointer-events-none absolute bottom-full mb-2 rounded-lg bg-black px-2 py-1 text-xs text-white
+                    opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                                Izvoz vseh vrstic računa iz leta {end.split('-')[0]}
+                            </span>
+                        </div>
+                    </div>
+
+
+                    {/* CSV */}
+                    <div className="md:col-span-1 flex flex-col">
+                        <label className="text-sm font-small text-gray-500 mb-1">
+                            Izvoz racunov
+                        </label>
+
+                        <div className="relative group">
+                            <button
+                                className="rounded-lg bg-orange-600 hover:bg-orange-700 text-white w-full py-2 flex items-center justify-center transition"
+                                onClick={exportCsv}
+                            >
+                                <i className="bi bi-filetype-csv"></i>
+                            </button>
+
+                            <span
+                                className="pointer-events-none absolute bottom-full mb-2 rounded-lg bg-black px-2 py-1 text-xs text-white
+                    opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                                Izvoz vseh računov iz leta {end.split('-')[0]}
+                            </span>
+                        </div>
+                    </div>
+
+
+                    {/* Refresh */}
+                    <div className="md:col-span-1 flex flex-col">
+                        <label className="text-sm font-small text-gray-500 mb-1">
+                            Osveži
+                        </label>
+
+                        <button
+                            className="bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg py-2 flex items-center justify-center transition"
+                            onClick={() => {
+                                setMessage("");
+                                loadBills();
+                            }}
                         >
-                        <i className="bi bi-arrow-clockwise text-lg"></i>
-                    </button>
+                            <i className="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
@@ -289,7 +448,7 @@ function BillsTable({setTotalRevenue,
                                         title="Uredi"
                                         onClick={() => {
                                             navigate("/edit/" + bill.id);
-                                            setPage?.("edit");  
+                                            setPage?.("edit");
                                         }}
                                     >
                                         <i className="bi bi-pencil"></i>

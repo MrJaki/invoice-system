@@ -74,6 +74,47 @@ function TaxPage() {
         }
     }
 
+    const exportCsv = async () => {
+        try {
+            const response = await api.post(
+                `${API_URL}/tax/csv`,
+                {},
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            const csvBlob = new Blob(
+                ['\uFEFF', response.data],
+                { type: 'text/csv;charset=utf-8;' }
+            );
+
+            const url = window.URL.createObjectURL(csvBlob);
+
+            const tempLink = document.createElement('a');
+            tempLink.href = url;
+            tempLink.download = `vrste-izjav.csv`;
+
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            tempLink.remove();
+
+            window.URL.revokeObjectURL(url);
+                
+            setIsVisible(false);
+            setIsError(false);
+            setMessage("");
+        } catch (err: any) {
+            setIsVisible(true);
+            setIsError(true);
+            setMessage(
+                err.response?.data?.error ||
+                err.message ||
+                "Prišlo je do napake pri izvažanu podatkov!"
+            );
+        }
+    }
+
     useEffect(() => {
         loadStataments();
     }, [])
@@ -98,7 +139,7 @@ function TaxPage() {
                     
                 </div>
 
-                <div className={`grid grid-cols-1 md:grid-cols-10 gap-3 mt-4 ${filterVisible ? '' : 'hidden'}`}>
+                <div className={`grid grid-cols-1 md:grid-cols-12 gap-3 mt-4 ${filterVisible ? '' : 'hidden'}`}>
                     {/* Search filter */}
                     <input
                         id="iskanje"
@@ -106,8 +147,26 @@ function TaxPage() {
                         placeholder="Išči..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className=" md:col-span-8 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
+                        className=" md:col-span-9 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
                     />
+
+                    {/* CSV export */}
+                    <div className="relative inline-block group md:col-span-1">
+                        <button className="rounded-lg bg-orange-600 hover:bg-orange-700 px-3 py-2 text-white w-full px-4 py-1 flex items-center justify-center transition"
+                            onClick={exportCsv}
+                        >
+                            <i className="bi bi-filetype-csv"></i>
+                        </button>
+
+                        <span
+                            className=" w-full pointer-events-none absolute bottom-full left-1/2 mb-2
+                                -translate-x-1/2 rounded-lg bg-black px-2 py-1 text-xs text-white
+                                opacity-0 transition-opacity
+                                group-hover:opacity-100"
+                        >
+                            Izvoz vseh vrst izjav
+                        </span>
+                    </div>
 
                     {/* Refresh button */}
                     <button

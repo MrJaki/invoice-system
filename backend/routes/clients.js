@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbClients = require('../model/dbClients');
+const { format } = require('@fast-csv/format');
 
 // Getting all clients
 // In query: limit, offset
@@ -52,6 +53,39 @@ router.post('/repairIDSequence',  async (req, res) => {
     catch (err) {
         console.log(err);
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+// Export data in csv format
+router.post('/csv', async (req, res) => {
+    try {
+        const data = await dbClients.getAllClients();
+
+        const filename = `clients.csv`;
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${filename}"`
+        );
+
+        const csvStream = format({
+            headers: true,
+            delimiter: ';'
+        });
+
+        csvStream.pipe(res);
+
+        data.forEach(row => {
+            csvStream.write(row);
+        });
+
+        csvStream.end();
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
 

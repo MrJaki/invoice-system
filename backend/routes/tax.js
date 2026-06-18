@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbTax = require('../model/dbTax');
+const { format } = require('@fast-csv/format');
 
 // Getting all statement types
 router.get('/',  async (req, res) => {
@@ -33,6 +34,39 @@ router.post('/',  async (req, res) => {
     catch (err) {
         console.log(err);
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+// Export data in csv format
+router.post('/csv', async (req, res) => {
+    try {
+        const data = await dbTax.getAllStatementTypes();
+
+        const filename = `tax.csv`;
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${filename}"`
+        );
+
+        const csvStream = format({
+            headers: true,
+            delimiter: ';'
+        });
+
+        csvStream.pipe(res);
+
+        data.forEach(row => {
+            csvStream.write(row);
+        });
+
+        csvStream.end();
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
 

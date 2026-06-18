@@ -5,7 +5,7 @@ const pool = require('./db');
  * @param {number} id 
  * @returns 
  */
-module.exports.getAllBillLines = function(id) {
+module.exports.getAllBillLinesById = function(id) {
     const query = `SELECT * 
                    FROM vrstice_racuna
                    WHERE id_racuna = $1`;
@@ -62,4 +62,24 @@ module.exports.getTaxTarifStatement = function(id_bill) {
                    LIMIT 1`;
     return pool.query(query, [id_bill])
         .then(res => res.rows[0]);
+}
+
+/**
+ * Getting all bill lines betwen current year and next year
+ * @param {string} year 
+ * @returns 
+ */
+module.exports.getYearBillLines = function(year) {
+    const query = `
+        SELECT * FROM vrstice_racuna v
+        JOIN racuni r ON r.id = v.id_racuna
+        WHERE r.datum_izstavitve >= $1
+          AND r.datum_izstavitve < $2
+    `;
+
+    const start = `${year}-01-01`;
+    const end = `${Number(year) + 1}-01-01`;
+
+    return pool.query(query, [start, end])
+        .then(res => res.rows);
 }

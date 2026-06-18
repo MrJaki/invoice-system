@@ -44,10 +44,19 @@ A full-stack invoice management application built with **Node.js**, **Express**,
 - Table relationship configuration
 - Import validation tools
 
-### PDF Invoice Export
+### CSV and PDF Export
 - Export invoices in pdf form
 - Includes bill, client and bill lines data
 - Contains user's data saved in json file
+- Exporting invoices, invoice lines, clients and tax statement in csv format
+
+### JWT Auth
+- JWT login and registration
+- Secure password hashing
+- Protected API access
+- Role-based permissions
+- User management
+- Token expiration and logout handling
 
 ---
 
@@ -84,6 +93,7 @@ The application uses PostgreSQL with four core tables:
 | `komitenti` | Customer/client records |
 | `racuni` | Invoice records |
 | `vrstice_racuna` | Invoice line items |
+| `kode_povabilo` | Invite code management |
 
 ### Relationships
 
@@ -121,7 +131,15 @@ project-root/
 │   │   ├── dbTax.js
 │   │   └── pdfMaker.js
 │   │
+│   ├── lib/
+│   │   └── auth.js
+│   │
+│   ├── middleware/
+│   │   ├── requireAuth.js
+│   │   └── requireRole.js
+│   │
 │   ├── routes/
+│   │   ├── auth.js
 │   │   ├── bills.js
 │   │   ├── billLines.js
 │   │   ├── clients.js
@@ -135,7 +153,12 @@ project-root/
 │
 ├── frontend/
 │   ├── src/
+│   │   ├── auth/
+│   │   │   ├── AuthContext.tsx
+│   │   │   └── PrivateRoute.tsx
+│   │   │
 │   │   ├── components/
+│   │   │   ├── BillDelete.tsx
 │   │   │   ├── BillLineAdd.tsx
 │   │   │   ├── BillLinesEdit.tsx
 │   │   │   ├── BillLinesTable.tsx
@@ -144,6 +167,8 @@ project-root/
 │   │   │   ├── ClientModalDelete.tsx
 │   │   │   ├── ClientTable.tsx
 │   │   │   ├── ClientsTableChoose.tsx
+│   │   │   ├── InviteCode.tsx
+│   │   │   ├── LineChart.tsx
 │   │   │   ├── MatchTable.tsx
 │   │   │   ├── Message.tsx
 │   │   │   ├── ModalWindow.tsx
@@ -151,6 +176,9 @@ project-root/
 │   │   │   ├── TaxStatementAdd.tsx
 │   │   │   ├── TaxStatementDelete.tsx
 │   │   │   └── TaxStatementEdit.tsx
+│   │   │
+│   │   ├── lib/
+│   │   │   └── api.tsx
 │   │   │
 │   │   ├── pages/
 │   │   │   ├── Bills.tsx
@@ -160,6 +188,8 @@ project-root/
 │   │   │   ├── EditClient.tsx
 │   │   │   ├── Import.tsx
 │   │   │   ├── Insert.tsx
+│   │   │   ├── Login.tsx
+│   │   │   ├── Register.tsx
 │   │   │   ├── Settings.tsx
 │   │   │   └── Tax.tsx
 │   │   │
@@ -238,14 +268,40 @@ CREATE DATABASE izdaja_racunov;
 psql -U postgres -d izdaja_racunov -f schema.sql
 ```
 
-### 7. Start Backend
+### 7. Add first admin user
+
+First create a custom invite code:
+```sql
+INSERT INTO kode_povabilo (koda)
+VALUES ('YOUR_INVITE_CODE');
+```
+
+Then run the registration request in PowerShell with your data:
+```powershell 
+Invoke-RestMethod `
+  -Uri "http://localhost:3002/api/auth/register" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body '{"email":"user@test.com","password":"password1234","password_repeat":"password1234","name":"John","surname":"Smith","invite_code":"YOUR_INVITE_CODE"}'
+```
+
+After registration, promote the user to admin:
+```sql
+UPDATE uporabniki
+SET vloga='admin'
+WHERE email='user@test.com';
+```
+
+
+
+### 8. Start Backend
 
 ```bash
 cd backend
 node app.js
 ```
 
-### 8. Start Frontend
+### 9. Start Frontend
 
 ```bash
 cd ../frontend
@@ -275,6 +331,7 @@ GET    /api/clients
 GET    /api/clients/:id
 
 POST    /api/clients/repairIDSequence
+POST    /api/clients/csv
 POST   /api/clients
 POST   /api/clients/import
 
@@ -287,12 +344,15 @@ DELETE /api/clients/:id
 
 ```http
 GET    /api/bills
-GET    /api/bills/:id
+GET    /api/bills/whole-year
 GET    /api/bills/next-number?date=:date
+GET    /api/bills/:id
 
-POST    /api/bills/repairIDSequence
 POST   /api/bills
 POST   /api/bills/import
+POST    /api/bills/repairIDSequence
+POST   /api/bills/csv
+POST   /api/bills/:id/pdf
 
 PATCH  /api/bills/:id
 PATCH  /api/bills/:id/amount
@@ -307,6 +367,7 @@ GET    /api/bill_lines?id=:billId
 GET    /api/bill_lines/tax?id_bill=:billId
 
 POST   /api/bill_lines
+POST   /api/bill_lines/csv
 
 PATCH  /api/bill_lines/:id
 ```
@@ -317,10 +378,28 @@ PATCH  /api/bill_lines/:id
 GET    /api/tax
 
 POST   /api/tax
+POST   /api/csv
 
 PATCH  /api/tax/:id
 
 DELETE /api/tax/:id
+```
+
+### JSON
+
+```http
+GET    /api/json/company
+
+PATCH  /api/company-update
+```
+
+### Auth
+
+```http
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/invite-code
+POST   /api/auth/me
 ```
 
 ---

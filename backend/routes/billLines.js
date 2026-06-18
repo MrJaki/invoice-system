@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbBillLines = require('../model/dbBillLines');
+const { format } = require('@fast-csv/format');
 
 // Getting all bill lines
 router.get('/',  async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/',  async (req, res) => {
     }
 
     try {
-        const bills = await dbBillLines.getAllBillLines(id);
+        const bills = await dbBillLines.getAllBillLinesById(id);
         res.json({success: true, data: bills});
     }
     catch (err) {
@@ -84,6 +85,41 @@ router.post('/',  async (req, res) => {
     catch (err) {
         console.log(err);
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
+    }
+});
+
+// Exporting data in csv format
+// Cod source: https://coreui.io/answers/how-to-generate-csv-files-in-nodejs/
+router.post('/csv', async (req, res) => {
+    const { year } = req.body;
+    try {
+        const bill = await dbBillLines.getYearBillLines(year);
+
+        const billFilename = `bill-lines-${year}.csv`;
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${billFilename}"`
+        );
+
+        const billCsv = format({
+            headers: true,
+            delimiter: ';'
+        });
+
+        billCsv.pipe(res);
+
+        bill.forEach(row => {
+            billCsv.write(row);
+        });
+
+        billCsv.end();
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
 

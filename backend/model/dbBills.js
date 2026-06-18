@@ -249,3 +249,22 @@ module.exports.getAllBillData = function(id) {
     return pool.query(query, [id])
         .then(res => res.rows[0]);
 };
+
+/**
+ * Getting all bills from year specified in attributes
+ * @param {string} year 
+ * @returns 
+ */
+module.exports.getYearBills = function(year) {
+    const query = `
+        SELECT * FROM racuni
+        WHERE datum_izstavitve >= $1
+          AND datum_izstavitve < $2
+    `;
+
+    const start = `${year}-01-01`;
+    const end = `${Number(year) + 1}-01-01`;
+
+    return pool.query(query, [start, end])
+        .then(res => res.rows);
+}

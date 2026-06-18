@@ -18,11 +18,25 @@ module.exports.checkClientByID = function(id) {
  * @returns 
  */
 module.exports.getAllClients = function(limitNum, offsetNum) {
-    const query = `SELECT * 
-                   FROM komitenti
-                   ORDER BY id
-                   LIMIT $1 OFFSET $2`;
-    return pool.query(query, [limitNum, offsetNum])
+    let query = `
+        SELECT *
+        FROM komitenti
+        ORDER BY id
+    `;
+
+    const params = [];
+
+    if (limitNum != null) {
+        params.push(limitNum);
+        query += ` LIMIT $${params.length}`;
+    }
+
+    if (offsetNum != null) {
+        params.push(offsetNum);
+        query += ` OFFSET $${params.length}`;
+    }
+
+    return pool.query(query, params)
         .then(res => res.rows);
 };
 

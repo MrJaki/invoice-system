@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.use('/api/auth', require('./routes/auth'));
 
-app.use('/api/bills', require('./routes/bills'));
+app.use('/api/bills', requireAuth, require('./routes/bills'));
 app.use('/api/bill_lines', requireAuth, require('./routes/billLines'));
 app.use('/api/clients', requireAuth, require('./routes/clients'));
 app.use('/api/tax', requireAuth, require('./routes/tax'));
