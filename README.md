@@ -44,6 +44,11 @@ A full-stack invoice management application built with **Node.js**, **Express**,
 - Table relationship configuration
 - Import validation tools
 
+### PDF Invoice Export
+- Export invoices in pdf form
+- Includes bill, client and bill lines data
+- Contains user's data saved in json file
+
 ---
 
 ## Tech Stack
@@ -113,22 +118,31 @@ project-root/
 │   │   ├── dbBills.js
 │   │   ├── dbBillLines.js
 │   │   ├── dbClients.js
-│   │   └── dbTax.js
+│   │   ├── dbTax.js
+│   │   └── pdfMaker.js
 │   │
 │   ├── routes/
 │   │   ├── bills.js
 │   │   ├── billLines.js
 │   │   ├── clients.js
-│   │   └── tax.js
+│   │   ├── tax.js
+│   │   └── json.js
 │   │
 │   ├── app.js
-│   ├── .env
 │   ├── .env.example
+│   ├── user_preferences_example.json
 │   └── package.json
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── BillLineAdd.tsx
+│   │   │   ├── BillLinesEdit.tsx
+│   │   │   ├── BillLinesTable.tsx
+│   │   │   ├── BillTable.tsx
+│   │   │   ├── ClientsAddForm.tsx
+│   │   │   ├── ClientModalDelete.tsx
+│   │   │   ├── ClientTable.tsx
 │   │   │   ├── ClientsTableChoose.tsx
 │   │   │   ├── MatchTable.tsx
 │   │   │   ├── Message.tsx
@@ -142,9 +156,11 @@ project-root/
 │   │   │   ├── Bills.tsx
 │   │   │   ├── Clients.tsx
 │   │   │   ├── Edit.tsx
+│   │   │   ├── EditBill.tsx
 │   │   │   ├── EditClient.tsx
 │   │   │   ├── Import.tsx
 │   │   │   ├── Insert.tsx
+│   │   │   ├── Settings.tsx
 │   │   │   └── Tax.tsx
 │   │   │
 │   │   ├── App.tsx
@@ -152,7 +168,6 @@ project-root/
 │   │   ├── App.css
 │   │   └── index.css
 │   │
-│   ├── .env
 │   ├── .env.example
 │   ├── vite.config.ts
 │   ├── tsconfig.json
@@ -160,6 +175,8 @@ project-root/
 │   ├── index.html
 │   └── package.json
 │
+├── izdaja_racunov.sql
+├── .gitignore
 └── README.md
 ```
 
@@ -317,6 +334,20 @@ DELETE /api/tax/:id
 | Bill Lines | Invoice item management |
 | Tax Statements | VAT and tax configuration |
 | Import | DBF accounting data import and matching |
+
+---
+
+## Language Notice
+
+This project was primarily developed for personal use and local accounting workflows in Slovenia.
+
+The database schema originates from an existing Slovenian accounting system, therefore PostgreSQL table names and column names are written in Slovenian (e.g. `komitenti`, `racuni`, `vrstice_racuna`, `vrste_izjav`). To maintain consistency between the application and the database structure, some TypeScript types, interfaces, and variables also use Slovenian naming where they directly correspond to database entities.
+
+The user interface is currently available only in Slovenian. However, most UI text is straightforward to locate and replace, so translating the application into another language should be relatively simple. Tools such as GitHub Copilot can help speed up the translation process.
+
+Outside of database-related code, English naming conventions are used wherever practical.
+
+Please note that commit messages in the Git history are also written in Slovenian, as the project was developed and debugged primarily in that language.
 
 ---
 

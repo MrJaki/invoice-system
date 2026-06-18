@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 
 type SidebarProps = {
     setPage: (page: string) => void;
@@ -10,7 +11,7 @@ export default function Sidebar({ setPage, page }: SidebarProps) {
     const menu = [
         { title: "Vnos", icon: "bi-file-earmark-plus", link: "insert" },
         { title: "Urejanje", icon: "bi-pencil", link: "edit" },
-        { title: "Tiskanje", icon: "bi-printer", link: "print" },
+        // { title: "Tiskanje", icon: "bi-printer", link: "print" },
         { title: "Računi", icon: "bi-cash", link: "bills" },
         { title: "Komitenti", icon: "bi-person", link: "clients" },
         { title: "Davki", icon: "bi-bank", link: "tax" },
@@ -20,6 +21,8 @@ export default function Sidebar({ setPage, page }: SidebarProps) {
         { title: "Uvoz podatkov", icon: "bi-box-arrow-in-down", link: "import" },
         { title: "Nastavitve", icon: "bi-gear", link: "settings" },
     ];
+
+    const { logout } = useAuth();
 
     const navigate = useNavigate();
 
@@ -72,6 +75,16 @@ export default function Sidebar({ setPage, page }: SidebarProps) {
                         {item.title}
                     </li>
                 ))}
+                <li
+                    onClick={() => {
+                        logout();
+                        navigate('/login');
+                    }}
+                        className={`p-2 text-sm rounded cursor-pointer transition text-gray-600 hover:bg-gray-100`}
+                    >
+                        <i className="bi bi-box-arrow-left mr-3"></i>
+                        Odjava
+                    </li>
             </ul>
         </div>
     );

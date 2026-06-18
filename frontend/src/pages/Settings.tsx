@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from '../lib/api'
 import { useEffect, useState } from "react";
 import Message from "../components/Message";
 
@@ -38,7 +38,7 @@ function ClientsPage() {
     const fetchUser = async () => {
         try {
 
-            const response = await axios.get(`${API_URL}/json/company`);
+            const response = await api.get(`${API_URL}/json/company`);
             setUser(response.data.data);
 
             setIsVisible(false);
@@ -59,7 +59,7 @@ function ClientsPage() {
         e.preventDefault();
         try {
 
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/json/company-update`,
                 {
                     name: user.ime,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import Modal from '../components/ModalWindow';
 import BillLinesForm from './BillLinesEdit'
 import Message from "./Message";
@@ -40,7 +40,7 @@ function BillLinesTable({chosenID, updateAmount, currentAmount, refreshLines}: {
     // Loading bill lines
     const loadBillLines = async () => {
         try {
-            const bill = await axios.get(
+            const bill = await api.get(
                 `${API_URL}/bill_lines`,
                 {
                     params: {
@@ -58,7 +58,7 @@ function BillLinesTable({chosenID, updateAmount, currentAmount, refreshLines}: {
             var amount = 0;
 
             // Getting tarif amount
-            const tarif = await axios.get(
+            const tarif = await api.get(
                 `${API_URL}/bill_lines/tax`,
                 {
                     params: {id_bill: chosenID},

@@ -70,6 +70,21 @@ CREATE TABLE vrstice_racuna (
 );
 
 -- ==========================================
+-- UPORABNIKI
+-- ==========================================
+
+CREATE TABLE uporabniki (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    ime VARCHAR(100),
+    priimek VARCHAR(100),
+    vloga VARCHAR(20) NOT NULL DEFAULT 'uporabnik',  -- 'admin' / 'uporabnik'
+    aktiven BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- ==========================================
 -- INDEXES
 -- ==========================================
 

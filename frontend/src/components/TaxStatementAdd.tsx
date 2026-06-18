@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useState } from "react";
 import Message from "./Message";
 
@@ -21,7 +21,7 @@ function AddTaxStatement({refresh, modal }: any) {
     const addNewStatement = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            await axios.post(
+            await api.post(
                 `${API_URL}/tax`,
                 {
                     tarif: statements.tarifa,

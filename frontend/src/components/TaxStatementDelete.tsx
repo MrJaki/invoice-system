@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useState } from "react";
 import Message from "./Message";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
@@ -23,7 +23,7 @@ function TaxStatementDelete({ statementId, openModal, setOpenModal, refresh }: S
      */
     const deleteStatement = async () => {
         try {
-            await axios.delete(
+            await api.delete(
                 `${API_URL}/tax/${statementId}`,
             )
 

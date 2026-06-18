@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useEffect, useState } from "react";
 import Message from "./Message";
 
@@ -13,7 +13,7 @@ function EditTaxStatement({refresh, modal, statements, setStatements }: any) {
     const editTaxStatement = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/tax/${statements.id}`,
                 {
                     tarif: statements.tarifa,

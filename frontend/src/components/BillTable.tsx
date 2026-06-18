@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import { useNavigate } from "react-router-dom";
 import Message from "./Message";
 
@@ -61,7 +61,7 @@ function BillsTable({setTotalRevenue,
      */
     const loadBills = async () => {
         try {
-            const bill = await axios.get(
+            const bill = await api.get(
                 `${API_URL}/bills`,
                 {
                     params: {
@@ -115,7 +115,7 @@ function BillsTable({setTotalRevenue,
 
     const getPdf = async (id: number) => {
         try {
-            const response = await axios.post(
+            const response = await api.post(
                 `${API_URL}/bills/${id}/pdf`,
                 {},
                 {

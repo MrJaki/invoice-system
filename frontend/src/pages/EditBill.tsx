@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import BillLinesTable from '../components/BillLinesTable'
 import Message from "../components/Message";
 import Modal from '../components/ModalWindow';
@@ -81,7 +81,7 @@ function EditBillPage() {
     const loadChosenBill = async () => {
         if (Number(id) == 0) return;
         try {
-            const response = await axios.get(
+            const response = await api.get(
                 `${API_URL}/bills/${id}`,
             );
 
@@ -114,7 +114,7 @@ function EditBillPage() {
     const updateBill = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/bills`,
                 {
                     dateOut,
@@ -146,7 +146,7 @@ function EditBillPage() {
      */
     const updateAmount = async (amount: number) => {
         try {
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/bills/amount`,
                 {
                     amount,

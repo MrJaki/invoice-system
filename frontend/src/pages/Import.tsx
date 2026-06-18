@@ -3,12 +3,12 @@ import { Dbf } from 'dbf-reader';
 import { DataTable } from 'dbf-reader/models/dbf-file';
 import { Buffer } from "buffer";
 import MatchTable from "../components/MatchTable";
-import axios from "axios";
+import api from '../lib/api'
 import Message from "../components/Message";
 
 globalThis.Buffer = Buffer;
 
-function LoadingModal({ isOpen, text = "Loading..." }: any) {
+function LoadingModal({ isOpen, text = "Nalaganje..." }: any) {
     if (!isOpen) return null;
 
     return (
@@ -121,7 +121,7 @@ function Import() {
     const tableTax = async (data: any[]) => {
         for (const z of data) {
             try {
-                await axios.post(
+                await api.post(
                     `${API_URL}/tax`,
                     {
                         tarif: z.tarifa || "",
@@ -149,7 +149,7 @@ function Import() {
             var zavezanec = false;
             if (z.zavezanec === "D") zavezanec = true;
             try {
-                await axios.post(
+                await api.post(
                     `${API_URL}/clients/import`,
                     {
                         id: z.id,
@@ -174,7 +174,7 @@ function Import() {
         }
 
         try {
-            await axios.post(
+            await api.post(
                 `${API_URL}/clients/repairIDSequence`
             );
             hideError();
@@ -191,7 +191,7 @@ function Import() {
     const tableBills = async (data: any[]) => {
         for (const z of data) {
             try {
-                await axios.post(
+                await api.post(
                     `${API_URL}/bills/import`,
                     {
                         id: Number(z.id),
@@ -214,7 +214,7 @@ function Import() {
         }
 
         try {
-            await axios.post(
+            await api.post(
                 `${API_URL}/bills/repairIDSequence`
             );
             hideError();
@@ -231,7 +231,7 @@ function Import() {
     const tableBillLines = async (data: any[]) => {
         for (const z of data) {
             try {
-                await axios.post(
+                await api.post(
                     `${API_URL}/bill_lines`,
                     {
                         quantity: z.kolicina || 0,
@@ -350,7 +350,7 @@ function Import() {
 
                     <LoadingModal
                         isOpen={loading}
-                        text="Importing data..."
+                        text="Vnos podatkov..."
                     />
 
                 </>

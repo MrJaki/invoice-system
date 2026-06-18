@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useState } from "react";
 import Message from "./Message";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
@@ -26,7 +26,7 @@ function DeleteBillModal({  openModal, setOpenModal }: BillLinesFormProps) {
      */
     const deleteClient = async () => {
         try {
-            await axios.delete(
+            await api.delete(
                 `${API_URL}/clients/${id}`
             )
 

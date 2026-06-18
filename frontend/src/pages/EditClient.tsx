@@ -1,6 +1,6 @@
 import Message from "../components/Message";
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import { useNavigate, useParams } from "react-router-dom"
 import DeleteClient from '../components/ClientModalDelete';
 
@@ -46,7 +46,7 @@ function ClientsPage() {
     const getClientInfo = async () => {
         try {
 
-            const client = await axios.get(
+            const client = await api.get(
                 `${API_URL}/clients/${id}`
             )
 
@@ -74,7 +74,7 @@ function ClientsPage() {
     const getStatementTypes = async () => {
         try {
 
-            const statement = await axios.get(
+            const statement = await api.get(
                 `${API_URL}/tax`
             )
 
@@ -106,7 +106,7 @@ function ClientsPage() {
         e.preventDefault()
         try {
 
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/clients/${id}`,
                 {
                     title: client.naziv,

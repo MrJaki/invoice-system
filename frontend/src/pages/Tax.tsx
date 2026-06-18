@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Message from "../components/Message";
-import axios from 'axios';
+import api from '../lib/api'
 import Modal from '../components/ModalWindow';
 import AddTaxStatement from "../components/TaxStatementAdd";
 import EditTaxStatement from "../components/TaxStatementEdit";
@@ -51,7 +51,7 @@ function TaxPage() {
 
     const loadStataments = async () => {
         try {
-            const bill = await axios.get(
+            const bill = await api.get(
                 `${API_URL}/tax`,
             );
             const data = Array.isArray(bill.data.data)

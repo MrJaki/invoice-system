@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import Message from "./Message";
 import Modal from './ModalWindow';
 import ClientForm from './ClientAddForm';
@@ -44,7 +44,7 @@ function ClientTable() {
      */
     const loadClients = async () => {
         try {
-            const client = await axios.get(
+            const client = await api.get(
                 `${API_URL}/clients`,
                 {
                     params: {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import Message from "../components/Message";
 import ClientTable from '../components/ClientsTableChoose'
 import BillLinesAdd from '../components/BillLineAdd'
@@ -48,7 +48,7 @@ function EditPage() {
      */
     const getNextBillNum = async (date: Date) => {
         try {
-            const newBill = await axios.get(
+            const newBill = await api.get(
                 `${API_URL}/bills/next-number`,
                 {
                     params: {
@@ -78,7 +78,7 @@ function EditPage() {
     const saveNewBill = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            const newBill = await axios.post(
+            const newBill = await api.post(
                 `${API_URL}/bills`,
                 {
                     id_client: clientId,

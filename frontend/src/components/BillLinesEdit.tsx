@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useState } from "react";
 import Message from "./Message";
 
@@ -17,7 +17,7 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
     const updateBillLine = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/bill_lines/${Data.id}`,
                 {
                     quantity: Data.kolicina,

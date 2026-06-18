@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useEffect, useState } from "react";
 import Message from "./Message";
 
@@ -42,7 +42,7 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
     const getStatementTypes = async () => {
         try {
 
-            const statement = await axios.get(
+            const statement = await api.get(
                 `${API_URL}/tax`
             )
 
@@ -75,7 +75,7 @@ function ClientAddForm({loadClients, setModal}: ClientAddFormProps) {
         const formData = new FormData(e.target);
         try {
 
-            await axios.post(
+            await api.post(
                 `${API_URL}/clients`,
                 {
                     title: client.naziv,

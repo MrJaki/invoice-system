@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../lib/api'
 import { useState } from "react";
 import Message from "./Message";
 
@@ -33,7 +33,7 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
         if (billId == 0 || !billId) return;
         try {
             // Adding bill line
-            const newLine = await axios.post(
+            const newLine = await api.post(
                 `${API_URL}/bill_lines`,
                 {
                     quantity: billLine.quantity,
@@ -63,12 +63,12 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
             }
 
             // Getting bill by id so we can update amount
-            const bill = await axios.get(
+            const bill = await api.get(
                 `${API_URL}/bills/${billId}`
             );
 
             // Getting tarif amount
-            const tarif = await axios.get(
+            const tarif = await api.get(
                 `${API_URL}/bill_lines/tax`,
                 {
                     params: {id_bill: billId},
@@ -107,7 +107,7 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
     const updateBillAmount = async (amount: number) => {
         if (billId == 0 || !billId) return;
         try {
-            await axios.patch(
+            await api.patch(
                 `${API_URL}/bills/amount`,
                 {
                     amount: amount,

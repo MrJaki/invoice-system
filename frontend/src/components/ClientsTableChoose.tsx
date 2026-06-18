@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from '../lib/api'
 import Message from "./Message";
 
 // Custom client type
@@ -33,7 +33,7 @@ function ClientTable({setClientId, clientId, setStepOne, setStepTwo}: {setClient
      */
     const loadClients = async () => {
         try {
-            const client = await axios.get(
+            const client = await api.get(
                 `${API_URL}/clients`,
                 {
                     params: {
