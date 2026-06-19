@@ -4,27 +4,13 @@ const express = require('express');
 const router = express.Router();
 const dbBills = require('../model/dbBills');
 const fs = require("fs").promises;
+const path = require("path");
 
-// UPN QR Code data fields we need for filling qr code
-const invoice = {
-
-    clientTitle: "",
-    clientAddress: "",
-    clientCity: "",
-
-    invoiceNumber: "",
-
-    amount: 0,
-
-    iban: "",
-
-    referenceModel: "SI00",
-    referenceValue: "",
-
-    recipientName: "",
-    recipientAddress: "",
-    recipientCity: "",
-};
+const PREF_FILE = path.join(
+    __dirname,
+    "..",
+    "user_preferences.json"
+);
 
 // Inserting data in qr code
 function createUpnQr(invoice) {
@@ -73,9 +59,33 @@ router.post('/:id', async (req, res) => {
         });
     }
 
+    // UPN QR Code data fields we need for filling qr code
+    const invoice = {
+
+        clientTitle: "",
+        clientAddress: "",
+        clientCity: "",
+
+        invoiceNumber: "",
+
+        amount: 0,
+
+        iban: "",
+
+        referenceModel: "SI00",
+        referenceValue: "",
+
+        recipientName: "",
+        recipientAddress: "",
+        recipientCity: "",
+    };
+
     try {
         // Getting user data from json file
-        const data = await fs.readFile('user_preferences.json', 'utf8');
+        const data = await fs.readFile(
+            PREF_FILE,
+            "utf8"
+        );
 
         const user = JSON.parse(data);
 
@@ -86,6 +96,12 @@ router.post('/:id', async (req, res) => {
 
         // Getting bill data from db
         const bill = await dbBills.getAllBillData(id);
+
+        if (!bill) {
+            return res.status(404).json({
+                error:"Račun ni najden!"
+            });
+        }
 
         invoice.clientTitle = bill.naziv_komitenta;
         invoice.clientAddress = bill.ulica;

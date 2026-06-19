@@ -97,6 +97,8 @@ router.post('/invite-code', requireAuth, requireRole('admin'), async (req, res )
     }
 });
 
+
+
 /**
  * Returns information about current user (check token)
  */

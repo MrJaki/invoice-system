@@ -46,6 +46,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
+
 // Reseting ID counter
 router.post('/repairIDSequence', async (req, res) => {
     try {
@@ -136,6 +138,8 @@ router.post('/import', async (req, res) => {
     }
 });
 
+
+
 // Updating client by id
 // In body: title, legal_title, additional_title, street, city, tax_num, obligee, statement_type_id
 // In params: id
@@ -179,6 +183,8 @@ router.patch('/:id', async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
+
+
 
 // Deleting client by id
 // In query: id

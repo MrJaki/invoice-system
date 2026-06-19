@@ -6,6 +6,12 @@ const path = require('path');
 const fs = require('fs');
 const { format } = require('@fast-csv/format');
 
+const PREF_FILE = path.join(
+    __dirname,
+    '..',
+    'user_preferences.json'
+);
+
 // Getting all bills
 // In query: limit, offset, start, end
 router.get('/', async (req, res) => {
@@ -86,6 +92,8 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
+
+
 
 // Adding new bill
 // In body: id_client, dateOut, dateValue, datePayment, bill_num
@@ -203,7 +211,7 @@ router.post('/:id/pdf', async (req, res) => {
         if (!billData)
             return res.status(400).json({ success: false, error: 'Račun ne obstaja!' });
 
-        const data = fs.readFileSync('user_preferences.json', 'utf8');
+        const data = fs.readFileSync(PREF_FILE, 'utf8');
         const user = JSON.parse(data);
 
         res.setHeader('Content-Type', 'application/pdf');
@@ -218,6 +226,8 @@ router.post('/:id/pdf', async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
+
+
 
 // Updating selected bill
 // In body: dateOut, dateValue, datePayment, id_bill
@@ -272,6 +282,8 @@ router.patch('/amount', async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
+
+
 
 // Deleting bill
 // In query: id

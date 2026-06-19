@@ -1,10 +1,65 @@
 require('dotenv').config();
+const helmet = require('helmet')
 const express = require('express');
 const cors = require('cors');
 const requireAuth = require('./middleware/requireAuth');
 const requireRole = require('./middleware/requireRole');
-
 const app = express();
+app.disable('x-powered-by');
+app.use(
+  helmet({
+    frameguard: {
+      action: "deny"
+    },
+
+    noSniff: true,
+
+    referrerPolicy: {
+      policy: "no-referrer"
+    },
+
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'none'"],
+
+        scriptSrc: ["'self'"],
+
+        styleSrc: ["'self'"],
+
+        imgSrc: [
+          "'self'",
+          "data:"
+        ],
+
+        fontSrc: [
+          "'self'"
+        ],
+
+        connectSrc: [
+          "'self'"
+        ],
+
+        objectSrc: [
+          "'none'"
+        ],
+
+        frameAncestors: [
+          "'none'"
+        ],
+
+        baseUri: [
+          "'none'"
+        ],
+
+        formAction: [
+          "'self'"
+        ],
+
+        upgradeInsecureRequests: []
+      }
+    }
+  })
+);
 
 app.use(cors({
   origin: process.env.FRONTED_URL

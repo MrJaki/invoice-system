@@ -203,6 +203,7 @@ function AddBillLine({ billId, refreshAmount, refreshLines }: BillLinesFormProps
                         name='price'
                         type="number"
                         min="0.01"
+                        step="0.01"
                         value={billLine.price}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"

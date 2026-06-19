@@ -46,6 +46,8 @@ router.get('/tax',  async (req, res) => {
     }
 });
 
+
+
 // Updating bill lines
 // In body: quantity, quantity_type, desc, price, id_bill_line
 router.patch('/:id',  async (req, res) => {
@@ -87,6 +89,8 @@ router.post('/',  async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
+
+
 
 // Exporting data in csv format
 // Cod source: https://coreui.io/answers/how-to-generate-csv-files-in-nodejs/

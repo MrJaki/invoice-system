@@ -58,6 +58,16 @@ A full-stack invoice management application built with **Node.js**, **Express**,
 - User management
 - Token expiration and logout handling
 
+### UPN QR Code Paying
+- Generate UPN QR codes for invoices
+- Include payment information:
+    - IBAN
+    - Recipient
+    - Amount
+    - Reference number
+    - Payment purpose
+- Slovenian UPN QR standard compliance
+
 ---
 
 ## Tech Stack
@@ -144,7 +154,8 @@ project-root/
 │   │   ├── billLines.js
 │   │   ├── clients.js
 │   │   ├── tax.js
-│   │   └── json.js
+│   │   ├── json.js
+│   │   └── qr.js
 │   │
 │   ├── app.js
 │   ├── .env.example
@@ -172,6 +183,7 @@ project-root/
 │   │   │   ├── MatchTable.tsx
 │   │   │   ├── Message.tsx
 │   │   │   ├── ModalWindow.tsx
+│   │   │   ├── Qr.tsx
 │   │   │   ├── Sidebar.tsx
 │   │   │   ├── TaxStatementAdd.tsx
 │   │   │   ├── TaxStatementDelete.tsx
@@ -218,7 +230,7 @@ project-root/
 
 ```bash
 git clone https://github.com/MrJaki/invoice-system.git
-cd sistem-za-izdajo-racunov
+cd invoice-system
 ```
 
 ### 2. Install Backend Dependencies
@@ -246,6 +258,9 @@ DB_NAME=izdaja_racunov
 DB_USER=
 DB_PASSWORD=
 FRONTED_URL=
+JWT_SECRET=
+JWT_EXPIRES_IN=8h
+APP_SECRET=
 ```
 
 Create `.env` file inside the fronted folder:
@@ -265,7 +280,7 @@ CREATE DATABASE izdaja_racunov;
 ### 6. Run Schema
 
 ```bash
-psql -U postgres -d izdaja_racunov -f schema.sql
+psql -U postgres -d izdaja_racunov -f izdaja_racunov.sql
 ```
 
 ### 7. Add first admin user
@@ -396,10 +411,17 @@ PATCH  /api/company-update
 ### Auth
 
 ```http
+GET   /api/auth/me
+
 POST   /api/auth/register
 POST   /api/auth/login
 POST   /api/auth/invite-code
-POST   /api/auth/me
+```
+
+### QR
+
+```http
+POST   /api/qr/:id
 ```
 
 ---

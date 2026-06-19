@@ -111,6 +111,7 @@ function BillLineForm({ Data, setData, refreshBillLines, modal }: any) {
                         name='cena'
                         type="number"
                         min="0.01"
+                        step="0.01"
                         value={Data?.cena}
                         onChange={handleChange}
                         className="w-full border border-gray-400 rounded-lg px-3 py-2 bg-gray-50"

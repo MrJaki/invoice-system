@@ -18,14 +18,16 @@ router.get('/',  async (req, res) => {
     }
 });
 
+
+
 // Adding new tax statement
 router.post('/',  async (req, res) => {
     const { tarif, code, type, level, longer_desc } = req.body;
 
-    if (!tarif || !code || !level || !longer_desc) {
+    if (!tarif || !code || !level) {
         return res.status(400).json({
             success: false,
-            error: 'Manjkajo obvezni podatki!'
+            error: 'Manjkajo obvezni podatki! Prosim preverite ali so vsi zahtevani podatki vpisani v dbf datoteki.'
         });
     }
 
@@ -71,6 +73,8 @@ router.post('/csv', async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!' });
     }
 });
+
+
 
 // Updating tax statament
 router.patch('/:id',  async (req, res) => {
@@ -120,6 +124,8 @@ router.patch('/:id',  async (req, res) => {
         res.status(500).json({ success: false, error: 'Napaka pri branju iz baze!'});
     }
 });
+
+
 
 // Deleting tax statement
 router.delete('/:id', async (req, res) => {
