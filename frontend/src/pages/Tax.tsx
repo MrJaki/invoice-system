@@ -47,7 +47,7 @@ function TaxPage() {
         stopnja: 0,
         opis: "",
     })
-    
+
 
     const loadStataments = async () => {
         try {
@@ -59,7 +59,7 @@ function TaxPage() {
                 : [bill.data.data];
 
             setStatements(data);
-            
+
             setIsVisible(false);
             setIsError(false);
             setMessage("");
@@ -100,7 +100,7 @@ function TaxPage() {
             tempLink.remove();
 
             window.URL.revokeObjectURL(url);
-                
+
             setIsVisible(false);
             setIsError(false);
             setMessage("");
@@ -132,62 +132,93 @@ function TaxPage() {
                 <div className="flex items-center justify-between">
                     <h3 className="text font-semibold text-gray-800">
                         Filtri in iskanje
-                        <button className="bi bi-arrow-down-up ml-5 cursor-pointer" onClick={() => setFilterVisible(!filterVisible)}>
-                        </button>
-                        
+                        <button
+                            className="bi bi-arrow-down-up ml-5 cursor-pointer"
+                            onClick={() => setFilterVisible(!filterVisible)}
+                        />
                     </h3>
-                    
                 </div>
 
-                <div className={`grid grid-cols-1 md:grid-cols-12 gap-3 mt-4 ${filterVisible ? '' : 'hidden'}`}>
-                    {/* Search filter */}
-                    <input
-                        id="iskanje"
-                        type="text"
-                        placeholder="Išči..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className=" md:col-span-9 border border-gray-300 rounded px-4 py-1 focus:ring-2 focus:ring-blue-500  focus:border-blue-500  outline-none "
-                    />
 
-                    {/* CSV export */}
-                    <div className="relative inline-block group md:col-span-1">
-                        <button className="rounded-lg bg-orange-600 hover:bg-orange-700 px-3 py-2 text-white w-full px-4 py-1 flex items-center justify-center transition"
-                            onClick={exportCsv}
-                        >
-                            <i className="bi bi-filetype-csv"></i>
-                        </button>
+                <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 mt-4 ${filterVisible ? '' : 'hidden'} text-left`}>
 
-                        <span
-                            className=" w-full pointer-events-none absolute bottom-full left-1/2 mb-2
-                                -translate-x-1/2 rounded-lg bg-black px-2 py-1 text-xs text-white
-                                opacity-0 transition-opacity
-                                group-hover:opacity-100"
-                        >
-                            Izvoz vseh vrst izjav
-                        </span>
+                    {/* Search */}
+                    <div className="md:col-span-9 flex flex-col">
+                        <label htmlFor="iskanje" className="text-sm font-small text-gray-500 mb-1">
+                            Iskanje
+                        </label>
+
+                        <input
+                            id="iskanje"
+                            type="text"
+                            placeholder="Išči..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        />
                     </div>
 
-                    {/* Refresh button */}
-                    <button
-                        className=" md:col-span-1 bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
-                        onClick={() => {
-                            setMessage("");
-                            loadStataments();
-                        }}
-                        >
-                        <i className="bi bi-arrow-clockwise text-lg"></i>
-                    </button>
 
-                    <button
-                        className=" md:col-span-1 bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-1 flex items-center justify-center transition  "
-                        onClick={() => {
-                            setMessage("");
-                            setOpenModal(true);
-                        }}
+                    {/* CSV */}
+                    <div className="md:col-span-1 flex flex-col">
+                        <label className="text-sm font-small text-gray-500 mb-1">
+                            Izvoz izjav
+                        </label>
+
+                        <div className="relative group">
+                            <button
+                                className="rounded-lg bg-orange-600 hover:bg-orange-700 text-white w-full py-2 flex items-center justify-center transition"
+                                onClick={exportCsv}
+                            >
+                                <i className="bi bi-filetype-csv"></i>
+                            </button>
+
+                            <span
+                                className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+                    rounded-lg bg-black px-2 py-1 text-xs text-white
+                    opacity-0 transition-opacity group-hover:opacity-100"
+                            >
+                                Izvoz vseh vrst izjav
+                            </span>
+                        </div>
+                    </div>
+
+
+                    {/* Refresh */}
+                    <div className="md:col-span-1 flex flex-col">
+                        <label className="text-sm font-small text-gray-500 mb-1">
+                            Osveži
+                        </label>
+
+                        <button
+                            className="bg-[#242996] hover:bg-[#1d217a] text-white rounded-lg py-2 flex items-center justify-center transition"
+                            onClick={() => {
+                                setMessage("");
+                                loadStataments();
+                            }}
                         >
-                        <i className="bi bi-file-earmark-plus"></i>
-                    </button>
+                            <i className="bi bi-arrow-clockwise "></i>
+                        </button>
+                    </div>
+
+
+                    {/* Add statement */}
+                    <div className="md:col-span-1 flex flex-col">
+                        <label className="text-sm font-small text-gray-500 mb-1">
+                            Dodaj
+                        </label>
+
+                        <button
+                            className="bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 flex items-center justify-center transition"
+                            onClick={() => {
+                                setMessage("");
+                                setOpenModal(true);
+                            }}
+                        >
+                            <i className="bi bi-file-earmark-plus"></i>
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
@@ -258,7 +289,7 @@ function TaxPage() {
             </div>
 
             {/* Add tax statement modal */}
-            <Modal 
+            <Modal
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 Form={AddTaxStatement}
@@ -267,7 +298,7 @@ function TaxPage() {
             />
 
             {/* Edit tax statement modal */}
-            <Modal 
+            <Modal
                 openModal={openEditModal}
                 setOpenModal={setOpenEditModal}
                 Form={EditTaxStatement}
@@ -278,7 +309,7 @@ function TaxPage() {
             />
 
             {/* Delete tax stateent modal */}
-            <TaxStatementDelete 
+            <TaxStatementDelete
                 openModal={openDeleteModal}
                 setOpenModal={setOpenDeleteModal}
                 refresh={loadStataments}

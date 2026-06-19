@@ -6,7 +6,7 @@ import LineChart from '../components/LineChart'
 function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => void; setChosenBill?: (value: number) => void }) {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [totalUnpaid, setTotalUnpaid] = useState(0);
-    const [end, setEnd] = useState('');
+    const [year, setYear] = useState('');
 
     return (
         <div className="p-6 w-full">
@@ -49,7 +49,7 @@ function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => vo
                 {/* Chart */}
                 <div className="md:col-span-2 bg-white shadow rounded-lg p-4">
                     <LineChart
-                        end={end}
+                        year={year}
                     />
                 </div>
 
@@ -60,7 +60,7 @@ function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => vo
                 setTotalUnpaid={setTotalUnpaid}
                 setTotalRevenue={setTotalRevenue}
                 setPage={setPage}
-                setYear={setEnd}
+                setYear={setYear}
             />
         </div>
     );

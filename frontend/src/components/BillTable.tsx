@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from '../lib/api'
 import { useNavigate } from "react-router-dom";
 import Message from "./Message";
+import QR from "./Qr";
 
 // Custom bill type
 type Bill = {
@@ -43,7 +44,7 @@ function BillsTable({ setTotalRevenue,
 
     // Filters for from and to date
     const [start, setStart] = useState(
-        new Date(new Date().getFullYear(), 0, 1)
+        new Date(new Date().getFullYear(), 0, 2)
             .toISOString()
             .split("T")[0]
 
@@ -55,6 +56,8 @@ function BillsTable({ setTotalRevenue,
     );
 
     const navigate = useNavigate();
+
+    const [qr, setQr] = useState(0);
 
     const API_URL = import.meta.env.VITE_API_URL;
 
@@ -247,8 +250,10 @@ function BillsTable({ setTotalRevenue,
     }, [offset, limit])
 
     useEffect(() => {
-        if (setYear) setYear(end)
-    }, [end])
+        if (setYear) setYear(start)
+
+        if (end < start) setStart(end);
+    }, [start])
 
     return (
         <>
@@ -465,6 +470,17 @@ function BillsTable({ setTotalRevenue,
                                         <i className="bi bi-filetype-pdf"></i>
                                         PDF
                                     </button>
+
+                                    <button
+                                        className="bg-white border border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-lg px-2 py-1 flex items-center gap-2 transition-colors duration-200"
+                                        title="Uredi"
+                                        onClick={() => {
+                                            setQr(bill.id);
+                                        }}
+                                    >
+                                        <i className="bi bi-qr-code-scan"></i>
+                                        QR
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -497,6 +513,11 @@ function BillsTable({ setTotalRevenue,
                     Next →
                 </button>
             </div>
+
+            <QR 
+                id={qr}
+            />
+
         </>
     );
 }

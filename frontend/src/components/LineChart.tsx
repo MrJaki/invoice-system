@@ -20,7 +20,7 @@ const xLabels = [
     'Dec'
 ];
 
-export default function SimpleLineChart(end: any) {
+export default function SimpleLineChart(start: any) {
     const [totalRevenue, setTotalRevenue] = useState<number[]>([])
     const [totalUnpaid, setTotalUnpaid] = useState<number[]>([]);
     const [totalAmount, setTotalAmount] = useState<number[]>([]);
@@ -33,9 +33,9 @@ export default function SimpleLineChart(end: any) {
     const API_URL = import.meta.env.VITE_API_URL;
 
     const loadBills = async () => {
-        if (end.end === '' || end.end == null) return;
+        if (start.year === '' || start.year == null) return;
         try {
-            const year = end.end.split('-')[0];
+            const year = start.year.split('-')[0];
 
             const bill = await api.get(
                 `${API_URL}/bills/whole-year`,
@@ -80,7 +80,7 @@ export default function SimpleLineChart(end: any) {
 
     useEffect(() => {
         loadBills();
-    }, [end])
+    }, [start])
 
     return (
         <>
