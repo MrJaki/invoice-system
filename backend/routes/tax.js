@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const dbTax = require('../model/dbTax');
 const { format } = require('@fast-csv/format');
+const dbBills = require('../model/dbBills');
+const dbBillLines = require('../model/dbBillLines');
 
 // Getting all statement types
 router.get('/',  async (req, res) => {
@@ -16,7 +18,7 @@ router.get('/',  async (req, res) => {
     }
 });
 
-
+// Adding new tax statement
 router.post('/',  async (req, res) => {
     const { tarif, code, type, level, longer_desc } = req.body;
 
@@ -70,6 +72,7 @@ router.post('/csv', async (req, res) => {
     }
 });
 
+// Updating tax statament
 router.patch('/:id',  async (req, res) => {
     const id = parseInt(req.params.id, 10);
 
@@ -91,6 +94,25 @@ router.patch('/:id',  async (req, res) => {
 
     try {
         const statements = await dbTax.updateStatement(tarif, code, type, level, longer_desc, id);
+
+        const bills = await dbBills.getBillByTaxId(id);
+
+        // Correcting all total amounts on bills 
+        for (const z of bills) {
+            const billLines = await dbBillLines.getAllBillLinesById(z.id);
+
+            let currentAmount = 0;
+
+            billLines.forEach(i => {
+                currentAmount += (i.cena * i.kolicina);
+            });
+
+            const lineVat = currentAmount * (level / 100);
+            const lineGross = currentAmount + lineVat;
+
+            await dbBills.updateBillAmount(Number(lineGross), z.id);
+        }
+
         res.json({success: true, data: statements});
     }
     catch (err) {
@@ -99,6 +121,7 @@ router.patch('/:id',  async (req, res) => {
     }
 });
 
+// Deleting tax statement
 router.delete('/:id', async (req, res) => {
     const id = parseInt(req.params.id, 10);
 

@@ -86,7 +86,7 @@ export default function SimpleLineChart(start: any) {
         <>
         <Message error={isError} visible={isVisible}>{message}</Message>
         <Box sx={{ width: '100%', height: 300 }}>
-            <p className='text-sm font-small text-gray-500'>Prikazujejo se vrednosti za račune iz leta, ki ga označuje spodnji vnos za datum "Datum valute do"</p>
+            <p className='text-sm font-small text-gray-500'>Prikazujejo se vrednosti za račune iz leta, ki ga označuje spodnji vnos za datum "Datum valute od"</p>
             
             <LineChart
                 series={[

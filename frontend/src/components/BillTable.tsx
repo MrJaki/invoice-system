@@ -247,13 +247,11 @@ function BillsTable({ setTotalRevenue,
 
     useEffect(() => {
         loadBills();
-    }, [offset, limit])
 
-    useEffect(() => {
         if (setYear) setYear(start)
 
         if (end < start) setStart(end);
-    }, [start])
+    }, [offset, limit, start, end])
 
     return (
         <>

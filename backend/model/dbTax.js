@@ -5,9 +5,15 @@ const pool = require('./db');
  * @returns 
  */
 module.exports.getAllStatementTypes = function() {
-    const query = `SELECT * FROM vrste_izjav`
+    const query = `SELECT * FROM vrste_izjav ORDER BY id`
     return pool.query(query)
         .then(res => res.rows);
+}
+
+module.exports.getStatementById = function(id) {
+    const query = `SELECT * FROM vrste_izjav WHERE id = $1 LIMIT 1`
+    return pool.query(query, [id])
+        .then(res => res.rows[0]);
 }
 
 /**

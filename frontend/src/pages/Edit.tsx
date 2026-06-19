@@ -45,7 +45,7 @@ function EditPage() {
                     </button>
                 </div>
                 <p className="text-left text-sm">
-                    Če številke računa ne veste na pamet ga lahko izberete iz tabele spodaj.
+                    Če številke računa ne veste na pamet lahko račun izberete iz tabele spodaj.
                 </p>
             </div>
 

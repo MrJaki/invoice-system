@@ -62,6 +62,7 @@ function createUpnQr(invoice) {
     return QRCode.toDataURL(upnData);
 }
 
+// Getting qr code
 router.post('/:id', async (req, res) => {
     const id = parseInt(req.params.id, 10);
 

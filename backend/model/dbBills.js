@@ -268,3 +268,32 @@ module.exports.getYearBills = function(year) {
     return pool.query(query, [start, end])
         .then(res => res.rows);
 }
+
+/**
+ * Retrieves all bills linked to a specific tax type
+ */
+module.exports.getBillByTaxId = function(id) {
+    const query = `
+        SELECT r.* FROM racuni r
+        JOIN komitenti k ON k.id = r.id_komitenta
+        JOIN vrste_izjav v ON v.id = k.id_vrsta_izjave
+        WHERE v.id = $1
+    `;
+
+    return pool.query(query, [id])
+        .then(res => res.rows);
+}
+
+/**
+ * Retrieves all bills linked to a specific client
+ */
+module.exports.getBillByClientId = function(id) {
+    const query = `
+        SELECT r.* FROM racuni r
+        JOIN komitenti k ON k.id = r.id_komitenta
+        WHERE k.id = $1
+    `;
+
+    return pool.query(query, [id])
+        .then(res => res.rows);
+}
