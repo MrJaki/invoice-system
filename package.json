@@ -1,5 +1,35 @@
 {
+  "name": "invoice-system",
+  "version": "1.0.0",
+  "main": "electron/main.js",
+  "scripts": {
+    "electron": "electron .",
+    "dist": "electron-builder"
+  },
   "dependencies": {
     "downloadjs": "^1.4.7"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "electron": "^42.4.1",
+    "electron-builder": "^26.15.3",
+    "wait-on": "^9.0.10"
+  },
+  "build": {
+    "appId": "com.invoice.system",
+    "productName": "Invoice System",
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "backend/**/*",
+      "backend/node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "backend/node_modules/**/*",
+      "backend/fonts/**/*"
+    ]
   }
 }

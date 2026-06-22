@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from './auth/AuthContext';
 import PrivateRoute from './auth/PrivateRoute';
 import Login from './pages/Login';
@@ -43,7 +43,7 @@ function Layout() {
 
 function App() {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <AuthProvider>
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -55,7 +55,7 @@ function App() {
                     } />
                 </Routes>
             </AuthProvider>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
 

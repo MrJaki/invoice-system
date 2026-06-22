@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Dbf } from 'dbf-reader';
 import { DataTable } from 'dbf-reader/models/dbf-file';
+import * as XLSX from "xlsx";
 import { Buffer } from "buffer";
 import MatchTable from "../components/MatchTable";
 import api from '../lib/api'
@@ -44,35 +45,96 @@ function Import() {
     const API_URL = import.meta.env.VITE_API_URL;
 
     // Reading data from .dbf file and storing them in array constants
-    const handleFilChange = (e: any) => {
+    const handleFilChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
-        if (selectedFile)
-            setFile(selectedFile);
 
-        let reader = new FileReader();
-        if (e.target.files && e.target.files.length > 0) {
-            let file = e.target.files[0];
-            reader.readAsArrayBuffer(file);
-            reader.onload = () => {
-                var arrayBuffer: ArrayBuffer = reader.result as ArrayBuffer;
-                if (arrayBuffer) {
-                    const buffer = Buffer.from(arrayBuffer);
-                    let datatable: DataTable = Dbf.read(buffer);
-                    console.log(datatable);
+        if (!selectedFile) return;
 
-                    const head = Array.isArray(datatable.columns) ? datatable.columns : [datatable.columns];
-                    const rows = Array.isArray(datatable.rows) ? datatable.rows : [datatable.rows];
+        setFile(selectedFile);
 
-                    setHead(head);
+        const extension = selectedFile.name
+            .split(".")
+            .pop()
+            ?.toLowerCase();
 
-                    const clonedHead = structuredClone(head);
-                    setFixedHead(clonedHead);
+        const reader = new FileReader();
 
-                    setRows(rows);
-                }
-            };
-        }
+        reader.onload = () => {
+            const result = reader.result;
+
+            switch (extension) {
+                case "dbf":
+                    handleDbf(result as ArrayBuffer);
+                    break;
+
+                case "xlsx":
+                case "xls":
+                case "csv":
+                    handleExcel(result as ArrayBuffer);
+                    break;
+
+                default:
+                    alert("Unsupported file type");
+            }
+        };
+
+        reader.readAsArrayBuffer(selectedFile);
+    };
+
+    const handleDbf = (arrayBuffer: ArrayBuffer) => {
+        const buffer = Buffer.from(arrayBuffer);
+        let datatable: DataTable = Dbf.read(buffer);
+        console.log(datatable);
+
+        const head = Array.isArray(datatable.columns) ? datatable.columns : [datatable.columns];
+        const rows = Array.isArray(datatable.rows) ? datatable.rows : [datatable.rows];
+
+        setHead(head);
+
+        const clonedHead = structuredClone(head);
+        setFixedHead(clonedHead);
+
+        setRows(rows);
     }
+
+    const handleExcel = (arrayBuffer: ArrayBuffer) => {
+        const workbook = XLSX.read(arrayBuffer, {
+            type: "array",
+        });
+
+        const sheetName = workbook.SheetNames[0];
+
+        if (!sheetName) {
+            console.error("No sheets found");
+            return;
+        }
+
+        const worksheet = workbook.Sheets[sheetName];
+
+        const rows = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet, {
+            defval: "",
+        });
+
+        const columns = rows.length
+            ? Object.keys(rows[0]).map((key) => ({
+                name: key,
+                type: "string",
+            }))
+            : [];
+
+        const datatable = {
+            columns,
+            rows,
+        };
+
+        console.log(datatable);
+
+        const head = datatable.columns;
+
+        setHead(head);
+        setFixedHead(structuredClone(head));
+        setRows(datatable.rows);
+    };
 
     // Showing and hiding error
     const showError = (msg: string) => {
@@ -264,14 +326,14 @@ function Import() {
                 <div className="grid gap-3">
                     <div className="grid gap-1">
                         <h2 className="text-center text-gray-400 text-xs">
-                            DBF file
+                            DBF, CSV ali XLSX datoteka
                         </h2>
                     </div>
 
                     <div className="grid gap-2">
                         {!file ? (
                             <h4 className="text-center text-gray-900 text-sm font-medium mb-3">
-                                Izberite .dbf datoteko, ki jo želite vnesti v tabelo. Pred začetkom si preberite navodila za pravilen vnos.
+                                Izberite .dbf, .csv ali .xlsx datoteko, ki jo želite vnesti v tabelo. Pred začetkom si preberite navodila za pravilen vnos.
                             </h4>
                         ) : (
                             <h4 className="text-center text-gray-900 text-sm font-medium mb-3">
@@ -283,7 +345,7 @@ function Import() {
                             <input
                                 id="dbf-upload"
                                 type="file"
-                                accept=".dbf"
+                                accept=".dbf, .csv, .xlsx, .xls"
                                 className="hidden"
                                 onChange={handleFilChange}
                             />

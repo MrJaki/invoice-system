@@ -2,20 +2,12 @@
 node_modules/
 **/node_modules/
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Environment variables
+# Environment
 .env
 .env.*
 !.env.example
 
-# Build outputs
+# Build
 dist/
 build/
 coverage/
@@ -23,53 +15,47 @@ coverage/
 # Vite
 .vite/
 
+# Electron
+out/
+release/
+*.asar
+*.exe
+*.msi
+*.nsis.7z
+*.blockmap
+
+# Logs
+*.log
+npm-debug.log*
+
 # TypeScript
 *.tsbuildinfo
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Temporary files
+# Temp
 tmp/
 temp/
 
-# Database files
+# Database
 *.sqlite
 *.sqlite3
+*.dump
+*.backup
 
-# Runtime files
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Package lock files (optional - remove if you want to track them)
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-
-# SQL dumps/backups (optional)
-*.bak
-
-# Frontend build artifacts
-frontend/dist/
-
-# Backend uploads (if you have any)
+# Uploads
 backend/uploads/
 
-# ESLint cache
+# Cache
 .eslintcache
 
-# Generated files
-*.tgz
-
-.env
-
+# User files
 user_preferences.json

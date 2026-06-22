@@ -1,12 +1,15 @@
 const PdfPrinter = require('pdfmake/src/printer');
 const fs = require('fs');
+const path = require('path');
+
+const fontsPath = path.join(__dirname, '..', 'fonts');
 
 const printer = new PdfPrinter({
   Roboto: {
-    normal: './fonts/Roboto-Regular.ttf',
-    bold: './fonts/Roboto-Medium.ttf',
-    italics: './fonts/Roboto-Italic.ttf',
-    bolditalics: './fonts/Roboto-MediumItalic.ttf'
+    normal: path.join(fontsPath, 'Roboto-Regular.ttf'),
+    bold: path.join(fontsPath, 'Roboto-Medium.ttf'),
+    italics: path.join(fontsPath, 'Roboto-Italic.ttf'),
+    bolditalics: path.join(fontsPath, 'Roboto-MediumItalic.ttf')
   }
 });
 

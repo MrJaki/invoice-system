@@ -438,6 +438,104 @@ POST   /api/qr/:id
 
 ---
 
+## Running as Desktop Application (Windows)
+
+The application can also be used as a standalone Windows desktop application.
+
+The `.exe` file is not stored inside the repository. Download the latest desktop release from the GitHub Releases page.
+
+### Requirements
+
+Before running the application, install:
+
+- Node.js (LTS)
+- PostgreSQL
+
+PostgreSQL is required because the application stores data in a PostgreSQL database.
+
+---
+
+## First Time Setup (Desktop App)
+
+### 1. Install PostgreSQL
+
+Download and install PostgreSQL.
+
+During installation remember:
+
+- PostgreSQL username
+- PostgreSQL password
+- Port number (default: `5432`)
+
+
+### 2. Create application database
+
+Open PostgreSQL command line (`psql`) or pgAdmin and create:
+
+```sql
+CREATE DATABASE izdaja_racunov;
+```
+
+
+### 3. Configure environment
+
+Inside the application folder create:
+
+```text
+backend/.env
+```
+
+Add:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=izdaja_racunov
+DB_USER=postgres
+DB_PASSWORD=YOUR_PASSWORD
+
+FRONTED_URL=
+
+JWT_SECRET=YOUR_SECRET
+JWT_EXPIRES_IN=8h
+APP_SECRET=YOUR_SECRET
+```
+
+
+### 4. Start the application
+
+Run:
+
+```text
+Invoice System.exe
+```
+
+## Creating the First Administrator Account
+
+After the application starts:
+
+### 1. Create an invite code in PostgreSQL
+
+```sql
+INSERT INTO kode_povabilo (koda)
+VALUES ('YOUR_INVITE_CODE');
+```
+
+### 2. Register a user through the application
+
+Use the invite code during registration.
+
+### 3. Promote the user to administrator
+
+Run:
+
+```sql
+UPDATE uporabniki
+SET vloga='admin'
+WHERE email='your@email.com';
+```
+---
+
 ## Language Notice
 
 This project was primarily developed for personal use and local accounting workflows in Slovenia.

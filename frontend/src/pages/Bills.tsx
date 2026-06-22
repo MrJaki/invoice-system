@@ -3,7 +3,7 @@ import BillsTable from '../components/BillTable'
 import LineChart from '../components/LineChart'
 
 
-function BillsPage({ setPage, setChosenBill }: { setPage?: (value: string) => void; setChosenBill?: (value: number) => void }) {
+function BillsPage({ setPage }: { setPage?: (value: string) => void;}) {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [totalUnpaid, setTotalUnpaid] = useState(0);
     const [year, setYear] = useState('');

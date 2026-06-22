@@ -1,4 +1,6 @@
-require('dotenv').config();
+require("dotenv").config({
+  path: __dirname + "/.env"
+});
 const helmet = require('helmet')
 const express = require('express');
 const cors = require('cors');
@@ -76,4 +78,4 @@ app.use('/api/tax', requireAuth, require('./routes/tax'));
 app.use('/api/json', requireAuth, require('./routes/json'));
 app.use('/api/qr', requireAuth, require('./routes/qr'));
 
-app. listen(3002, () => console.log('Server running on port 3002'));
+app.listen(3002, () => console.log('Server running on port 3002'));

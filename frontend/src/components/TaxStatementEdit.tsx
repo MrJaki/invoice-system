@@ -1,5 +1,5 @@
 import api from '../lib/api'
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Message from "./Message";
 
 function EditTaxStatement({refresh, modal, statements, setStatements }: any) {
