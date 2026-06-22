@@ -117,7 +117,7 @@ export default function Login() {
                 <div className="mt-4 text-sm text-center text-gray-600">
                     Že imate račun?{' '}
                     <a
-                        href="/login"
+                        href="#/login"
                         className="text-[#242996] hover:underline font-medium"
                     >
                         Prijavite se tukaj

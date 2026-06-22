@@ -8,11 +8,22 @@ const requireRole = require('../middleware/requireRole');
 const fs = require('fs');
 const path = require('path');
 
+const { app } = require("electron");
+
 const DATA_FILE = path.join(
-    __dirname,
-    '..',
-    'user_preferences.json'
+    app.getPath("userData"),
+    "user_preferences.json"
 );
+
+
+if (!fs.existsSync(DATA_FILE)) {
+    fs.writeFileSync(
+        DATA_FILE,
+        JSON.stringify({
+            company: {}
+        }, null, 2)
+    );
+}
 
 /**
  * Getting user data from json
