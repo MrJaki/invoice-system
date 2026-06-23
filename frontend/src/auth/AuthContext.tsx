@@ -16,6 +16,7 @@ interface AuthContextValue {
     loading: boolean;
     register: (email: string, password: string, password_repeat: string, name: string, surname: string, invite_code: string) => Promise<void>;
     generateCode: () => Promise<string>;
+    databaseConfig: (host: string, port: number, database: string, user: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -73,8 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
     }
 
+    async function databaseConfig(host: string, port: number, database: string, user: string, password: string) {
+        await api.patch(API_URL + '/setup/database-update', { host, port, database, user, password});
+    }
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading, register, generateCode }}>
+        <AuthContext.Provider value={{ user, login, logout, loading, register, generateCode, databaseConfig }}>
             {children}
         </AuthContext.Provider>
     )

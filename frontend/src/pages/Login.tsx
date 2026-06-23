@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import axios from 'axios';
 
 export default function Login() {
     const { login } = useAuth();
@@ -9,6 +10,8 @@ export default function Login() {
     const [geslo, setGeslo] = useState('');
     const [napaka, setNapaka] = useState('');
     const [busy, setBusy] = useState(false);
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -23,6 +26,19 @@ export default function Login() {
             setBusy(false);
         }
     }
+
+    // Checking if able to connect to database if not redirected to database config page
+    const checkingConection = async () => {
+        try {
+            const res = await axios.get(`${API_URL}/setup/status`);
+
+            if (res.data.setupRequired) navigate('/config')
+        } catch {}
+    }
+
+    useEffect(() => {
+        checkingConection();
+    }, [])
 
     return (
         <div className="flex items-center justify-center mt-16 px-4">

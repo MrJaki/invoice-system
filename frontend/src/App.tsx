@@ -15,6 +15,7 @@ import EditClient from './pages/EditClient';
 import Tax from './pages/Tax';
 import Import from './pages/Import';
 import Settings from './pages/Settings';
+import ConfigDatabase from './pages/ConfigDatabase'
 
 function Layout() {
     const [page, setPage] = useState("bills");
@@ -46,6 +47,7 @@ function App() {
         <HashRouter>
             <AuthProvider>
                 <Routes>
+                    <Route path="/config" element={<ConfigDatabase />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path='/*' element={

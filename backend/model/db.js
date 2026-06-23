@@ -1,18 +1,70 @@
-const { Pool } = require('pg');
+const { Pool } = require("pg");
+const { loadConfig } = require("../config/configService");
 
-// Defining a new pool object with connection settings
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10),
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-});
+let pool;
 
-// Attempt to connect to the database, reporting if the attempt was successful or returning a message if it was not.
-pool.connect()
-    .then(() => console.log('Povezan na bazo izdaja_racunov'))
-    .catch(err => console.error('Napaka pri povezavi na bazo:', err));
+// Creating DB connection
+function createPool() {
 
-// Export the pool object to enable the use of this link in other files
-module.exports = pool;
+    const config = loadConfig();
+
+    if (!config?.database) {
+        return null;
+    }
+
+
+    const dbConfig = config.database;
+
+
+    return new Pool({
+        host: dbConfig.host,
+        port: dbConfig.port,
+        database: dbConfig.database,
+        user: dbConfig.user,
+        password: dbConfig.password
+    });
+
+    console.log('Database running!');
+}
+
+
+// Create initial pool
+pool = createPool();
+
+
+// Export wrapper object
+const db = {
+
+    query(...args) {
+        if (!pool) {
+            throw new Error("Database not configured");
+        }
+
+        return pool.query(...args);
+    },
+
+
+    connect(...args) {
+        if (!pool) {
+            throw new Error("Database not configured");
+        }
+
+        return pool.connect(...args);
+    },
+
+
+    async restart() {
+
+        if (pool) {
+            await pool.end();
+        }
+
+        pool = createPool();
+
+        console.log("Database pool restarted");
+    }
+
+};
+
+
+module.exports = db;

@@ -70,6 +70,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/setup', require('./routes/setup'));
 
 app.use('/api/bills', requireAuth, require('./routes/bills'));
 app.use('/api/bill_lines', requireAuth, require('./routes/billLines'));

@@ -7,13 +7,22 @@ const requireRole = require('../middleware/requireRole');
 
 const fs = require('fs');
 const path = require('path');
+const { app } = require('electron');
 
-const { app } = require("electron");
+let DATA_FILE;
 
-const DATA_FILE = path.join(
-    app.getPath("userData"),
-    "user_preferences.json"
-);
+if (app && app.isReady && app.isReady()) {
+    DATA_FILE = path.join(
+        app.getPath("userData"),
+        "user_preferences.json"
+    );
+} else {
+    DATA_FILE = path.join(
+        __dirname,
+        '..',
+        'user_preferences.json'
+    );
+}
 
 
 if (!fs.existsSync(DATA_FILE)) {
@@ -57,7 +66,7 @@ router.get('/company', requireAuth, async (req, res) => {
  * Updating usr data 
  * Only admins
  */
-router.patch('/company-update', requireAuth, requireRole('admin'), async (req,res)=>{
+router.patch('/company-update', requireAuth, requireRole('admin'), async (req, res) => {
 
     const { name, surname, title, legal_title, street, city, tax_num, iban, bank } = req.body;
 
@@ -89,23 +98,22 @@ router.patch('/company-update', requireAuth, requireRole('admin'), async (req,re
 
         await fs.promises.writeFile(
             DATA_FILE,
-            JSON.stringify(user,null,2)
+            JSON.stringify(user, null, 2)
         );
 
 
         return res.json({
-            success:true
+            success: true
         });
 
 
-    } catch(err){
+    } catch (err) {
 
         return res.status(500).json({
-            error:"Posodabljanje neuspešno."
+            error: "Posodabljanje neuspešno."
         });
     }
 });
-
 
 
 module.exports = router;
