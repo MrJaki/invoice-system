@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
+const { loadSecrets } = require("../config/secretService");
 
-const SECRET = process.env.JWT_SECRET;
+const secrets = loadSecrets();
+
+const SECRET = secrets.JWT_SECRET;
 const EXPIRE_IN = process.env.JWT_EXPIRES_IN || '8h';
 
 module.exports.signToken = function(user) {

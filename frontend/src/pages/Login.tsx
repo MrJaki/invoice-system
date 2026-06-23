@@ -32,8 +32,11 @@ export default function Login() {
         try {
             const res = await axios.get(`${API_URL}/setup/status`);
 
-            if (res.data.setupRequired) navigate('/config')
-        } catch {}
+            console.log(res);
+            if (res.data.setupRequired) navigate('/config');
+        } catch (err) {
+            console.error("Status check failed:", err);
+        }
     }
 
     useEffect(() => {

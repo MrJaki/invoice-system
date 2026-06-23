@@ -5,84 +5,100 @@ const router = express.Router();
 const requireAuth = require('../middleware/requireAuth');
 const requireRole = require('../middleware/requireRole');
 
-const fs = require('fs');
-const path = require('path');
-const { app } = require('electron');
+const fs = require("fs");
+const path = require("path");
+const { app } = require("electron");
 
-let DATA_FILE;
+function getDataFile(){
 
-if (app && app.isReady && app.isReady()) {
-    DATA_FILE = path.join(
-        app.getPath("userData"),
-        "user_preferences.json"
-    );
-} else {
-    DATA_FILE = path.join(
+    // Electron mode
+    if (
+        app &&
+        app.isReady &&
+        app.isReady()
+    ) {
+
+        const userData = app.getPath("userData");
+
+        if (!fs.existsSync(userData)) {
+            fs.mkdirSync(userData, {
+                recursive:true
+            });
+        }
+
+        return path.join(
+            userData,
+            "user_preferences.json"
+        );
+    }
+
+
+    // Browser / Node mode
+    return path.join(
         __dirname,
-        '..',
-        'user_preferences.json'
-    );
-}
-
-
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(
-        DATA_FILE,
-        JSON.stringify({
-            company: {}
-        }, null, 2)
+        "..",
+        "user_preferences.json"
     );
 }
 
 // Checking database status if able to connect or not
-router.get("/status", async (req,res)=>{
+router.get("/status", async (req, res) => {
+    const result = {
+        connected: false,
+        setupRequired: false,
+        database: null,
+        error: null
+    };
 
     try {
+        if (!app) return;
 
         const { loadConfig } = require("../config/configService");
 
         const config = loadConfig();
 
-
-        // no database configuration exists
-        if(!config?.database){
+        if (!config?.database) {
             return res.json({
-                connected:false,
-                setupRequired:true
+                ...result,
+                setupRequired: true,
+                error: "Database configuration missing"
             });
         }
 
+        result.database = {
+            host: config.database.host,
+            database: config.database.database,
+            user: config.database.user
+        };
 
         const pool = require("../model/db");
 
         await pool.query("SELECT 1");
 
-
-        res.json({
-            connected:true,
-            setupRequired:false
+        return res.json({
+            ...result,
+            connected: true
         });
 
+    } catch (err) {
+        console.error("STATUS CHECK FAILED:", err);
 
-    } catch(err){
-
-        res.json({
-            connected:false,
-            setupRequired:false
+        return res.json({
+            ...result,
+            setupRequired: true,
+            error: err.message
         });
-
     }
-
 });
 
 // Updating database configuration in json file for electron apps
 router.patch('/database-update', async (req, res) => {
 
-    if(process.env.ELECTRON_MODE !== "true"){
-        return res.status(403).json({
-            error:"Not available"
-        });
-    }
+    // if(process.env.ELECTRON_MODE !== "true"){
+    //     return res.status(403).json({
+    //         error:"Not available"
+    //     });
+    // }
 
     const {
         host,
@@ -93,10 +109,7 @@ router.patch('/database-update', async (req, res) => {
     } = req.body;
 
     try {
-        const data = await fs.promises.readFile(
-            DATA_FILE,
-            'utf8'
-        );
+        const data = await fs.promises.readFile(getDataFile(), 'utf8');
 
         let config = JSON.parse(data);
 
@@ -110,7 +123,7 @@ router.patch('/database-update', async (req, res) => {
         };
 
         await fs.promises.writeFile(
-            DATA_FILE,
+            getDataFile(),
             JSON.stringify(config, null, 2)
         );
 

@@ -1,6 +1,6 @@
 {
   "name": "invoice-system",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "electron/main.js",
   "scripts": {
     "electron": "electron .",
@@ -25,7 +25,9 @@
       "electron/**/*",
       "frontend/dist/**/*",
       "backend/**/*",
-      "backend/node_modules/**/*"
+      "backend/node_modules/**/*",
+      "!backend/.env",
+      "!backend/user_preferences.json"
     ],
     "asarUnpack": [
       "backend/node_modules/**/*",

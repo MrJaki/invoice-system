@@ -16,5 +16,9 @@
     "database": "",
     "user": "postgres",
     "password": ""
+  },
+  "secrets": {
+    "JWT_SECRET": "",
+    "APP_SECRET": ""
   }
 }

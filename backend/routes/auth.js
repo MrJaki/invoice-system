@@ -6,6 +6,9 @@ const dbUsers = require('../model/dbUsers');
 const { signToken } = require('../lib/auth');
 const requireAuth = require('../middleware/requireAuth');
 const requireRole = require('../middleware/requireRole');
+const { loadSecrets } = require("../config/secretService");
+
+const secrets = loadSecrets();
 
 /**
  * Adding new user
@@ -28,7 +31,7 @@ router.post('/register', async (req, res) => {
         const code = await dbUsers.getInviteCode(invite_code);
         if (!code) return res.status(400).json({ success: false, error: 'Koda za povabilo ni veljavna!' });
 
-        const hash = await bcrypt.hash(process.env.APP_SECRET + password, 10);
+        const hash = await bcrypt.hash(secrets.APP_SECRET + password, 10);
         const user = await dbUsers.create(email, hash, name, surname);
 
         await dbUsers.updateState(invite_code);
@@ -60,7 +63,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ success: false, error: 'Napačni podakti za prijavo.'});
         }
 
-        const ok = await bcrypt.compare(process.env.APP_SECRET + password, user.password_hash);
+        const ok = await bcrypt.compare(secrets.APP_SECRET + password, user.password_hash);
 
         if (!ok) {
             return res.status(401).json({ success: false, error: 'Napačni podakti za prijavo.'});
