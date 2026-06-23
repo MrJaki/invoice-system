@@ -64,7 +64,7 @@ app.use(
 );
 
 app.use(cors({
-  origin: process.env.FRONTED_URL
+  origin: process.env.FRONTEND_URL
 }));
 
 app.use(express.json());

@@ -5,6 +5,7 @@ const pdfModel = require('../model/pdfMaker');
 const path = require('path');
 const fs = require('fs');
 const { format } = require('@fast-csv/format');
+const { loadConfig } = require('../config/configService');
 
 const PREF_FILE = path.join(
     __dirname,
@@ -211,8 +212,9 @@ router.post('/:id/pdf', async (req, res) => {
         if (!billData)
             return res.status(400).json({ success: false, error: 'Račun ne obstaja!' });
 
-        const data = fs.readFileSync(PREF_FILE, 'utf8');
-        const user = JSON.parse(data);
+        const config = loadConfig();
+
+        const user = config || {};
 
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="racun-${billData.stevilka_racuna}.pdf"`);

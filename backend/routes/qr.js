@@ -5,6 +5,7 @@ const router = express.Router();
 const dbBills = require('../model/dbBills');
 const fs = require("fs").promises;
 const path = require("path");
+const { loadConfig } = require('../config/configService');
 
 const PREF_FILE = path.join(
     __dirname,
@@ -82,12 +83,9 @@ router.post('/:id', async (req, res) => {
 
     try {
         // Getting user data from json file
-        const data = await fs.readFile(
-            PREF_FILE,
-            "utf8"
-        );
+        const config = loadConfig();
 
-        const user = JSON.parse(data);
+        const user = config || {};
 
         invoice.recipientName = user.company.pravni_naziv;
         invoice.recipientAddress = user.company.ulica;

@@ -170,11 +170,11 @@ function buildDocDefinition(data, user) {
                             z.tip_kolicine,
                             z.opis,
                             {
-                                text: `${z.cena.toFixed(2)} €`,
+                                text: `${z.cena?.toFixed(2)} €`,
                                 alignment: 'right'
                             },
                             {
-                                text: `${(z.kolicina * z.cena).toFixed(2)} €`,
+                                text: `${(z.kolicina * z.cena)?.toFixed(2)} €`,
                                 alignment: 'right'
                             }
                         ])
@@ -203,8 +203,8 @@ function buildDocDefinition(data, user) {
                         table: {
                             widths: ['*', 90],
                             body: [
-                                ['Osnova', znesekBrezDDV.toFixed(2)+ " €"],
-                                ['DDV ' + data.stopnja + '%', ddv.toFixed(2) + " €"],
+                                ['Osnova', znesekBrezDDV?.toFixed(2)+ " €"],
+                                ['DDV ' + data.stopnja + '%', ddv?.toFixed(2) + " €"],
                                 [
                                     {
                                         text: 'SKUPAJ',

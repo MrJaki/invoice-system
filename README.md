@@ -4,6 +4,16 @@ A full-stack invoice management application built with **Node.js**, **Express**,
 
 ---
 
+## Supported Deployment Modes
+
+### Browser / Server
+Uses .env configuration and a centrally hosted PostgreSQL database.
+
+### Electron Desktop
+Stores configuration and generated application secrets inside the user's local application data directory.
+
+---
+
 ## Features
 
 ### Invoice Management
@@ -133,6 +143,11 @@ racuni (1)
 project-root/
 │
 ├── backend/
+│   ├── config/
+│   │   ├── configService.js
+│   │   ├── paths.js
+│   │   └── secretService.js
+│   │
 │   ├── model/
 │   │   ├── db.js
 │   │   ├── dbBills.js
@@ -155,12 +170,16 @@ project-root/
 │   │   ├── clients.js
 │   │   ├── tax.js
 │   │   ├── json.js
+│   │   ├── setup.js
 │   │   └── qr.js
 │   │
 │   ├── app.js
 │   ├── .env.example
 │   ├── user_preferences_example.json
 │   └── package.json
+│
+├── electron/
+│   └── main.js
 │
 ├── frontend/
 │   ├── src/
@@ -257,10 +276,10 @@ DB_PORT=5432
 DB_NAME=izdaja_racunov
 DB_USER=
 DB_PASSWORD=
-FRONTED_URL=
-JWT_SECRET=
+FRONTEND_URL=
+JWT_SECRET=your_random_secret
 JWT_EXPIRES_IN=8h
-APP_SECRET=
+APP_SECRET=your_random_secret
 ```
 
 Create `.env` file inside the fronted folder:
@@ -424,6 +443,14 @@ POST   /api/auth/invite-code
 POST   /api/qr/:id
 ```
 
+### Setup
+
+```http
+GET     /api/setup/status
+
+PATCH   /api/setup/database-update
+```
+
 ---
 
 ## Main Modules
@@ -442,7 +469,9 @@ POST   /api/qr/:id
 
 The application can also be used as a standalone Windows desktop application.
 
-The `.exe` file is not stored inside the repository. Download the latest desktop release from the GitHub Releases page.
+The `.exe` file is not stored inside the repository.
+
+Download the latest desktop release from: https://github.com/MrJaki/invoice-system/releases
 
 ### Requirements
 
@@ -477,38 +506,15 @@ CREATE DATABASE izdaja_racunov;
 ```
 
 
-### 3. Configure environment
-
-Inside the application folder create:
-
-```text
-backend/.env
-```
-
-Add:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=izdaja_racunov
-DB_USER=postgres
-DB_PASSWORD=YOUR_PASSWORD
-
-FRONTED_URL=
-
-JWT_SECRET=YOUR_SECRET
-JWT_EXPIRES_IN=8h
-APP_SECRET=YOUR_SECRET
-```
-
-
-### 4. Start the application
+### 3. Start the application
 
 Run:
 
-```text
 Invoice System.exe
-```
+
+On first startup the application will open a setup page where you can enter PostgreSQL connection details.
+
+After a successful connection test the settings are saved automatically.
 
 ## Creating the First Administrator Account
 

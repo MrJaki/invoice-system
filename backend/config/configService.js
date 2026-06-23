@@ -28,28 +28,25 @@ function loadConfig() {
 
     let config = null;
 
-    // Electron
-    if (app && app.isReady && app.isReady()) {
+    if (!fs.existsSync(DATA_FILE)) {
+        return null;
+    }
 
-        if (!fs.existsSync(DATA_FILE)) {
-            return null;
-        }
+    // Always load config file
+    config = JSON.parse(
+        fs.readFileSync(DATA_FILE, "utf8")
+    );
 
-        config = JSON.parse(
-            fs.readFileSync(DATA_FILE, "utf8")
-        );
 
-    } else {
+    // Server: override database from env if provided
+    if (!app || !app.isReady || !app.isReady()) {
 
-        // Server
-        config = {
-            database: {
-                host: process.env.DB_HOST,
-                port: process.env.DB_PORT,
-                database: process.env.DB_NAME,
-                user: process.env.DB_USER,
-                password: process.env.DB_PASSWORD
-            }
+        config.database = {
+            host: process.env.DB_HOST || config.database?.host,
+            port: process.env.DB_PORT || config.database?.port,
+            database: process.env.DB_NAME || config.database?.database,
+            user: process.env.DB_USER || config.database?.user,
+            password: process.env.DB_PASSWORD || config.database?.password
         };
     }
 
